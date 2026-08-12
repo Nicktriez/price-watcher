@@ -1,5 +1,5 @@
 export function fmtPrice(p: string): string {
-  return p.replace(/\.?0+$/, "");
+  return p.includes(".") ? p.replace(/\.?0+$/, "") : p;
 }
 
 export function fmtDate(iso: string): string {
