@@ -50,6 +50,7 @@ The offer feed comes from **Tjek A/S — the same company that owns eTilbudsavis
 - `docs/setup-dev.md` — local dev setup: Postgres install, `.env` creation, toolchain commands. **Read this first if environment/deps aren't set up.**
 - `src/db/` — Kysely schema, migrations, client
 - `src/lib/` — the Tjek API client and ingestion logic
+- `src/lib/__fixtures__/` — real Tjek payloads as ground-truth fixtures (`rema1000.offers.json`, `rema1000.catalogs.json`). Use these to build types/tests against the real data shape.
 - `src/routes/` — SolidStart routes (offers index, product, store pages)
 - `src/server/` — the ingestion scheduler
 - `tasks/` — the coding task files (implement these)

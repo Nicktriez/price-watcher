@@ -1,7 +1,7 @@
 # Task 002 — Tjek API Client (typed)
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/build-plan.md` → "What to code — Phase 1" + `research/snapshot/REMA1000.offers.json` (ground-truth payloads) + `research/notes/chains.md`
+**Plan source:** `docs/build-plan.md` → "What to code — Phase 1" + `src/lib/__fixtures__/rema1000.offers.json` (ground-truth payloads, local) + `research/notes/chains.md`
 
 ## Objective
 
