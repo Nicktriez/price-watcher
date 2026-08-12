@@ -1,24 +1,24 @@
 [
- {
-  "catalog_id": "SiNjgbWb",
-  "label": "Netto uge 33 Nonfood",
-  "page_count": 9,
-  "declared_offers": 57,
-  "fetched_offers": 56,
-  "run_from": "2026-08-07T22:00:00+0000",
-  "run_till": "2026-08-14T21:59:59+0000",
-  "publish": "2026-08-06T07:00:00+0000",
-  "pdf_url": "https://squid-api.tjek.com/v2/catalogs/SiNjgbWb/download"
- },
- {
-  "catalog_id": "HWBr9Bz2",
-  "label": "Netto uge 33",
-  "page_count": 34,
-  "declared_offers": 219,
-  "fetched_offers": 217,
-  "run_from": "2026-08-07T22:00:00+0000",
-  "run_till": "2026-08-14T21:59:59+0000",
-  "publish": "2026-08-05T05:00:00+0000",
-  "pdf_url": "https://squid-api.tjek.com/v2/catalogs/HWBr9Bz2/download"
- }
+  {
+    "catalog_id": "SiNjgbWb",
+    "label": "Netto uge 33 Nonfood",
+    "page_count": 9,
+    "declared_offers": 57,
+    "fetched_offers": 56,
+    "run_from": "2026-08-07T22:00:00+0000",
+    "run_till": "2026-08-14T21:59:59+0000",
+    "publish": "2026-08-06T07:00:00+0000",
+    "pdf_url": "https://squid-api.tjek.com/v2/catalogs/SiNjgbWb/download"
+  },
+  {
+    "catalog_id": "HWBr9Bz2",
+    "label": "Netto uge 33",
+    "page_count": 34,
+    "declared_offers": 219,
+    "fetched_offers": 217,
+    "run_from": "2026-08-07T22:00:00+0000",
+    "run_till": "2026-08-14T21:59:59+0000",
+    "publish": "2026-08-05T05:00:00+0000",
+    "pdf_url": "https://squid-api.tjek.com/v2/catalogs/HWBr9Bz2/download"
+  }
 ]

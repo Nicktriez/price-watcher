@@ -9,19 +9,19 @@ Phase 1's `ingestChain(dealerId)` already works for one chain (REMA). This task 
 
 ## The chain config (real dealer IDs from research)
 
-| Chain | Dealer ID | Cadence / notes |
-|---|---|---|
-| REMA 1000 | `11deC` | weekly, publish Fri 08:00 UTC — already working |
-| Netto | `9ba51` | weekly, publish Thu 05:00 UTC |
-| Bilka | `93f13` | weekly, publish Thu 08:00 UTC |
-| Føtex | `bdf5A` | weekly, Thu 08:00 UTC; can run 2-week aviser |
-| Kvickly | `c1edq` | Thu–Thu |
-| SuperBrugsen | `0b1e8` | Thu–Thu |
-| 365discount | `DWZE1w` | Wed–Wed (offset week) |
-| Brugsen | `d311fg` | sporadic — low priority |
-| Lidl | `71c90` | weekly avis + weekend avis (Fri–Sun) + long-running LPs — poll all catalogs |
-| SPAR | `88ddE` | secondary |
-| MENY | `267e1m` | secondary |
+| Chain        | Dealer ID | Cadence / notes                                                             |
+| ------------ | --------- | --------------------------------------------------------------------------- |
+| REMA 1000    | `11deC`   | weekly, publish Fri 08:00 UTC — already working                             |
+| Netto        | `9ba51`   | weekly, publish Thu 05:00 UTC                                               |
+| Bilka        | `93f13`   | weekly, publish Thu 08:00 UTC                                               |
+| Føtex        | `bdf5A`   | weekly, Thu 08:00 UTC; can run 2-week aviser                                |
+| Kvickly      | `c1edq`   | Thu–Thu                                                                     |
+| SuperBrugsen | `0b1e8`   | Thu–Thu                                                                     |
+| 365discount  | `DWZE1w`  | Wed–Wed (offset week)                                                       |
+| Brugsen      | `d311fg`  | sporadic — low priority                                                     |
+| Lidl         | `71c90`   | weekly avis + weekend avis (Fri–Sun) + long-running LPs — poll all catalogs |
+| SPAR         | `88ddE`   | secondary                                                                   |
+| MENY         | `267e1m`  | secondary                                                                   |
 
 ## What to build
 

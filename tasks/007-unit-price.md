@@ -10,11 +10,13 @@ Make prices comparable across different package sizes. **The basket math (Phase 
 ## The data you're normalizing
 
 Each offer has a `quantity` block (raw Tjek fields already mapped into `offer`):
+
 - `unit` — `g`, `kg`, `l`, `stk` (the `quantity.unit.symbol`)
 - `size_from` / `size_to` — the size in the unit's base measure (e.g. grams)
 - `pieces_from` / `pieces_max` — piece counts
 
 From the REMA fixture, `quantity` looks like:
+
 ```json
 "quantity": { "unit": { "symbol": "g" }, "size": { "from": 470, "to": 1080 }, "pieces": { "from": 1, "to": 1, "max": 6 } }
 ```

@@ -9,7 +9,7 @@ Make the same product across chains resolve to **one `Product` row**, so the app
 
 ## The starting point (keep it simple)
 
-Phase 1 note: *"start by creating one product per unique (heading, dealer) pair, refined by Phase 2 matching."* Phase 2 matching should **start simple and only get fuzzy later**:
+Phase 1 note: _"start by creating one product per unique (heading, dealer) pair, refined by Phase 2 matching."_ Phase 2 matching should **start simple and only get fuzzy later**:
 
 1. **Normalize names** before comparison:
    - lowercase, trim
@@ -32,11 +32,11 @@ Phase 1 note: *"start by creating one product per unique (heading, dealer) pair,
 1. **Name normalization** helper (`normalizeName(heading)`) — pure function, testable.
 2. **Cross-chain product linking** — after ingestion, run a pass that links offers with matching normalized names across chains to one `Product`.
 3. **A matching run** that's idempotent and re-runnable (don't re-match already-linked products into a mess).
-   - *(Do NOT add `external_id`/GTIN columns or RPC wiring in this task — that's the deferred REMA RPC work above.)*
+   - _(Do NOT add `external_id`/GTIN columns or RPC wiring in this task — that's the deferred REMA RPC work above.)_
 
 ## Important
 
-- **Idempotent and safe:** never re-link a product to a *different* existing product once matched; the first stable link wins.
+- **Idempotent and safe:** never re-link a product to a _different_ existing product once matched; the first stable link wins.
 - **Name collisions are real:** "Cola" at two chains may be different products. Exact normalized match is a heuristic, not truth — accept some mislinks in v1; the trust-tier + crowd layer corrects later.
 - Don't delete products — relink offers, keep history intact.
 
@@ -46,11 +46,11 @@ Phase 1 note: *"start by creating one product per unique (heading, dealer) pair,
 - [ ] Same product across 2+ chains links to ONE `Product` — **known test case: "3-stjernet pålæg" appears in both `rema1000.offers.json` and `netto.offers.json`** (exact-heading overlap found during fixture review). After normalization, more matches may surface; at minimum this one must link.
 - [ ] Re-running the matcher doesn't corrupt existing links
 - [ ] `vp check` + `vp test` pass
-- [ ] *(Deferred, NOT part of this task)* REMA `get_offer_products` RPC / GTIN — blocked on `REMA_API_KEY` not being available to OpenCode
+- [ ] _(Deferred, NOT part of this task)_ REMA `get_offer_products` RPC / GTIN — blocked on `REMA_API_KEY` not being available to OpenCode
 
 ## Testing approach — CRITICAL, do NOT write a DB test
 
-The matcher must be a **pure function** over offer arrays, e.g. `linkProducts(offers: Offer[]): LinkDecision[]` that returns *decisions* ("this offer → this product id") **without touching the database**. The DB application (applying decisions to rows) is a thin separate layer.
+The matcher must be a **pure function** over offer arrays, e.g. `linkProducts(offers: Offer[]): LinkDecision[]` that returns _decisions_ ("this offer → this product id") **without touching the database**. The DB application (applying decisions to rows) is a thin separate layer.
 
 - Unit-test `linkProducts` entirely against the **REMA + Netto fixtures**: feed both chains' offers in, assert that "3-stjernet pålæg" resolves to ONE product. No DB, no network.
 - `normalizeName` is a pure string function — unit-test it against fixture headings.
