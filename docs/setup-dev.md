@@ -80,10 +80,10 @@ Re-running it should be a no-op (Kysely tracks applied migrations).
 
 ## Where dev happens vs. production
 
-| Machine | Role | DB |
-|---|---|---|
-| **Laptop** (`~/price-watcher`) | Where OpenCode runs + local dev | Local Postgres via `DATABASE_URL` |
-| **Hetzner VPS** (later) | Production hosting | Its own Postgres, configured at deploy — separate `.env` |
+| Machine                        | Role                            | DB                                                       |
+| ------------------------------ | ------------------------------- | -------------------------------------------------------- |
+| **Laptop** (`~/price-watcher`) | Where OpenCode runs + local dev | Local Postgres via `DATABASE_URL`                        |
+| **Hetzner VPS** (later)        | Production hosting              | Its own Postgres, configured at deploy — separate `.env` |
 
 ## Troubleshooting
 

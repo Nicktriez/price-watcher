@@ -24,7 +24,7 @@ Three server-rendered routes showing the ingested data. Minimal, real, Tailwind-
 ## Data notes
 
 - Offers join to `product` for the name and `chain` for the chain name.
-- Use `internal=false`-agnostic queries here — for Phase 1, all offers are feed (`internal=true`) and that's fine; the UI just shows current offers. (The `internal` flag matters for *publishing* decisions later, not for showing offers in Phase 1.)
+- Use `internal=false`-agnostic queries here — for Phase 1, all offers are feed (`internal=true`) and that's fine; the UI just shows current offers. (The `internal` flag matters for _publishing_ decisions later, not for showing offers in Phase 1.)
 - Image: use `offer.image_url` (the Tjek `images.view` URL).
 
 ## Acceptance criteria

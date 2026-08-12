@@ -36,6 +36,7 @@ A Denmark-only grocery price watcher. SolidStart 2 (Solid meta-framework) + Tail
 ## Data / legal boundary (important)
 
 The offer feed comes from **Tjek A/S — the same company that owns eTilbudsavis, a direct competitor.** Consequences:
+
 - Feed rows must have `source='tjek'`, `trust_tier='official'`, `internal=true`. Feed data is **internal-only** — never marked publishable, never treated as something the site can redistribute.
 - `internal=true` rows are for the app's own use; crowd/receipt rows (`internal=false`) are the publishable layer.
 - The `offer.internal` column enforces this. Do not omit or flip it.

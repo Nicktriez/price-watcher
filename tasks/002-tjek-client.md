@@ -21,27 +21,37 @@ Base URL from env: `TJEK_BASE_URL` (default `https://squid-api.tjek.com`).
 ```ts
 interface TjekOffer {
   id: string;
-  heading: string;                       // product name
+  heading: string; // product name
   description: string | null;
   catalog_page: number | null;
   pricing: { price: number; pre_price: number | null; currency: string };
   quantity: {
-    unit: { symbol: string | null };     // g | kg | l | stk ...
+    unit: { symbol: string | null }; // g | kg | l | stk ...
     size: { from: number | null; to: number | null };
     pieces: { from: number | null; to: number | null; max: number | null };
   };
   images: { thumb: string | null; view: string | null; zoom: string | null };
-  run_from: string; run_till: string; publish: string;  // ISO timestamps
-  catalog_id: string; dealer_id: string;
+  run_from: string;
+  run_till: string;
+  publish: string; // ISO timestamps
+  catalog_id: string;
+  dealer_id: string;
 }
 
 interface TjekCatalog {
-  id: string; label: string; page_count: number | null;
-  offer_count: number; run_from: string|null; run_till: string|null; publish: string|null;
+  id: string;
+  label: string;
+  page_count: number | null;
+  offer_count: number;
+  run_from: string | null;
+  run_till: string | null;
+  publish: string | null;
 }
 
 interface TjekDealer {
-  id: string; name: string; website: string | null;
+  id: string;
+  name: string;
+  website: string | null;
 }
 ```
 

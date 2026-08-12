@@ -6,7 +6,8 @@
 ## Objective
 
 Schedule the REMA ingestion so price history accumulates automatically. Two concerns:
-1. **~6h capture** — run `ingestChain('11deC')` every ~6h to snapshot `price_point` history (the when-to-buy feature later needs history *before* it ships — never backfill a graph you forgot to collect).
+
+1. **~6h capture** — run `ingestChain('11deC')` every ~6h to snapshot `price_point` history (the when-to-buy feature later needs history _before_ it ships — never backfill a graph you forgot to collect).
 2. **Weekly offer refresh** — the Tjek weekly window changes; polling every ~6h naturally picks up the new week when it's published (early Thursday/Friday morning for REMA).
 
 ## Implementation

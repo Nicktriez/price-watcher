@@ -8,6 +8,7 @@ Tjek.com (`squid-api.tjek.com`), which is treated as the primary surface.
 ## Salling Group — Netto · Bilka · Føtex
 
 **Shared infra, two sub-platforms:**
+
 - **Netto** — Next.js (App Router) + Tjek Incito. Avis = page images on
   `image-transformer-api.tjek.com` (signed `s=…` URLs), metadata embedded in RSC flight data.
 - **Bilka / Føtex** — Nuxt SSR + **SAP Commerce** + Magnolia CMS. Avis = Magnolia image
@@ -16,11 +17,13 @@ Tjek.com (`squid-api.tjek.com`), which is treated as the primary surface.
   JS bundle and only answers registered routes → **not a public surface**.
 
 ### Netto
+
 - Avis: `https://netto.dk/netto-avisen/` · sitemap `netto.dk/sitemap.xml` (open)
 - Dealer `9ba51`. Week 33 = 219 + 57 offers. PDF via Tjek `/v2/catalogs/{id}/download`.
 - Cadence: weekly, publish Thu 05:00 UTC. Format: JSON (primary), PDF/images (fallback).
 
 ### Bilka / Føtex
+
 - Bilka: `bilka.dk/tilbudsavis`, PLPs `bilka.dk/tilbud/{cat}/pl/{slug}/`
 - Føtex: `foetex.dk/tilbudsavis` (note: **foetex**, not fotex), PLPs same pattern
 - Sitemaps: `bilka.dk/sitemap/sitemap-index.xml`, `foetex.dk/sitemap/sitemap-index.xml`
@@ -35,12 +38,12 @@ Tjek.com (`squid-api.tjek.com`), which is treated as the primary surface.
 All Coop banners use a shared `catalog.js` viewer on their own domains over Tjek images,
 and are fully present on Tjek with per-banner dealer ids.
 
-| Chain | Dealer id | Avis URL | Week-33 offers |
-|---|---|---|---|
-| Kvickly | `c1edq` | kvickly.dk/tilbudsavis | 227 (62 p.) |
-| SuperBrugsen | `0b1e8` | superbrugsen.dk/tilbudsavis | 151 (46 p.) |
-| 365discount | `DWZE1w` | 365discount.coop.dk/tilbudsavis | 150+168 (two live weeks) |
-| Brugsen | `d311fg` | (via coop.dk) | 71 (sporadic) |
+| Chain        | Dealer id | Avis URL                        | Week-33 offers           |
+| ------------ | --------- | ------------------------------- | ------------------------ |
+| Kvickly      | `c1edq`   | kvickly.dk/tilbudsavis          | 227 (62 p.)              |
+| SuperBrugsen | `0b1e8`   | superbrugsen.dk/tilbudsavis     | 151 (46 p.)              |
+| 365discount  | `DWZE1w`  | 365discount.coop.dk/tilbudsavis | 150+168 (two live weeks) |
+| Brugsen      | `d311fg`  | (via coop.dk)                   | 71 (sporadic)            |
 
 - Coop hub: `coop.dk/tilbudsavis` (aggregates all banners).
 - Cadence: **Thu–Thu** for Kvickly/SuperBrugsen; **Wed–Wed** for 365 (offset week). SuperBrugsen

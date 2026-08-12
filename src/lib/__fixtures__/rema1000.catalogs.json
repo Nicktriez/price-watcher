@@ -1,35 +1,35 @@
 [
- {
-  "catalog_id": "F4WBC8CG",
-  "label": "Uge 33",
-  "page_count": 24,
-  "declared_offers": 111,
-  "fetched_offers": 111,
-  "run_from": "2026-08-08T22:00:00+0000",
-  "run_till": "2026-08-15T21:59:59+0000",
-  "publish": "2026-08-05T10:00:00+0000",
-  "pdf_url": "https://squid-api.tjek.com/v2/catalogs/F4WBC8CG/download"
- },
- {
-  "catalog_id": "ginHCvos",
-  "label": "Dit Digitale REMA 1000 Univers",
-  "page_count": 12,
-  "declared_offers": 0,
-  "fetched_offers": 0,
-  "run_from": "2026-08-08T22:00:00+0000",
-  "run_till": "2026-09-13T21:59:59+0000",
-  "publish": "2026-08-09T06:00:00+0000",
-  "pdf_url": "https://squid-api.tjek.com/v2/catalogs/ginHCvos/download"
- },
- {
-  "catalog_id": "xPR8EWk3",
-  "label": "Meget mere s\u00e6son - august",
-  "page_count": 16,
-  "declared_offers": 0,
-  "fetched_offers": 0,
-  "run_from": "2026-07-31T22:00:00+0000",
-  "run_till": "2026-08-31T21:59:59+0000",
-  "publish": "2026-08-01T06:00:00+0000",
-  "pdf_url": "https://squid-api.tjek.com/v2/catalogs/xPR8EWk3/download"
- }
+  {
+    "catalog_id": "F4WBC8CG",
+    "label": "Uge 33",
+    "page_count": 24,
+    "declared_offers": 111,
+    "fetched_offers": 111,
+    "run_from": "2026-08-08T22:00:00+0000",
+    "run_till": "2026-08-15T21:59:59+0000",
+    "publish": "2026-08-05T10:00:00+0000",
+    "pdf_url": "https://squid-api.tjek.com/v2/catalogs/F4WBC8CG/download"
+  },
+  {
+    "catalog_id": "ginHCvos",
+    "label": "Dit Digitale REMA 1000 Univers",
+    "page_count": 12,
+    "declared_offers": 0,
+    "fetched_offers": 0,
+    "run_from": "2026-08-08T22:00:00+0000",
+    "run_till": "2026-09-13T21:59:59+0000",
+    "publish": "2026-08-09T06:00:00+0000",
+    "pdf_url": "https://squid-api.tjek.com/v2/catalogs/ginHCvos/download"
+  },
+  {
+    "catalog_id": "xPR8EWk3",
+    "label": "Meget mere s\u00e6son - august",
+    "page_count": 16,
+    "declared_offers": 0,
+    "fetched_offers": 0,
+    "run_from": "2026-07-31T22:00:00+0000",
+    "run_till": "2026-08-31T21:59:59+0000",
+    "publish": "2026-08-01T06:00:00+0000",
+    "pdf_url": "https://squid-api.tjek.com/v2/catalogs/xPR8EWk3/download"
+  }
 ]
