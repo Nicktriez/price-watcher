@@ -71,7 +71,7 @@ export interface PricePointTable {
   id: string;
   offer_id: string;
   product_id: string;
-  store_id: string;
+  store_id: string | null;
   price: string;
   currency: string;
   observed_at: string;
