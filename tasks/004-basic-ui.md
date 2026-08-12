@@ -1,7 +1,7 @@
 # Task 004 — Basic UI: Offers Index + Product + Store Pages
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/build-plan.md` → "What to code — Phase 1" (UI section)
+**Plan source:** `docs/reference/build-plan.md` → "What to code — Phase 1" (UI section)
 
 ## Objective
 

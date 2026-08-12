@@ -1,7 +1,7 @@
 # Task 001 — Kysely Database Schema + Initial Migration
 
 **Repo:** `~/price-watcher` (the SolidStart project, NOT the research repo)
-**Plan source:** `docs/build-plan.md` → "What to code — Phase 1" (canonical copy in `/root/grocery-price-watcher-research`)
+**Plan source:** `docs/reference/build-plan.md` → "What to code — Phase 1" (canonical copy lives in the research repo `grocery-price-watcher-research`, but this project-local copy is the one to read)
 
 ## Objective
 

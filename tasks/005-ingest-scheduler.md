@@ -1,7 +1,7 @@
 # Task 005 — Ingestion Scheduler (weekly + ~6h capture)
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/build-plan.md` → "What to code — Phase 1" (Task 4 in the plan) + `research/notes/chains.md` (cadence)
+**Plan source:** `docs/reference/build-plan.md` → "What to code — Phase 1" (Task 4 in the plan) + `docs/reference/chains.md` (cadence)
 
 ## Objective
 

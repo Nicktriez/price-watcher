@@ -1,7 +1,7 @@
 # Task 003 — Tjek Ingestion Worker (REMA first)
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/build-plan.md` → "What to code — Phase 1" (the ingestion flow) + `src/lib/__fixtures__/rema1000.offers.json` (ground truth, local)
+**Plan source:** `docs/reference/build-plan.md` → "What to code — Phase 1" (the ingestion flow) + `src/lib/__fixtures__/rema1000.offers.json` (ground truth, local)
 
 ## Objective
 

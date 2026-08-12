@@ -30,7 +30,7 @@ A Denmark-only grocery price watcher. SolidStart 2 (Solid meta-framework) + Tail
 - **You implement tasks from `tasks/`.** Each task file is self-contained (objective, steps, exact schema/field paths, acceptance criteria). Read the referenced task file and implement it fully.
 - **Do not invent product decisions** or deviate from the task spec. If something is ambiguous or missing, note it and ask rather than guessing.
 - **Run `vp check` and `vp test` before finishing** — never say "I think it compiles." These must pass.
-- **The design source of truth is `docs/build-plan.md`** (in the research repo `/root/grocery-price-watcher-research`, not committed here). Tasks reference its "What to code — Phase N" sections. If a task references the plan, read the corresponding plan section from that repo path.
+- **The design source of truth is `docs/reference/build-plan.md`** (kept in this repo for agent access — the canonical copy lives in the research repo `/root/grocery-price-watcher-research`). Tasks reference its "What to code — Phase N" sections; read them from `docs/reference/build-plan.md`.
 - **Node >= 24 is required.** The project's `package.json` `engines` enforces it. If the local Node is older, flag it.
 
 ## Data / legal boundary (important)
@@ -48,6 +48,8 @@ The offer feed comes from **Tjek A/S — the same company that owns eTilbudsavis
 ## Repo layout
 
 - `docs/setup-dev.md` — local dev setup: Postgres install, `.env` creation, toolchain commands. **Read this first if environment/deps aren't set up.**
+- `docs/reference/build-plan.md` — the full build plan (design source of truth; "What to code — Phase N" sections drive the tasks).
+- `docs/reference/chains.md` — Danish chain research: dealer IDs, catalog publish cadence, data formats. Ground truth for ingestion/scheduling.
 - `src/db/` — Kysely schema, migrations, client
 - `src/lib/` — the Tjek API client and ingestion logic
 - `src/lib/__fixtures__/` — real Tjek payloads as ground-truth fixtures (`rema1000.offers.json`, `rema1000.catalogs.json`). Use these to build types/tests against the real data shape.
