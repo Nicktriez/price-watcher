@@ -9,6 +9,7 @@
     "jsxImportSource": "solid-js",
     "allowJs": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "strict": true,
     "types": ["vite/client"],
     "isolatedModules": true,
