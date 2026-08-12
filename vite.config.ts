@@ -4,6 +4,8 @@ import { solidStart } from "@solidjs/start/config";
 import tailwindcss from "@tailwindcss/vite";
 import { lazyPlugins } from "vite-plus";
 
+const isTest = !!process.env.VITEST;
+
 export default defineConfig({
   staged: {
     "*": "vp check --fix",
@@ -14,5 +16,8 @@ export default defineConfig({
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },
   },
-  plugins: lazyPlugins(() => [solidStart(), tailwindcss(), nitro()]),
+  plugins: isTest ? [] : lazyPlugins(() => [solidStart(), tailwindcss(), nitro()]),
+  test: {
+    include: ["src/**/*.test.ts"],
+  },
 });
