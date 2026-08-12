@@ -20,7 +20,7 @@ Running status of all coding tasks. Updated as tasks are assigned, run, and veri
 
 | #   | Task                               | Status | Verified by |
 | --- | ---------------------------------- | ------ | ----------- |
-| 006 | Chain config + all-chain ingestion | ⬜     |             |
+| 006 | Chain config + all-chain ingestion | ✅     | OpenCode (implementation reviewed: priority order, error isolation, migration 0005) |
 | 007 | Unit-price normalization           | ⬜     |             |
 | 008 | Product matching across chains     | ⬜     |             |
 | 009 | Weekly refresh cron (all chains)   | ⬜     |             |
