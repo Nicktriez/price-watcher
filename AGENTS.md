@@ -31,7 +31,7 @@ A Denmark-only grocery price watcher. SolidStart 2 (Solid meta-framework) + Tail
 - **Update `TASKS.md` when you finish a task** — mark the task 🔄 when starting and ✅/🟡 when done, with how it was verified. This is the shared record of what's complete.
 - **Do not invent product decisions** or deviate from the task spec. If something is ambiguous or missing, note it and ask rather than guessing.
 - **Run `vp check` and `vp test` before finishing** — never say "I think it compiles." These must pass.
-- **The design source of truth is `docs/reference/build-plan.md`** (kept in this repo for agent access — the canonical copy lives in the research repo `/root/grocery-price-watcher-research`). Tasks reference its "What to code — Phase N" sections; read them from `docs/reference/build-plan.md`.
+- **The design source of truth is `docs/reference/build-plan.md`** (kept in this repo for agent access — the canonical copy lives in the `grocery-price-watcher-research` repo). Tasks reference its "What to code — Phase N" sections; read them from `docs/reference/build-plan.md`.
 - **Node >= 24 is required.** The project's `package.json` `engines` enforces it. If the local Node is older, flag it.
 
 ## Data / legal boundary (important)
