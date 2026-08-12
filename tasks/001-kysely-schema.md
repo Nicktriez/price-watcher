@@ -9,10 +9,12 @@ Create the Kysely `Database` interface and the initial migration that establishe
 
 ## Steps
 
-1. Create `src/db/schema.ts` — the Kysely `Database` interface with a row type per table.
-2. Create `src/db/migrations/0001_init.ts` — a Kysely migration creating these tables:
+1. Install the DB deps (this task's one install): `pnpm add kysely pg` and `pnpm add -D @types/pg`. (`pg` is the Postgres driver Kysely needs.)
+2. Create `src/db/schema.ts` — the Kysely `Database` interface with a row type per table.
+3. Create `src/db/migrations/0001_init.ts` — a Kysely migration creating these tables:
    - `chain`, `store`, `product`, `offer`, `price_point`, `list`, `list_item`
-3. Create `src/db/client.ts` — a single exported `Kysely<Database>` instance reading `DATABASE_URL`.
+4. Create `src/db/client.ts` — a single exported `Kysely<Database>` instance reading `DATABASE_URL`.
+5. Create a migration runner (e.g. `src/db/migrate.ts`) that calls `migrateToLatest()` and a `package.json` script `"db:migrate": "node src/db/migrate.ts"` — Kysely does NOT auto-run migrations; a runner script is required for the acceptance check to be executable.
 
 ## Table schema (exact — copy these columns)
 
@@ -60,4 +62,5 @@ id: string (PK); list_id: FK list.id; product_id: FK product.id (nullable); free
 - [ ] `src/db/schema.ts` defines a `Database` interface covering every table above
 - [ ] `0001_init.ts` migration creates all 7 tables with the exact columns
 - [ ] `src/db/client.ts` exports a `Kysely<Database>` from `DATABASE_URL`
-- [ ] Migration runs against a local Postgres without error
+- [ ] `pnpm db:migrate` runs against a local Postgres without error (creates all tables)
+- [ ] Re-running `pnpm db:migrate` is a no-op (Kysely tracks applied migrations)
