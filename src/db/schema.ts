@@ -57,6 +57,8 @@ export interface OfferTable {
   pieces_from: number | null;
   pieces_max: number | null;
   image_url: string | null;
+  unit_price: string | null;
+  unit_price_unit: string | null;
   valid_from: string;
   valid_to: string;
   published_at: string | null;

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { db } from "../db/client.ts";
 import { getCatalogs, getOffers, type TjekOffer } from "./tjek.ts";
+import { computeUnitPrice } from "./unit-price.ts";
 
 const OFFER_NAMESPACE = "offer";
 const PRODUCT_NAMESPACE = "product";
@@ -88,6 +89,7 @@ export async function ingestChain(dealerId: string): Promise<IngestResult> {
       const productId = await upsertProduct(dealerId, offer.heading);
       const id = offerUuid(dealerId, catalog.id, offer.id);
       const now = new Date().toISOString();
+      const unitPrice = computeUnitPrice(offer);
 
       const row = {
         product_id: productId,
@@ -106,6 +108,8 @@ export async function ingestChain(dealerId: string): Promise<IngestResult> {
         pieces_from: offer.quantity.pieces.from,
         pieces_max: offer.quantity.pieces.max,
         image_url: offer.images.view,
+        unit_price: unitPrice?.unit_price ?? null,
+        unit_price_unit: unitPrice?.unit_price_unit ?? null,
         valid_from: offer.run_from,
         valid_to: offer.run_till,
         published_at: offer.publish,
