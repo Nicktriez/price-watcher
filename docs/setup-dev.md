@@ -2,6 +2,8 @@
 
 How to get this project running on a dev machine (e.g. the laptop where OpenCode runs). This is for **local development** — production hosting is a separate Hetzner box configured at deploy time.
 
+> **New machine?** Start with `docs/bootstrap-new-machine.md` — it covers everything from a blank install (Node, pnpm, `vp`, GitHub SSH, clone, Postgres, `.env`, OpenCode). This file assumes the environment already exists and covers the running commands.
+
 ## Prerequisites
 
 - **Node >= 24** (the `package.json` `engines` field enforces it — check with `node --version`)

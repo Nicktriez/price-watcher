@@ -49,6 +49,7 @@ The offer feed comes from **Tjek A/S — the same company that owns eTilbudsavis
 ## Repo layout
 
 - `docs/setup-dev.md` — local dev setup: Postgres install, `.env` creation, toolchain commands. **Read this first if environment/deps aren't set up.**
+- `docs/bootstrap-new-machine.md` — full end-to-end setup for a brand-new dev machine (Node, pnpm, `vp`, GitHub SSH, clone, Postgres, `.env`, OpenCode). The "I changed machines" doc.
 - `docs/reference/build-plan.md` — the full build plan (design source of truth; "What to code — Phase N" sections drive the tasks).
 - `docs/reference/chains.md` — Danish chain research: dealer IDs, catalog publish cadence, data formats. Ground truth for ingestion/scheduling.
 - `src/db/` — Kysely schema, migrations, client
