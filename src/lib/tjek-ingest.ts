@@ -23,16 +23,16 @@ function offerUuid(dealerId: string, catalogId: string, tjekOfferId: string): st
   return uuidFromKey(`${OFFER_NAMESPACE}:${dealerId}:${catalogId}:${tjekOfferId}`);
 }
 
-function productUuid(heading: string): string {
-  return uuidFromKey(`${PRODUCT_NAMESPACE}:${heading}`);
+function productUuid(dealerId: string, heading: string): string {
+  return uuidFromKey(`${PRODUCT_NAMESPACE}:${dealerId}:${heading}`);
 }
 
 function pricePointUuid(offerId: string, price: string, observedAt: string): string {
   return uuidFromKey(`${PRICE_POINT_NAMESPACE}:${offerId}:${price}:${observedAt}`);
 }
 
-async function upsertProduct(name: string): Promise<string> {
-  const id = productUuid(name);
+async function upsertProduct(dealerId: string, name: string): Promise<string> {
+  const id = productUuid(dealerId, name);
   await db
     .insertInto("product")
     .values({ id, name, brand: null, ean: null, unit: null, size_grams: null })
@@ -85,7 +85,7 @@ export async function ingestChain(dealerId: string): Promise<IngestResult> {
     const existing = await existingOfferIds(dealerId, catalog.id);
 
     for (const offer of offers) {
-      const productId = await upsertProduct(offer.heading);
+      const productId = await upsertProduct(dealerId, offer.heading);
       const id = offerUuid(dealerId, catalog.id, offer.id);
       const now = new Date().toISOString();
 
@@ -136,4 +136,47 @@ export async function ingestChain(dealerId: string): Promise<IngestResult> {
 
 export async function ingestRema(): Promise<IngestResult> {
   return ingestChain("11deC");
+}
+
+export interface ChainIngestResult {
+  chainId: string;
+  dealerId: string;
+  ok: boolean;
+  inserted?: number;
+  updated?: number;
+  error?: unknown;
+}
+
+export async function ingestAllChainsFrom(
+  chains: { id: string; tjek_dealer_id: string }[],
+  ingest: (dealerId: string) => Promise<IngestResult>,
+): Promise<ChainIngestResult[]> {
+  const results: ChainIngestResult[] = [];
+  for (const chain of chains) {
+    try {
+      const { inserted, updated } = await ingest(chain.tjek_dealer_id);
+      results.push({
+        chainId: chain.id,
+        dealerId: chain.tjek_dealer_id,
+        ok: true,
+        inserted,
+        updated,
+      });
+      console.log(`[ingest:${chain.id}] inserted=${inserted} updated=${updated}`);
+    } catch (error) {
+      console.error(`[ingest:${chain.id}] failed:`, error);
+      results.push({ chainId: chain.id, dealerId: chain.tjek_dealer_id, ok: false, error });
+    }
+  }
+  return results;
+}
+
+export async function ingestAllChains(): Promise<ChainIngestResult[]> {
+  const chains = await db
+    .selectFrom("chain")
+    .select(["id", "tjek_dealer_id"])
+    .orderBy("priority", "asc")
+    .orderBy("id", "asc")
+    .execute();
+  return ingestAllChainsFrom(chains, ingestChain);
 }

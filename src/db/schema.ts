@@ -16,6 +16,7 @@ export interface ChainTable {
   tjek_dealer_id: string;
   website: string | null;
   logo_url: string | null;
+  priority: number;
 }
 
 export interface StoreTable {
