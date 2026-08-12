@@ -40,8 +40,9 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 | 014 | Per-user spending view (retention hook) | ⬜ | 010, 012 |
 | 015 | Receipt gamification (points + streaks) | ⬜ | 010, 012 |
 | 016 | Refine OCR recovery classifier (Phase 3 GATE) | ⬜ | research spike |
+| 017 | "Your price vs. average" on scanned receipts | ⬜ | 010, 012, 013 |
 
-**Run order:** 010 → 011 → 012 → then 013/014/015 (parallelizable after 012) + 016 (gate, when ≥10 receipts gathered).
+**Run order:** 010 → 011 → 012 → then 013/014/015 (parallelizable after 012) + 016 (gate, when ≥10 receipts gathered) + 017 (after 013 provides the baseline).
 
 ## Phase 4+ (not started)
 

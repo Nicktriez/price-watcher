@@ -292,9 +292,10 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 2. Normalize the receipt: store, date, line items (product, quantity, unit, price, total). Trust tier: receipts are ground truth — the highest-quality crowd data available, no guessing.
 3. Baseline price table: `PricePoint`-style records (product, store, price, observed_at) separate from `Offer`. Basket math uses these for non-offer items (Phase 4).
 4. **User identity (magic-link):** `user` table + email-OTP sign-in. Receipts get a real `user_id`. This unlocks the spending view + gamification below.
-5. Per-user spending view: "here's what you spent, by store, this month" — the receipt becomes a personal spending tracker, which is the retention hook that makes people keep uploading.
-6. GDPR: receipt images are personal data — store them encrypted and short-lived (delete after parse, keep only the extracted numbers), and be explicit in the privacy policy. Never sell or expose purchase history tied to identity.
-7. Gamification: points per accepted receipt, streak bonuses — ties into the existing trust-tier/gamification system.
+5. Per-user spending view: "here's what you spent, by store, this month" — the receipt becomes a personal spending tracker, which is the retention hook that makes people keep uploading. **This is the whole user incentive — frame the receipt flow as "your free spending tracker," with the crowd-data moat as the invisible byproduct. It is the onboarding reward, not optional garnish.**
+6. **"Your price vs. average" on every scanned receipt:** immediately after scanning, each line shows whether the user paid above/below the going rate ("coffee 42 kr — 3 kr below average"). This is the payoff that turns the *scanner* into the beneficiary (not just the donor to the crowd layer). Without it, uploading is a favor to the platform and favors don't scale.
+7. GDPR: receipt images are personal data — store them encrypted and short-lived (delete after parse, keep only the extracted numbers), and be explicit in the privacy policy. Never sell or expose purchase history tied to identity.
+8. Gamification: points per accepted receipt, streak bonuses — ties into the existing trust-tier/gamification system.
 
 **Verification:**
 - [ ] 10 test Danish receipts parse to ≥90% correct line items (spike in Phase 0)
@@ -303,6 +304,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 - [ ] Receipt image deleted after parse; extracted data anonymized
 - [ ] Magic-link sign-in works; receipts are tied to a `user_id`
 - [ ] Spending view shows "what you spent by store this month" for a signed-in user
+- [ ] A scanned receipt shows a per-line "your price vs. average" comparison (above/below the going rate)
 
 ---
 
