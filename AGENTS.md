@@ -28,6 +28,7 @@ A Denmark-only grocery price watcher. SolidStart 2 (Solid meta-framework) + Tail
 ## Ground rules for coding agents
 
 - **You implement tasks from `tasks/`.** Each task file is self-contained (objective, steps, exact schema/field paths, acceptance criteria). Read the referenced task file and implement it fully.
+- **Update `TASKS.md` when you finish a task** — mark the task 🔄 when starting and ✅/🟡 when done, with how it was verified. This is the shared record of what's complete.
 - **Do not invent product decisions** or deviate from the task spec. If something is ambiguous or missing, note it and ask rather than guessing.
 - **Run `vp check` and `vp test` before finishing** — never say "I think it compiles." These must pass.
 - **The design source of truth is `docs/reference/build-plan.md`** (kept in this repo for agent access — the canonical copy lives in the research repo `/root/grocery-price-watcher-research`). Tasks reference its "What to code — Phase N" sections; read them from `docs/reference/build-plan.md`.
@@ -54,7 +55,7 @@ The offer feed comes from **Tjek A/S — the same company that owns eTilbudsavis
 - `docs/reference/chains.md` — Danish chain research: dealer IDs, catalog publish cadence, data formats. Ground truth for ingestion/scheduling.
 - `src/db/` — Kysely schema, migrations, client
 - `src/lib/` — the Tjek API client and ingestion logic
-- `src/lib/__fixtures__/` — real Tjek payloads as ground-truth fixtures (`rema1000.offers.json`, `rema1000.catalogs.json`). Use these to build types/tests against the real data shape.
+- `src/lib/__fixtures__/` — real Tjek payloads as ground-truth fixtures (`rema1000.offers.json`, `rema1000.catalogs.json`, `netto.offers.json`, `netto.catalogs.json`). Use these to build types/tests against the real data shape. REMA + Netto both present so cross-chain matching is testable (e.g. "3-stjernet pålæg" exists in both).
 - `src/routes/` — SolidStart routes (offers index, product, store pages)
 - `src/server/` — the ingestion scheduler
 - `tasks/` — the coding task files (implement these)
