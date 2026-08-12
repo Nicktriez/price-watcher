@@ -27,6 +27,22 @@ Running status of all coding tasks. Updated as tasks are assigned, run, and veri
 
 **Phase 2 status: done.** Full ingestion pipeline working: all chains config-driven, unit prices normalized, products matched across chains, 6h refresh with history preserved.
 
-## Phase 3+ (not started)
+## Phase 3 (current)
 
-Receipt scanning + baseline prices (Phase 3), lists + basket math (Phase 4), travel cost (Phase 5), crowd data + trust tiers (Phase 6), monetization + launch (Phase 7), agent layer (Phase 8), Tjek-independent ingestion (Phase 9, conditional).
+Identity + receipts + baseline prices. **Identity was moved earlier** (magic-link, no full auth) so receipts can be tied to a user and the spending/gamification retention loop is buildable now.
+
+| # | Task | Status | Depends on |
+| --- | --- | --- | --- |
+| 010 | User identity (magic-link) + receipt schema | ⬜ | — |
+| 011 | App-side OCR + line-item parser | ⬜ | 010 |
+| 012 | Signed-in receipt upload + baseline writing | ⬜ | 010, 011 |
+| 013 | Receipt-derived prices on product page | ⬜ | 010, 012 |
+| 014 | Per-user spending view (retention hook) | ⬜ | 010, 012 |
+| 015 | Receipt gamification (points + streaks) | ⬜ | 010, 012 |
+| 016 | Refine OCR recovery classifier (Phase 3 GATE) | ⬜ | research spike |
+
+**Run order:** 010 → 011 → 012 → then 013/014/015 (parallelizable after 012) + 016 (gate, when ≥10 receipts gathered).
+
+## Phase 4+ (not started)
+
+Lists + basket math (Phase 4), travel cost (Phase 5), crowd data + trust tiers (Phase 6), monetization + launch (Phase 7), agent layer (Phase 8), Tjek-independent ingestion (Phase 9, conditional).
