@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { db } from "../db/client.ts";
 import { getCatalogs, getOffers, type TjekOffer } from "./tjek.ts";
+import { linkProducts } from "./product-matching.ts";
 import { computeUnitPrice } from "./unit-price.ts";
 
 const OFFER_NAMESPACE = "offer";
@@ -182,5 +183,37 @@ export async function ingestAllChains(): Promise<ChainIngestResult[]> {
     .orderBy("priority", "asc")
     .orderBy("id", "asc")
     .execute();
-  return ingestAllChainsFrom(chains, ingestChain);
+  const results = await ingestAllChainsFrom(chains, ingestChain);
+  await matchProducts();
+  return results;
+}
+
+export async function matchProducts(): Promise<number> {
+  const offers = await db
+    .selectFrom("offer")
+    .select(["id", "product_id", "dealer_id", "heading"])
+    .execute();
+
+  const decisions = linkProducts(offers);
+  const now = new Date().toISOString();
+
+  for (const decision of decisions) {
+    await db.transaction().execute(async (trx) => {
+      await trx
+        .updateTable("offer")
+        .set({ product_id: decision.toProductId, updated_at: now })
+        .where("id", "=", decision.offerId)
+        .execute();
+      await trx
+        .updateTable("price_point")
+        .set({ product_id: decision.toProductId })
+        .where("offer_id", "=", decision.offerId)
+        .execute();
+    });
+  }
+
+  if (decisions.length > 0) {
+    console.log(`[match] linked ${decisions.length} offers across chains`);
+  }
+  return decisions.length;
 }
