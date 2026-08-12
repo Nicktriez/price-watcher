@@ -1,29 +1,33 @@
 import { pathToFileURL } from "node:url";
 import cron from "node-cron";
-import { ingestRema } from "../lib/tjek-ingest.ts";
+import { ingestAllChains } from "../lib/tjek-ingest.ts";
+import { createRunLock, isSchedulerEnabled } from "./ingest-lock.ts";
 
 const SCHEDULE = "15 */6 * * *";
 
-let running = false;
+const runLock = createRunLock();
 
 export async function runOnce(): Promise<void> {
-  if (running) {
+  if (!runLock.tryAcquire()) {
     console.log("[ingest] previous run still in progress, skipping this tick");
     return;
   }
-  running = true;
   try {
-    const result = await ingestRema();
-    console.log(`[ingest] done: inserted=${result.inserted} updated=${result.updated}`);
+    const results = await ingestAllChains();
+    const ok = results.filter((r) => r.ok).length;
+    const failed = results.length - ok;
+    console.log(
+      `[ingest] done: ${ok}/${results.length} chains ingested${failed > 0 ? `, ${failed} failed` : ""}`,
+    );
   } catch (error) {
     console.error("[ingest] run failed, will retry on next tick:", error);
   } finally {
-    running = false;
+    runLock.release();
   }
 }
 
 export function startScheduler(): void {
-  if (process.env.DISABLE_INGEST_SCHEDULER === "1") {
+  if (!isSchedulerEnabled()) {
     console.log("[ingest] scheduler disabled (DISABLE_INGEST_SCHEDULER=1)");
     return;
   }

@@ -18,12 +18,12 @@ Running status of all coding tasks. Updated as tasks are assigned, run, and veri
 
 ## Phase 2 (current)
 
-| # | Task | Status | Verified by |
-| --- | --- | --- | --- |
-| 006 | Chain config + all-chain ingestion | ✅ | OpenCode (impl reviewed: priority order, error isolation, migration 0005) |
-| 007 | Unit-price normalization | ✅ | OpenCode (12 unit tests vs fixtures; 5070/5070 offers populated; migration 0006) |
-| 008 | Product matching across chains | ✅ | OpenCode (impl reviewed: pure linkProducts, "3-stjernet pålæg" cross-chain test, idempotent, DB-free) |
-| 009 | Weekly refresh cron (all chains) | ⬜ | |
+| #   | Task                               | Status | Verified by                                                                                           |
+| --- | ---------------------------------- | ------ | ----------------------------------------------------------------------------------------------------- |
+| 006 | Chain config + all-chain ingestion | ✅     | OpenCode (impl reviewed: priority order, error isolation, migration 0005)                             |
+| 007 | Unit-price normalization           | ✅     | OpenCode (12 unit tests vs fixtures; 5070/5070 offers populated; migration 0006)                      |
+| 008 | Product matching across chains     | ✅     | OpenCode (impl reviewed: pure linkProducts, "3-stjernet pålæg" cross-chain test, idempotent, DB-free) |
+| 009 | Weekly refresh cron (all chains)   | ⬜     |                                                                                                       |
 
 ## Phase 3+ (not started)
 
