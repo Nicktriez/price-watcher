@@ -45,6 +45,8 @@ interface TjekDealer {
 }
 ```
 
+> **IMPORTANT — catalog field names:** the `rema1000.catalogs.json` fixture was saved by the research collector, which **renamed** the raw API fields (`id`→`catalog_id`, `offer_count`→`declared_offers`/`fetched_offers`, and added a `pdf_url`). The `TjekCatalog` type above uses the **raw `/v2/catalogs` API field names** (`id`, `offer_count`), which is what your `getCatalogs()` actually receives at runtime. The offers fixture (`rema1000.offers.json`) IS raw API shape — use it directly for `TjekOffer`. Do not copy field names from the catalogs fixture into the type.
+
 ## Function signatures (suggested)
 
 ```ts
