@@ -15,6 +15,7 @@ How to get this project running on a **brand-new dev machine**, end to end. This
 | **Vite+ CLI (`vp`)** | latest                                                              | The unified toolchain (dev/build/test/check) |
 | **OpenCode**         | latest                                                              | The fallback coding agent                    |
 | **Postgres**         | any recent (16 is fine)                                             | The database                                 |
+| **Tesseract + `tesseract-ocr-dan`** | any recent                                            | Receipt OCR (Phase 3) — `-l dan` needs the Danish language data |
 | **git**              | any                                                                 | Cloning/pushing                              |
 
 ## 2. Install Node >= 24
@@ -98,7 +99,15 @@ git config user.name "Nicklas Jensen"
 git config user.email "jensen0710@gmail.com"
 ```
 
-> The clone brings everything: `src/`, `tasks/`, `docs/reference/build-plan.md`, `docs/reference/chains.md`, and `src/lib/__fixtures__/` (real Tjek payloads). No research repo access needed — it's all here.
+> The clone brings everything: `src/`, `tasks/`, `docs/reference/build-plan.md`, `docs/reference/chains.md`, and `src/lib/__fixtures__/` (real Tjek payloads).
+
+**You also need the research repo for Phase 3 tasks.** Tasks 011 (receipt OCR), 012 (upload flow), and 016 (OCR classifier) read the OCR reference implementation (`research/ocr_receipts.py`), the human-verified findings (`research/notes/ocr-receipts.md`), and the 6 real receipt images (`research/receipts/`) — none of which are in the project repo. Clone it alongside the project:
+
+```bash
+git clone git@github.com:Nicktriez/grocery-price-watcher-research.git ~/grocery-price-watcher-research
+```
+
+OpenCode runs in `~/price-watcher` (project), but the Phase 3 OCR tasks hardcode `~/grocery-price-watcher-research/...` as their reference, so the research repo must be cloned on the same machine. The Phase 1–2 tasks don't need it; Phase 3 does.
 
 ## 7. Install & start Postgres
 
@@ -176,7 +185,22 @@ vp build && pnpm start   # production check
 # browse to http://localhost:3000
 ```
 
-## 12. Install OpenCode (the coding agent)
+## 12. Install Tesseract (receipt OCR — Phase 3)
+
+Required for the Phase 3 OCR tasks (011/012/016). The `dan` package is what makes Danish store/product names readable:
+
+```bash
+sudo apt install -y tesseract-ocr tesseract-ocr-dan
+```
+
+**Verify:**
+```bash
+tesseract --list-langs   # must include 'dan'
+```
+
+> Phase 1–2 don't need this; it becomes a hard dependency when the receipt tasks start.
+
+## 13. Install OpenCode (the coding agent)
 
 ```bash
 npm i -g opencode-ai@latest
@@ -186,7 +210,7 @@ opencode auth list      # confirm a provider is configured
 opencode run 'Respond with exactly: OPENCODE_SMOKE_OK'
 ```
 
-## 13. You're ready to code
+## 14. You're ready to code
 
 Run a task by pointing OpenCode at it (you must `cd` into the repo first — OpenCode uses the current directory, there's no `--workdir` flag):
 
@@ -197,6 +221,8 @@ opencode run 'Implement the task in tasks/002-tjek-client.md'
 
 OpenCode reads `AGENTS.md` (project context + ground rules) and the referenced task file, then writes the code.
 
+> **Phase 3 tasks** additionally reference the research repo. For those, `cd ~/price-watcher` still works (OpenCode can read files outside the cwd via absolute path), but the research repo must be cloned at `~/grocery-price-watcher-research` (see step 6) and Tesseract installed (see step 12).
+
 ---
 
 ## Machine checklist (everything in one list)
@@ -206,6 +232,7 @@ OpenCode reads `AGENTS.md` (project context + ground rules) and the referenced t
 - [ ] `vp` CLI installed (`vp --version`)
 - [ ] GitHub SSH key added (private repo access)
 - [ ] Repo cloned (`git clone ... ~/price-watcher`)
+- [ ] Research repo cloned (`~/grocery-price-watcher-research`) — required for Phase 3 OCR tasks
 - [ ] git identity set (`user.name` / `user.email`)
 - [ ] Postgres running
 - [ ] `nicklas` user + `price_watcher` DB created
@@ -214,6 +241,7 @@ OpenCode reads `AGENTS.md` (project context + ground rules) and the referenced t
 - [ ] `pnpm db:migrate` ran (7 tables exist)
 - [ ] `vp check` + `vp test` pass
 - [ ] `vp dev` serves the app
+- [ ] Tesseract installed (`tesseract --list-langs` includes `dan`) — Phase 3
 - [ ] OpenCode installed + authenticated
 
 ## Troubleshooting
@@ -227,6 +255,8 @@ OpenCode reads `AGENTS.md` (project context + ground rules) and the referenced t
 | `pnpm db:migrate` fails                       | Postgres not running, or `nicklas` lacks rights on `price_watcher`                       |
 | `vp check` fails                              | Usually Node too old, or deps not installed — run `vp install` first                     |
 | OpenCode wrong binary                         | `which -a opencode` to confirm which one resolves                                        |
+| Phase 3 task can't find `ocr_receipts.py` / receipts | Research repo not cloned at `~/grocery-price-watcher-research` — clone it (step 6) |
+| `tesseract --list-langs` missing `dan`        | `tesseract-ocr-dan` not installed — `sudo apt install -y tesseract-ocr tesseract-ocr-dan` |
 
 ## Where production runs (NOT this machine)
 
