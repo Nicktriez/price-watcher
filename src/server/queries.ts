@@ -16,11 +16,22 @@ export async function getChains() {
   return db.selectFrom("chain").select(["id", "name"]).orderBy("name").execute();
 }
 
-export async function getCurrentOffers(chainId?: string | null) {
+function baseOfferQuery(chainId: string | null) {
   let query = db
     .selectFrom("offer")
     .innerJoin("product", "product.id", "offer.product_id")
     .leftJoin("chain", "chain.tjek_dealer_id", "offer.dealer_id")
+    .where("offer.valid_to", ">=", new Date().toISOString());
+  if (chainId) {
+    query = query.where("chain.id", "=", chainId);
+  }
+  return query;
+}
+
+export async function getCurrentOffersPage(chainId: string | null, page: number, pageSize = 100) {
+  const offset = (page - 1) * pageSize;
+
+  const rows = await baseOfferQuery(chainId)
     .select((eb) => [
       "offer.id",
       "offer.product_id",
@@ -35,19 +46,24 @@ export async function getCurrentOffers(chainId?: string | null) {
       eb.ref("chain.id").as("chain_id"),
       eb.ref("chain.name").as("chain_name"),
     ])
-    .where("offer.valid_to", ">=", new Date().toISOString())
-    .orderBy("offer.valid_to", "asc");
+    .orderBy("offer.valid_to", "asc")
+    .orderBy("offer.id", "asc")
+    .limit(pageSize)
+    .offset(offset)
+    .execute();
 
-  if (chainId) {
-    query = query.where("chain.id", "=", chainId);
-  }
+  const { n } = await baseOfferQuery(chainId)
+    .select(db.fn.countAll<string>().as("n"))
+    .executeTakeFirstOrThrow();
 
-  const rows = await query.execute();
-  return rows.map((r) => ({
-    ...r,
-    valid_from: iso(r.valid_from as string | Date),
-    valid_to: iso(r.valid_to as string | Date),
-  }));
+  return {
+    offers: rows.map((r) => ({
+      ...r,
+      valid_from: iso(r.valid_from as string | Date),
+      valid_to: iso(r.valid_to as string | Date),
+    })),
+    total: Number(n),
+  };
 }
 
 export async function getProductById(productId: string) {

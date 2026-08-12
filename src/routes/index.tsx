@@ -1,14 +1,25 @@
 import { A, createAsync, useSearchParams } from "@solidjs/router";
 import { For, Show } from "solid-js";
 import { fmtPrice } from "~/lib/format";
-import { getChains, getCurrentOffers } from "~/server/queries";
+import { getChains, getCurrentOffersPage } from "~/server/queries";
+
+const PAGE_SIZE = 100;
 
 export default function Home() {
   const [params] = useSearchParams();
   const chains = createAsync(() => getChains());
-  const offers = createAsync(() =>
-    getCurrentOffers(typeof params.chain === "string" ? params.chain : null),
-  );
+
+  const chain = () => (typeof params.chain === "string" ? params.chain : null);
+  const page = () => {
+    const raw = typeof params.page === "string" ? parseInt(params.page, 10) : NaN;
+    return Number.isFinite(raw) && raw >= 1 ? raw : 1;
+  };
+
+  const data = createAsync(() => getCurrentOffersPage(chain(), page()));
+  const offers = () => data()?.offers;
+  const total = () => data()?.total ?? 0;
+
+  const totalPages = () => Math.max(1, Math.ceil(total() / PAGE_SIZE));
 
   return (
     <main class="mx-auto max-w-4xl p-4 text-gray-900">
@@ -34,6 +45,9 @@ export default function Home() {
       </form>
 
       <Show when={offers()?.length} fallback={<p class="text-gray-500">No current offers.</p>}>
+        <p class="mb-3 text-sm text-gray-600">
+          Showing {offers()!.length} of {total()} offers (page {page()} of {totalPages()})
+        </p>
         <ul class="grid gap-4 sm:grid-cols-2">
           <For each={offers()}>
             {(o) => (
@@ -64,6 +78,26 @@ export default function Home() {
             )}
           </For>
         </ul>
+        <Show when={totalPages() > 1}>
+          <nav class="mt-6 flex items-center justify-center gap-4">
+            <Show when={page() > 1}>
+              <A
+                href={`/?page=${page() - 1}&chain=${chain() ?? ""}`}
+                class="text-sky-700 hover:underline"
+              >
+                ← Previous
+              </A>
+            </Show>
+            <Show when={page() < totalPages()}>
+              <A
+                href={`/?page=${page() + 1}&chain=${chain() ?? ""}`}
+                class="text-sky-700 hover:underline"
+              >
+                Next →
+              </A>
+            </Show>
+          </nav>
+        </Show>
       </Show>
     </main>
   );
