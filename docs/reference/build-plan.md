@@ -127,15 +127,15 @@ Goals are **engagement-weighted**, not signup-count vanity. A price watcher with
 **Remaining Phase 0 item:** OCR spike — install `tesseract-ocr` + `tesseract-ocr-dan` and test against ~10 real Danish receipts once Nick has gathered them (was not run during research because receipts weren't ready). Only affects Phase 3, does not block Phase 1.
 
 **Receipts to collect for the OCR spike (~10, covering format variety, not just 10 of the same store):**
-- [ ] **REMA 1000** — #1 priority: prints article numbers on receipts, which match the `get_offer_products` RPC (Phase 1's first chain)
+- [x] **REMA 1000** — ✅ GATHERED (2026-08-12) — #1 priority: prints article numbers on receipts, which match the `get_offer_products` RPC (Phase 1's first chain)
 - [ ] **Netto** — biggest hard-discounter target
-- [ ] **Lidl** — hard-discounter, different layout
+- [x] **Lidl** — ✅ GATHERED (2026-08-12) — hard-discounter, different layout
 - [ ] **Bilka** — includes nonfood lines + store-brand
 - [ ] **Føtex** — Salling sibling, deeper catalogue
 - [ ] **Kvickly** — Coop banner
 - [ ] **SuperBrugsen** — Coop banner, different receipt style
 - [ ] **365discount** — Coop discount banner
-- [ ] **SPAR or MENY** — independent/affiliate chain
+- [x] **SPAR** — ✅ GATHERED (2026-08-12) — independent/affiliate chain (chose SPAR over MENY)
 - [ ] **One "messy" receipt** — crumpled, angled, faded thermal paper, or a partial/ripped one (tests OCR robustness, not just clean scans)
 
 **Diversity tips so the spike actually tests something:**
