@@ -7,19 +7,22 @@
     "start": "node .output/server/index.mjs",
     "preview": "vp preview",
     "prepare": "vp config",
-    "db:migrate": "node src/db/migrate.ts"
+    "db:migrate": "node src/db/migrate.ts",
+    "ingest:schedule": "node src/server/ingest-scheduler.ts"
   },
   "dependencies": {
     "@solidjs/router": "^1.0.0",
     "@solidjs/start": "^2.0.0",
     "kysely": "^0.29.5",
     "nitro": "^3.0.260610-beta",
+    "node-cron": "^4.6.0",
     "pg": "^8.23.0",
     "solid-js": "^1.9.14",
     "vite": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.7",
+    "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.21.0",
     "tailwindcss": "^4.0.7",
     "vite-plus": "catalog:"
