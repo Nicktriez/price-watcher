@@ -8,14 +8,14 @@ How to get this project running on a **brand-new dev machine**, end to end. This
 
 ## 1. Prerequisites
 
-| Tool | Version | Why |
-|---|---|---|
-| **Node** | **>= 24** (hard requirement — `package.json` `engines` enforces it) | Runtime. Older versions refuse to build |
-| **pnpm** | pins to 11.21.0 (via `devEngines`) | Package manager; Vite+ drives it |
-| **Vite+ CLI (`vp`)** | latest | The unified toolchain (dev/build/test/check) |
-| **OpenCode** | latest | The fallback coding agent |
-| **Postgres** | any recent (16 is fine) | The database |
-| **git** | any | Cloning/pushing |
+| Tool                 | Version                                                             | Why                                          |
+| -------------------- | ------------------------------------------------------------------- | -------------------------------------------- |
+| **Node**             | **>= 24** (hard requirement — `package.json` `engines` enforces it) | Runtime. Older versions refuse to build      |
+| **pnpm**             | pins to 11.21.0 (via `devEngines`)                                  | Package manager; Vite+ drives it             |
+| **Vite+ CLI (`vp`)** | latest                                                              | The unified toolchain (dev/build/test/check) |
+| **OpenCode**         | latest                                                              | The fallback coding agent                    |
+| **Postgres**         | any recent (16 is fine)                                             | The database                                 |
+| **git**              | any                                                                 | Cloning/pushing                              |
 
 ## 2. Install Node >= 24
 
@@ -35,6 +35,7 @@ sudo apt update && sudo apt install -y nodejs
 ```
 
 **Verify:**
+
 ```bash
 node --version   # must be v24.x.x or higher
 ```
@@ -55,7 +56,9 @@ pnpm --version
 curl -fsSL https://vite.plus | bash
 # (Windows PowerShell: irm https://vite.plus/ps1 | iex)
 ```
+
 Then open a new terminal and verify:
+
 ```bash
 vp --version
 vp help
@@ -75,6 +78,7 @@ cat ~/.ssh/id_ed25519.pub   # copy this
 Add the public key at https://github.com/settings/ssh/new (title it for this machine, e.g. `laptop-popos`).
 
 **Verify:**
+
 ```bash
 ssh -T git@github.com
 # "Hi Nicktriez! You've successfully authenticated..." = good
@@ -88,6 +92,7 @@ cd ~/price-watcher
 ```
 
 **Set git identity for this machine** (the repo's own identity for your commits):
+
 ```bash
 git config user.name "Nicklas Jensen"
 git config user.email "jensen0710@gmail.com"
@@ -98,6 +103,7 @@ git config user.email "jensen0710@gmail.com"
 ## 7. Install & start Postgres
 
 Debian/Pop!_OS:
+
 ```bash
 sudo apt update
 sudo apt install -y postgresql postgresql-contrib
@@ -105,9 +111,11 @@ sudo systemctl enable --now postgresql
 ```
 
 Create the project user + database:
+
 ```bash
 sudo -u postgres psql
 ```
+
 ```sql
 CREATE USER nicklas WITH PASSWORD 'your-password-here';
 CREATE DATABASE price_watcher OWNER nicklas;
@@ -117,16 +125,20 @@ CREATE DATABASE price_watcher OWNER nicklas;
 ## 8. Create `.env`
 
 `.env` is gitignored — make it by hand on each machine:
+
 ```bash
 touch ~/price-watcher/.env
 ```
+
 Contents:
+
 ```
 DATABASE_URL=postgres://nicklas:YOUR_REAL_PASSWORD@localhost:5432/price_watcher
 TJEK_BASE_URL=https://squid-api.tjek.com
 ```
 
 **Verify:**
+
 ```bash
 psql "$DATABASE_URL" -c "SELECT version();"   # expect version + (1 row)
 ```
@@ -145,9 +157,11 @@ vp test           # run tests — must pass
 ```bash
 pnpm db:migrate   # runs src/db/migrate.ts -> migrateToLatest()
 ```
+
 Re-running should be a no-op (Kysely tracks applied migrations).
 
 **Confirm the tables exist:**
+
 ```bash
 psql "$DATABASE_URL" -c "\dt"
 # expect: chain, store, product, offer, price_point, list, list_item
@@ -204,19 +218,19 @@ OpenCode reads `AGENTS.md` (project context + ground rules) and the referenced t
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `node --version` < 24 | Install/switch to Node 24 (nvm) — the project refuses to build otherwise |
-| `ssh: Permission denied (publickey)` on clone | Key not added to GitHub; re-check `ssh -T git@github.com` |
-| `vp: command not found` | Global install not on PATH after install — open a new terminal, or check `vp env doctor` |
-| `DATABASE_URL` not picked up | `.env` exists in repo root? correct `postgres://` prefix? |
-| `pnpm db:migrate` fails | Postgres not running, or `nicklas` lacks rights on `price_watcher` |
-| `vp check` fails | Usually Node too old, or deps not installed — run `vp install` first |
-| OpenCode wrong binary | `which -a opencode` to confirm which one resolves |
+| Symptom                                       | Fix                                                                                      |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `node --version` < 24                         | Install/switch to Node 24 (nvm) — the project refuses to build otherwise                 |
+| `ssh: Permission denied (publickey)` on clone | Key not added to GitHub; re-check `ssh -T git@github.com`                                |
+| `vp: command not found`                       | Global install not on PATH after install — open a new terminal, or check `vp env doctor` |
+| `DATABASE_URL` not picked up                  | `.env` exists in repo root? correct `postgres://` prefix?                                |
+| `pnpm db:migrate` fails                       | Postgres not running, or `nicklas` lacks rights on `price_watcher`                       |
+| `vp check` fails                              | Usually Node too old, or deps not installed — run `vp install` first                     |
+| OpenCode wrong binary                         | `which -a opencode` to confirm which one resolves                                        |
 
 ## Where production runs (NOT this machine)
 
-| Machine | Role | DB |
-|---|---|---|
-| **Dev machine** | OpenCode + local dev | Local Postgres via `.env` |
-| **Hetzner VPS** (later) | Production hosting | Its own Postgres, separate `.env` — set up at deploy time |
+| Machine                 | Role                 | DB                                                        |
+| ----------------------- | -------------------- | --------------------------------------------------------- |
+| **Dev machine**         | OpenCode + local dev | Local Postgres via `.env`                                 |
+| **Hetzner VPS** (later) | Production hosting   | Its own Postgres, separate `.env` — set up at deploy time |
