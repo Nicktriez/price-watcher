@@ -96,12 +96,32 @@ export async function getProductById(productId: string) {
     .orderBy("offer.valid_to", "asc")
     .execute();
 
+  const baselines = await db
+    .selectFrom("price_point")
+    .innerJoin("receipt", "receipt.id", "price_point.receipt_id")
+    .select([
+      "receipt.store_name",
+      "receipt.trust_tier",
+      "price_point.price",
+      "price_point.observed_at",
+    ])
+    .where("price_point.product_id", "=", productId)
+    .where("price_point.source", "=", "receipt")
+    .orderBy("price_point.observed_at", "desc")
+    .execute();
+
   return {
     ...product,
     offers: offers.map((o) => ({
       ...o,
       valid_from: iso(o.valid_from as string | Date),
       valid_to: iso(o.valid_to as string | Date),
+    })),
+    baselines: baselines.map((b) => ({
+      storeName: b.store_name,
+      trustTier: b.trust_tier,
+      price: b.price,
+      observedAt: iso(b.observed_at as string | Date),
     })),
   };
 }

@@ -29,6 +29,27 @@ function Sparkline({ points }: { points: { observed_at: string; price: string }[
   );
 }
 
+function TrustBadge({ tier }: { tier: "official" | "community" | "single" }) {
+  return (
+    <span
+      class={`inline-flex items-center gap-1 text-xs font-medium ${
+        tier === "official"
+          ? "text-green-700"
+          : tier === "community"
+            ? "text-amber-700"
+            : "text-gray-500"
+      }`}
+    >
+      <span aria-hidden="true">{tier === "official" ? "✓" : "●"}</span>
+      {tier === "official"
+        ? "Official offer"
+        : tier === "community"
+          ? "Community"
+          : "User-reported"}
+    </span>
+  );
+}
+
 export default function ProductPage() {
   const params = useParams();
   const product = createAsync(async () => (params.id ? getProductById(params.id) : null));
@@ -70,6 +91,7 @@ export default function ProductPage() {
                         />
                       </Show>
                       <div>
+                        <TrustBadge tier="official" />
                         <p class="font-semibold">
                           {fmtPrice(o.price)} {o.currency}
                         </p>
@@ -82,6 +104,32 @@ export default function ProductPage() {
                         <p class="text-xs text-gray-500">
                           Valid {fmtDate(o.valid_from)} – {fmtDate(o.valid_to)}
                         </p>
+                      </div>
+                    </li>
+                  )}
+                </For>
+              </ul>
+            </Show>
+
+            <h2 class="mb-2 mt-6 text-lg font-semibold">User-reported prices</h2>
+            <p class="mb-2 text-xs text-gray-500">
+              Prices from grocery receipts uploaded by users — not official offers.
+            </p>
+            <Show
+              when={p().baselines.length}
+              fallback={<p class="text-gray-500">No user-reported prices yet.</p>}
+            >
+              <ul class="space-y-2 rounded border border-amber-200 bg-amber-50 p-3">
+                <For each={p().baselines}>
+                  {(b) => (
+                    <li class="flex items-baseline justify-between gap-3 text-sm">
+                      <div>
+                        <TrustBadge tier={b.trustTier} />
+                        <span class="ml-2 text-gray-700">{b.storeName ?? "Unknown store"}</span>
+                      </div>
+                      <div class="text-right">
+                        <span class="font-semibold">{fmtPrice(b.price)} kr</span>
+                        <span class="ml-2 text-xs text-gray-500">{fmtDate(b.observedAt)}</span>
                       </div>
                     </li>
                   )}
