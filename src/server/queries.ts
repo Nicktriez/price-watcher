@@ -186,3 +186,78 @@ export async function getStoreById(storeId: string) {
     })),
   };
 }
+
+export interface SpendingReport {
+  totalThisMonth: number;
+  byStore: { storeName: string; count: number; total: number }[];
+  recentReceipts: {
+    id: string;
+    storeName: string | null;
+    receiptDate: string | null;
+    total: string | null;
+    itemCount: number;
+  }[];
+}
+
+function dateOnly(v: Date | string | null): string | null {
+  if (v == null) return null;
+  const d = typeof v === "string" ? new Date(v) : v;
+  if (Number.isNaN(d.getTime())) return null;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+export async function getSpendingReport(userId: string): Promise<SpendingReport> {
+  const now = new Date();
+  const monthStartStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const nextMonthStr = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-01`;
+
+  const monthReceipts = await db
+    .selectFrom("receipt")
+    .select(["store_name", "total"])
+    .where("user_id", "=", userId)
+    .where("receipt_date", ">=", monthStartStr)
+    .where("receipt_date", "<", nextMonthStr)
+    .execute();
+
+  let totalThisMonth = 0;
+  const storeMap = new Map<string, { storeName: string; count: number; total: number }>();
+  for (const r of monthReceipts) {
+    const name = r.store_name ?? "Unknown store";
+    const value = r.total ? parseFloat(r.total) : 0;
+    totalThisMonth += value;
+    const entry = storeMap.get(name) ?? { storeName: name, count: 0, total: 0 };
+    entry.count += 1;
+    entry.total += value;
+    storeMap.set(name, entry);
+  }
+  const byStore = [...storeMap.values()].sort((a, b) => b.total - a.total);
+
+  const recent = await db
+    .selectFrom("receipt")
+    .leftJoin("receipt_item", "receipt_item.receipt_id", "receipt.id")
+    .select([
+      "receipt.id",
+      "receipt.store_name",
+      "receipt.receipt_date",
+      "receipt.total",
+      db.fn.count("receipt_item.id").as("item_count"),
+    ])
+    .where("receipt.user_id", "=", userId)
+    .groupBy("receipt.id")
+    .orderBy("receipt.created_at", "desc")
+    .limit(20)
+    .execute();
+
+  return {
+    totalThisMonth: Math.round(totalThisMonth * 100) / 100,
+    byStore,
+    recentReceipts: recent.map((r) => ({
+      id: r.id,
+      storeName: r.store_name,
+      receiptDate: dateOnly(r.receipt_date as Date | string | null),
+      total: r.total,
+      itemCount: Number(r.item_count),
+    })),
+  };
+}

@@ -1,4 +1,4 @@
-import { createAsync, Navigate } from "@solidjs/router";
+import { A, createAsync, Navigate } from "@solidjs/router";
 import { createSignal, Show } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
 import { uploadReceipt, type UploadResult } from "~/server/receipt-upload";
@@ -73,6 +73,11 @@ export default function Upload() {
                       {result()!.dedup === "keep" && "We kept your earlier, cleaner scan."}
                     </p>
                   )}
+                  <p class="mt-3">
+                    <A href="/spending" class="font-medium text-sky-700 hover:underline">
+                      View your spending report →
+                    </A>
+                  </p>
                 </>
               ) : (
                 <p class="font-medium text-red-700">

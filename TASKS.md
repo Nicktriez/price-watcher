@@ -38,7 +38,7 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 | 012 | App-side OCR + line-item parser               | ✅     | OpenCode (full OCR run: all 10 receipts store-from-content, totals 390.75/314.9/67.95, Netto footer 11, SPAR wrapped; RUN_OCR_TESTS=1)               | 010, 011      |
 | 013 | Signed-in receipt upload + baseline writing   | ✅     | OpenCode (browser E2E: sign-in gate, upload→receipt+items+price_point(source=receipt, trust=community), fingerprint dedup→duplicate, image deleted)  | 010, 011, 012 |
 | 014 | Receipt-derived prices on product page        | ✅     | OpenCode (product page shows offers w/ ✓ Official + user-reported w/ ● Community from receipts, honest labels, empty state; browser + psql verified) | 010, 013      |
-| 015 | Per-user spending view (retention hook)       | ⬜     |                                                                                                                                                      | 010, 013      |
+| 015 | Per-user spending view (retention hook)       | ✅     | OpenCode (browser E2E: total this month, by-store breakdown, recent receipts, upload→spending link, sign-in gate; per-user filter)                   | 010, 013      |
 | 016 | Receipt gamification (points + streaks)       | ⬜     |                                                                                                                                                      | 010, 013      |
 | 017 | "Your price vs. average" on scanned receipts  | ⬜     |                                                                                                                                                      | 010, 013, 014 |
 
