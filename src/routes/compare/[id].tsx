@@ -2,11 +2,13 @@ import { createAsync, Navigate, useParams } from "@solidjs/router";
 import { For, Show } from "solid-js";
 import { fmtPrice } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
+import { getStoreDistances } from "~/server/distance";
 import { getBasketCosts, getList } from "~/server/lists";
 
 export default function StoreComparison() {
   const params = useParams();
   const user = createAsync(() => getCurrentUser());
+  const distances = createAsync(async () => (user() ? getStoreDistances(user()!.id) : []));
 
   const data = createAsync(async () => {
     if (!user() || !params.id) return null;
@@ -95,6 +97,7 @@ export default function StoreComparison() {
                           <tr class="border-b border-gray-300 text-left text-xs uppercase text-gray-500">
                             <th class="py-2 pr-2">Store</th>
                             <th class="py-2 pr-2 text-right">Total</th>
+                            <th class="py-2 pr-2 text-right">Driving (round trip)</th>
                             <th class="py-2 pr-2 text-right">vs. most expensive</th>
                             <th class="py-2 text-right">Offers / user-reported</th>
                           </tr>
@@ -106,6 +109,9 @@ export default function StoreComparison() {
                               const baselineHeavy =
                                 store.baselineTotal > 0 &&
                                 store.baselineTotal / store.basketTotal >= 0.5;
+                              const distance = distances()?.find(
+                                (d) => d.chainId === store.storeId,
+                              );
                               return (
                                 <tr class="border-b border-gray-100">
                                   <td class="py-2 pr-2">
@@ -123,6 +129,11 @@ export default function StoreComparison() {
                                   </td>
                                   <td class="py-2 pr-2 text-right font-semibold">
                                     {fmtPrice(String(store.basketTotal))} kr
+                                  </td>
+                                  <td class="py-2 pr-2 text-right text-gray-600">
+                                    {distance?.roundTripKm != null
+                                      ? `${fmtPrice(String(distance.roundTripKm))} km`
+                                      : "—"}
                                   </td>
                                   <td class="py-2 pr-2 text-right text-gray-600">
                                     {savings > 0 ? `−${fmtPrice(String(savings))} kr` : "—"}
@@ -150,9 +161,18 @@ export default function StoreComparison() {
                           baseline).
                         </p>
                       </Show>
+                      <Show when={distances()?.length === 0}>
+                        <p class="mb-2 text-sm text-gray-500">
+                          <a href="/settings" class="text-sky-700 hover:underline">
+                            Set your home address
+                          </a>{" "}
+                          to see driving distances (round trip) per store.
+                        </p>
+                      </Show>
                       <p class="text-xs text-gray-500">
                         Blue = current offers. Amber = user-reported prices from receipts — not
-                        official offers. Fuel-adjusted totals come later.
+                        official offers. Driving distances are round-trip to the nearest store.
+                        Fuel-adjusted totals come later.
                       </p>
                     </Show>
                   </Show>

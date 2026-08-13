@@ -63,13 +63,13 @@ The core product — "where do I shop this week?" Lists + basket math + store ra
 
 The differentiator — "is it worth the detour?" Store coordinates, OSRM routing, fuel price, car profile, and the net-win verdict.
 
-| #   | Task                                  | Status | Depends on          |
-| --- | ------------------------------------- | ------ | ------------------- |
-| 024 | Store geocoding (lat/lon)             | ✅     | Phase 2 store data  |
-| 025 | OSRM routing + user address           | ⬜     | 024, 010 (identity) |
-| 026 | Fuel price (daily national-average)   | ⬜     | —                   |
-| 027 | Car profile per user                  | ⬜     | 010 (identity)      |
-| 028 | Verdict line (basket + fuel, net win) | ⬜     | 021, 025, 026, 027  |
+| #   | Task                                  | Status | Depends on                                                                                                                                        |
+| --- | ------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 024 | Store geocoding (lat/lon)             | ✅     | Phase 2 store data                                                                                                                                |
+| 025 | OSRM routing + user address           | ✅     | OpenCode (browser E2E: save home address → round-trip km per store on compare, cached per user+store, no-home prompt, privacy note; 4 unit tests) | 024, 010 (identity) |
+| 026 | Fuel price (daily national-average)   | ⬜     | —                                                                                                                                                 |
+| 027 | Car profile per user                  | ⬜     | 010 (identity)                                                                                                                                    |
+| 028 | Verdict line (basket + fuel, net win) | ⬜     | 021, 025, 026, 027                                                                                                                                |
 
 **Run order:** 024 → 025 → 026 → 027 (025/026/027 parallelizable after 024) → 028 (the verdict, depends on all). 028 is the payoff — pure fuel math, testable standalone.
 

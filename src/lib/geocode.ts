@@ -43,3 +43,12 @@ export async function geocodeAddress(address: AddressInput): Promise<GeoCoord | 
   if (!res.ok) return null;
   return parseGeocodeResponse(await res.text());
 }
+
+export async function geocodeFreeform(queryInput: string): Promise<GeoCoord | null> {
+  const query = queryInput.trim();
+  if (!query) return null;
+  const url = `${NOMINATIM_SEARCH}?${new URLSearchParams({ format: "json", limit: "1", countrycodes: "dk", q: query })}`;
+  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
+  if (!res.ok) return null;
+  return parseGeocodeResponse(await res.text());
+}

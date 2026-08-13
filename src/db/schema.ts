@@ -91,6 +91,17 @@ export interface UserTable {
   receipt_count: number;
   current_streak: number;
   last_receipt_date: string | null;
+  home_address: string | null;
+  home_lat: number | null;
+  home_lon: number | null;
+}
+
+export interface UserStoreDistanceTable {
+  user_id: string;
+  store_id: string;
+  distance_km: number;
+  round_trip_km: number;
+  updated_at: string;
 }
 
 export interface LoginTokenTable {
@@ -188,4 +199,5 @@ export interface Database {
   list_item: ListItemTable;
   list_template: ListTemplateTable;
   list_template_item: ListTemplateItemTable;
+  user_store_distance: UserStoreDistanceTable;
 }
