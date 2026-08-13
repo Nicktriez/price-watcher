@@ -40,7 +40,7 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 | 014 | Receipt-derived prices on product page        | ✅     | OpenCode (product page shows offers w/ ✓ Official + user-reported w/ ● Community from receipts, honest labels, empty state; browser + psql verified) | 010, 013      |
 | 015 | Per-user spending view (retention hook)       | ✅     | OpenCode (browser E2E: total this month, by-store breakdown, recent receipts, upload→spending link, sign-in gate; per-user filter)                   | 010, 013      |
 | 016 | Receipt gamification (points + streaks)       | ✅     | OpenCode (browser E2E: 14pts clean-receipt + 13pts lower-recovery, no double-award on dedup, streak recorded/reset; 7 unit tests for award/streak)   | 010, 013      |
-| 017 | "Your price vs. average" on scanned receipts  | ⬜     |                                                                                                                                                      | 010, 013, 014 |
+| 017 | "Your price vs. average" on scanned receipts  | ✅     | OpenCode (browser E2E: per-line below-average + no-comparison states, overall delta, ownership enforced; real receipt baselines)                     | 010, 013, 014 |
 
 **Run order:** 010 → 011 (gate) → 012 → 013 → then 014/015/016 (parallelizable after 013) + 017 (after 014 provides the baseline). Numbers now match build order.
 

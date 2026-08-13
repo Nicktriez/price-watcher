@@ -80,8 +80,11 @@ export default function Upload() {
                     </p>
                   )}
                   <p class="mt-3">
-                    <A href="/spending" class="font-medium text-sky-700 hover:underline">
-                      View your spending report →
+                    <A
+                      href={result()!.receiptId ? `/receipts/${result()!.receiptId}` : "/spending"}
+                      class="font-medium text-sky-700 hover:underline"
+                    >
+                      See your price comparison →
                     </A>
                   </p>
                 </>

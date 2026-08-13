@@ -261,3 +261,102 @@ export async function getSpendingReport(userId: string): Promise<SpendingReport>
     })),
   };
 }
+
+export interface ReceiptLineComparison {
+  id: string;
+  name: string;
+  status: string;
+  paid: number | null;
+  average: number | null;
+  delta: number | null;
+}
+
+export interface ReceiptComparison {
+  receipt: { storeName: string | null; receiptDate: string | null; total: string | null };
+  lines: ReceiptLineComparison[];
+  comparableCount: number;
+  overallDelta: number | null;
+}
+
+export async function getReceiptComparison(
+  receiptId: string,
+  userId: string,
+): Promise<ReceiptComparison | null> {
+  if (!isUuid(receiptId)) return null;
+
+  const receipt = await db
+    .selectFrom("receipt")
+    .select(["store_name", "receipt_date", "total"])
+    .where("id", "=", receiptId)
+    .where("user_id", "=", userId)
+    .executeTakeFirst();
+  if (!receipt) return null;
+
+  const items = await db
+    .selectFrom("receipt_item")
+    .select(["id", "name", "price", "product_id", "status"])
+    .where("receipt_id", "=", receiptId)
+    .orderBy("created_at", "asc")
+    .execute();
+
+  const productIds = [
+    ...new Set(
+      items
+        .filter((i) => i.product_id != null && i.price != null)
+        .map((i) => i.product_id! as string),
+    ),
+  ];
+
+  const averageByProduct = new Map<string, { avg: number; count: number }>();
+  if (productIds.length > 0) {
+    const rows = await db
+      .selectFrom("price_point")
+      .innerJoin("receipt", "receipt.id", "price_point.receipt_id")
+      .select(["price_point.product_id", "price_point.price"])
+      .where("price_point.source", "=", "receipt")
+      .where("price_point.product_id", "in", productIds)
+      .where("receipt.user_id", "!=", userId)
+      .execute();
+    const sums = new Map<string, { total: number; count: number }>();
+    for (const r of rows) {
+      const v = r.price == null ? 0 : parseFloat(r.price);
+      const entry = sums.get(r.product_id) ?? { total: 0, count: 0 };
+      entry.total += v;
+      entry.count += 1;
+      sums.set(r.product_id, entry);
+    }
+    for (const [pid, e] of sums) {
+      averageByProduct.set(pid, { avg: e.total / e.count, count: e.count });
+    }
+  }
+
+  const lines: ReceiptLineComparison[] = items.map((item) => {
+    const paid = item.price == null ? null : parseFloat(item.price);
+    const avgEntry = item.product_id ? averageByProduct.get(item.product_id as string) : undefined;
+    const average = avgEntry?.avg ?? null;
+    return {
+      id: item.id,
+      name: item.name,
+      status: item.status,
+      paid,
+      average,
+      delta: paid != null && average != null ? Math.round((paid - average) * 100) / 100 : null,
+    };
+  });
+
+  const comparable = lines.filter((l) => l.delta != null);
+  const overallDelta = comparable.length
+    ? Math.round(comparable.reduce((s, l) => s + (l.delta ?? 0), 0) * 100) / 100
+    : null;
+
+  return {
+    receipt: {
+      storeName: receipt.store_name,
+      receiptDate: dateOnly(receipt.receipt_date as Date | string | null),
+      total: receipt.total,
+    },
+    lines,
+    comparableCount: comparable.length,
+    overallDelta,
+  };
+}
