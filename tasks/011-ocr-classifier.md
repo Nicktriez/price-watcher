@@ -17,13 +17,13 @@ The Phase 0 spike's `item_recovery` metric is inconsistent with its own definiti
 
 ## The four failure modes (classify separately, never blend)
 
-| Mode | What's happening | Recoverable? |
-|---|---|---|
-| **clean** | name AND price both recovered | — |
-| **garbled** | degraded photo (Lidl-type) — price genuinely unreadable | **No** — real loss |
-| **wrapped** | SPAR-style long name, price on the next line (parser gap) | **Yes** — line-joining fix |
-| **crumple** | price visible but receipt crumpled at that spot (REMA/SPAR-type) | **Yes** — crop-and-retry / ask user to flatten |
-| **footer** | Netto boilerplate (URLs, legal/returns, hours, brand lines) counted as items | **N/A — must be filtered, not scored** |
+| Mode        | What's happening                                                             | Recoverable?                                   |
+| ----------- | ---------------------------------------------------------------------------- | ---------------------------------------------- |
+| **clean**   | name AND price both recovered                                                | —                                              |
+| **garbled** | degraded photo (Lidl-type) — price genuinely unreadable                      | **No** — real loss                             |
+| **wrapped** | SPAR-style long name, price on the next line (parser gap)                    | **Yes** — line-joining fix                     |
+| **crumple** | price visible but receipt crumpled at that spot (REMA/SPAR-type)             | **Yes** — crop-and-retry / ask user to flatten |
+| **footer**  | Netto boilerplate (URLs, legal/returns, hours, brand lines) counted as items | **N/A — must be filtered, not scored**         |
 
 ## What to build (in priority order)
 

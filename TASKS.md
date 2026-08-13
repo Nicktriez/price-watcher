@@ -31,16 +31,16 @@ Running status of all coding tasks. Updated as tasks are assigned, run, and veri
 
 Identity + receipts + baseline prices. **Identity was moved earlier** (magic-link, no full auth) so receipts can be tied to a user and the spending/gamification retention loop is buildable now.
 
-| #   | Task                                          | Status | Depends on     |
-| --- | --------------------------------------------- | ------ | -------------- |
-| 010 | User identity (magic-link) + receipt schema    | ✅     | —              |
-| 011 | Refine OCR recovery classifier (Phase 3 GATE)  | 🟡 ready — trigger met (10 receipts); footer-filter top priority | 010 |
-| 012 | App-side OCR + line-item parser               | ⬜     | 010, 011       |
-| 013 | Signed-in receipt upload + baseline writing   | ⬜     | 010, 011, 012  |
-| 014 | Receipt-derived prices on product page        | ⬜     | 010, 013       |
-| 015 | Per-user spending view (retention hook)       | ⬜     | 010, 013       |
-| 016 | Receipt gamification (points + streaks)       | ⬜     | 010, 013       |
-| 017 | "Your price vs. average" on scanned receipts  | ⬜     | 010, 013, 014  |
+| #   | Task                                          | Status | Depends on                                                                                                                    |
+| --- | --------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| 010 | User identity (magic-link) + receipt schema   | ✅     | —                                                                                                                             |
+| 011 | Refine OCR recovery classifier (Phase 3 GATE) | ✅     | OpenCode (10 fixtures × both PSM variants; footer filter 10/10 Netto lines; wrapped line-join; crumple flag; honest recovery) | 010 |
+| 012 | App-side OCR + line-item parser               | ⬜     | 010, 011                                                                                                                      |
+| 013 | Signed-in receipt upload + baseline writing   | ⬜     | 010, 011, 012                                                                                                                 |
+| 014 | Receipt-derived prices on product page        | ⬜     | 010, 013                                                                                                                      |
+| 015 | Per-user spending view (retention hook)       | ⬜     | 010, 013                                                                                                                      |
+| 016 | Receipt gamification (points + streaks)       | ⬜     | 010, 013                                                                                                                      |
+| 017 | "Your price vs. average" on scanned receipts  | ⬜     | 010, 013, 014                                                                                                                 |
 
 **Run order:** 010 → 011 (gate) → 012 → 013 → then 014/015/016 (parallelizable after 013) + 017 (after 014 provides the baseline). Numbers now match build order.
 
