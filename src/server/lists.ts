@@ -237,3 +237,95 @@ export async function searchProducts(
     .execute();
   return rows.map((r) => ({ id: r.id, name: r.name, brand: r.brand }));
 }
+
+export interface TemplatePreview {
+  id: string;
+  name: string;
+  kind: ListKind;
+  itemCount: number;
+  firstItems: string[];
+}
+
+export async function getTemplates(): Promise<TemplatePreview[]> {
+  const templates = await db
+    .selectFrom("list_template")
+    .select(["id", "name", "kind"])
+    .orderBy("position", "asc")
+    .execute();
+
+  const previews: TemplatePreview[] = [];
+  for (const t of templates) {
+    const items = await db
+      .selectFrom("list_template_item")
+      .leftJoin("product", "product.id", "list_template_item.product_id")
+      .select(["list_template_item.free_text", "product.name"])
+      .where("list_template_item.template_id", "=", t.id)
+      .orderBy("list_template_item.position", "asc")
+      .execute();
+    previews.push({
+      id: t.id,
+      name: t.name,
+      kind: t.kind as ListKind,
+      itemCount: items.length,
+      firstItems: items
+        .map((i) => i.name ?? i.free_text ?? "")
+        .filter(Boolean)
+        .slice(0, 3),
+    });
+  }
+  return previews;
+}
+
+export async function useTemplate(templateId: string): Promise<string> {
+  const user = await requireUser();
+
+  return db.transaction().execute(async (trx) => {
+    const template = await trx
+      .selectFrom("list_template")
+      .select(["id", "name", "kind"])
+      .where("id", "=", templateId)
+      .executeTakeFirst();
+    if (!template) throw new Error("not-found");
+
+    const items = await trx
+      .selectFrom("list_template_item")
+      .select(["product_id", "free_text", "quantity", "unit"])
+      .where("template_id", "=", template.id)
+      .orderBy("position", "asc")
+      .execute();
+
+    const listId = randomUUID();
+    const now = new Date().toISOString();
+    await trx
+      .insertInto("list")
+      .values({
+        id: listId,
+        user_id: user.id,
+        name: template.name,
+        kind: template.kind as ListKind,
+        template_id: template.id,
+        created_at: now,
+        updated_at: now,
+      })
+      .execute();
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      await trx
+        .insertInto("list_item")
+        .values({
+          id: randomUUID(),
+          list_id: listId,
+          product_id: item.product_id,
+          free_text: item.product_id ? null : item.free_text,
+          quantity: item.quantity,
+          unit: item.unit,
+          position: i + 1,
+          created_at: now,
+        })
+        .execute();
+    }
+
+    return listId;
+  });
+}

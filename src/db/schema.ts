@@ -144,6 +144,25 @@ export interface ListTable {
   updated_at: string;
 }
 
+export interface ListTemplateTable {
+  id: string;
+  name: string;
+  kind: "recipe" | "cleaning" | "custom";
+  position: number;
+  created_at: string;
+}
+
+export interface ListTemplateItemTable {
+  id: string;
+  template_id: string;
+  product_id: string | null;
+  free_text: string | null;
+  quantity: number | null;
+  unit: string | null;
+  position: number;
+  created_at: string;
+}
+
 export interface ListItemTable {
   id: string;
   list_id: string;
@@ -167,4 +186,6 @@ export interface Database {
   receipt_item: ReceiptItemTable;
   list: ListTable;
   list_item: ListItemTable;
+  list_template: ListTemplateTable;
+  list_template_item: ListTemplateItemTable;
 }
