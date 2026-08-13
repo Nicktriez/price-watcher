@@ -329,7 +329,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 4 — Lists + Basket Math (2–3 weeks) 🔄 CURRENT (2026-08-12)
 
-**Status:** Task 018 ✅, Task 019 ✅, Task 020 (templates) ✅ — 8 seeded Danish templates, one-transaction clone, empty state (templates + blank list); 69 tests pass (10 files). Next: Task 021 (basket math) → 022 → 023.
+**Status:** Task 018 ✅, Task 019 ✅, Task 020 ✅, Task 021 (basket cost) ✅ — pure unit-testable function, unit-price normalization (g→kg, ml/cl→l), cheapest-by-unit-price offer pick, offer/baseline/no-price split; 74 tests pass (11 files). Next: Task 022 (comparison view) → 023 (madplan).
 
 **Objective:** The core product — "where do I shop this week?"
 
