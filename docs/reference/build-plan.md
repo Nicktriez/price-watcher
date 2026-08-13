@@ -353,7 +353,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 5 — Travel Cost ("is it worth the detour?") (1–2 weeks) 🔄 CURRENT (2026-08-12)
 
-**Status:** Task 024 ✅, Task 025 ✅, Task 026 (fuel price) ✅ — daily 06:30 cron, OK.dk national avg (petrol/diesel) + Elspot DK2 EV, config-driven sources, timestamped history, honest fallback (keeps last price); 90 tests pass (15 files). Next: Task 027 (car profile) → 028 (verdict).
+**Status:** Task 024 ✅, Task 025 ✅, Task 026 ✅, Task 027 (car profile) ✅ — fuel type + efficiency + EV charging (home/public), conditional UI (kWh/km for EV, charging only for EV), labeled Danish default, per-user; 94 tests pass (16 files). Next: Task 028 (fuel verdict) — final Phase 5 task.
 
 **Objective:** Add the honest math from the fuel discussion.
 
