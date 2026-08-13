@@ -327,9 +327,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 4 — Lists + Basket Math (2–3 weeks) 🔄 CURRENT (2026-08-12)
+## Phase 4 — Lists + Basket Math (2–3 weeks) ✅ COMPLETE (2026-08-12)
 
-**Status:** Task 018 ✅, Task 019 ✅, Task 020 ✅, Task 021 ✅, Task 022 (comparison view) ✅ — ranked cheapest-first, verdict + savings, offer/baseline split, baseline-heavy marked "user-reported" (no discount language), empty-state; 74 tests pass. Next: Task 023 (madplan) — final Phase 4 task.
+**Status:** Tasks 018–023 all ✅. Core product done: lists CRUD, recipe import, templates, basket cost (pure math), store comparison, weekly madplan. 78 tests pass (12 files). Phase 4 complete — the M1 loop (build a basket → store ranking) works end-to-end.
 
 **Objective:** The core product — "where do I shop this week?"
 

@@ -44,9 +44,9 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 
 **Run order:** 010 → 011 (gate) → 012 → 013 → then 014/015/016 (parallelizable after 013) + 017 (after 014 provides the baseline). Numbers now match build order.
 
-## Phase 4 (current — next up)
+## Phase 4 (complete)
 
-The core product — "where do I shop this week?" Lists + basket math + store ranking + the weekly madplan.
+The core product — "where do I shop this week?" Lists + basket math + store ranking + the weekly madplan. **Phase 4 status: done.** M1 loop works end-to-end.
 
 | #   | Task                                          | Status | Verified by                                                                                                                                              | Depends on     |
 | --- | --------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
