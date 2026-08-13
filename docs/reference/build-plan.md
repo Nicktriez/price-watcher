@@ -353,7 +353,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 5 — Travel Cost ("is it worth the detour?") (1–2 weeks) 🔄 CURRENT (2026-08-12)
 
-**Status:** Tasks defined (024–028, in `tasks/`). Next: Task 024 (store geocoding), then 025/026/027 → 028 (fuel verdict).
+**Status:** Task 024 (store geocoding) ✅ — coordinates from Tjek `/v2/stores` where available, Nominatim fallback (rate-limited), ingest hook, idempotent; 82 tests pass (13 files). Next: 025 (OSRM routing) / 026 (fuel) / 027 (car profile) → 028 (verdict).
 
 **Objective:** Add the honest math from the fuel discussion.
 
