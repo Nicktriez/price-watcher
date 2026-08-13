@@ -9,9 +9,10 @@ Show **baseline prices** (from receipts) on the product page, visually distingui
 
 ## Context
 
-Phase 3's verification criteria: *"Baseline prices appear on product pages and are visually distinguished from offers."* The product page currently shows only offers (from `src/server/queries.ts` → `getProductById`). This task adds the receipt-derived baseline layer alongside it.
+Phase 3's verification criteria: _"Baseline prices appear on product pages and are visually distinguished from offers."_ The product page currently shows only offers (from `src/server/queries.ts` → `getProductById`). This task adds the receipt-derived baseline layer alongside it.
 
 The distinction matters (it's the trust-tier / legal-boundary system made visible):
+
 - **Offers** = official weekly deals (Tjek feed) — `trust_tier='official'`
 - **Baseline** = crowd-sourced from receipts — `trust_tier='community'`/`'single'`
 

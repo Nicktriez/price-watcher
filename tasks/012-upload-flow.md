@@ -9,7 +9,7 @@ The user-facing path: **signed-in user photographs a receipt → upload → OCR 
 
 ## Context
 
-Phase 3 is the crowd-data moat — receipts are the highest-quality, Tjek-independent data. The retention hook is that a user's receipts become *their* spending history. So uploads are **tied to a signed-in user** (Task 010's magic-link identity), NOT anonymous.
+Phase 3 is the crowd-data moat — receipts are the highest-quality, Tjek-independent data. The retention hook is that a user's receipts become _their_ spending history. So uploads are **tied to a signed-in user** (Task 010's magic-link identity), NOT anonymous.
 
 **Sequencing:** depends on Task 010 (identity + schema) + Task 011 (OCR engine). Don't start until those exist.
 
@@ -38,7 +38,7 @@ A user may upload the same physical receipt more than once — a **better** re-s
    - Better image (higher confidence) → **replace** old rows with the new parse; points awarded once
    - Worse image → **keep** the original; don't downgrade
    - Identical (double-tap) → silent dedup, "you already uploaded this receipt"
-3. **Do NOT dedup cross-user** — two people in a household uploading the same receipt is *desired* for the community trust tier (multiple reports agree). Different `user_id` = separate observations.
+3. **Do NOT dedup cross-user** — two people in a household uploading the same receipt is _desired_ for the community trust tier (multiple reports agree). Different `user_id` = separate observations.
 4. **Feedback** should make retries feel rewarded: "your re-scan was cleaner" is encouragement, not a punish.
 
 ## Important

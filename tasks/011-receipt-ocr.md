@@ -10,6 +10,7 @@ Build the receipt OCR + parse logic into the app. This is the engine that turns 
 ## The research you're porting
 
 The Phase 0 spike (in `grocery-price-watcher-research`) already proved Tesseract works and produced a working reference implementation:
+
 - `research/ocr_receipts.py` — grayscale + 4×90° rotation, `-l dan` under `--psm 3` and `--psm 6`, best orientation auto-picked, per-field merge with confidence downgrade on variant disagreement.
 - `research/notes/ocr-receipts.md` — the human-verified findings, especially the **three failure modes**:
   - **clean** = name AND price both recovered
@@ -42,7 +43,7 @@ The Phase 0 spike (in `grocery-price-watcher-research`) already proved Tesseract
 - **Run the two PSM modes + rotations** and merge per field — the spike showed `--psm 6` is essential for dense REMA rows, `--psm 3` for sparse SPAR/Lidl. Don't use a single mode.
 - **Store from content, never filename.** This is a hard rule from the corrected framing.
 - **Nothing fabricated.** A garbled line stays garbled (`status='garbled'`), never guessed. This is a recovery-measurement engine, not a hallucinator.
-- **This is app code** in `~/price-watcher`, but you can reference the research repo's implementation for the port. Do not copy the whole Python script — port the *logic* to TypeScript, adapted for the app.
+- **This is app code** in `~/price-watcher`, but you can reference the research repo's implementation for the port. Do not copy the whole Python script — port the _logic_ to TypeScript, adapted for the app.
 - Tesseract must be installed (the research repo spike installed it on the research machine; the app machine needs it too — the upload task's setup may handle this).
 
 ## Acceptance criteria

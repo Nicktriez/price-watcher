@@ -12,6 +12,7 @@ Two foundations that Phase 3 depends on: **(1) a lightweight user identity** (ma
 Per the plan: **magic-link / email-OTP only. No passwords, no reset, no social login, no roles.** This is deliberately minimal — just enough identity that receipts, the spending view, and gamification can be per-user.
 
 Build:
+
 1. **A `user` table** (migration):
    - `id` — PK, uuid
    - `email` — text, unique

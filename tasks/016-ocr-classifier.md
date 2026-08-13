@@ -10,10 +10,12 @@ Fix the `item_recovery` metric and separate the three OCR failure modes. **This 
 ## Why this gate exists
 
 The Phase 0 spike's `item_recovery` metric is inconsistent with its own definition:
+
 - It counts a **name-only** item (price=None) as "clean" (`qual >= 0.5 and clean_words(name)`, `ocr_receipts.py` line ~302) — but the report defines clean as **name AND price** both recovered.
 - It collapses three distinct failure modes into one percentage, which **understates SPAR and REMA** (recoverable data) and overstates the genuine loss on degraded photos.
 
 The human-verified findings (in `research/notes/ocr-receipts.md`) separate them:
+
 - **clean** = name AND price both recovered
 - **garbled** = degraded photo, price genuinely unreadable (real loss)
 - **wrapped** = SPAR-style long name, price on the next line (parser fix recovers it)

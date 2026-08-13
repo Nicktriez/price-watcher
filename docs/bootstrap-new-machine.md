@@ -8,15 +8,15 @@ How to get this project running on a **brand-new dev machine**, end to end. This
 
 ## 1. Prerequisites
 
-| Tool                 | Version                                                             | Why                                          |
-| -------------------- | ------------------------------------------------------------------- | -------------------------------------------- |
-| **Node**             | **>= 24** (hard requirement — `package.json` `engines` enforces it) | Runtime. Older versions refuse to build      |
-| **pnpm**             | pins to 11.21.0 (via `devEngines`)                                  | Package manager; Vite+ drives it             |
-| **Vite+ CLI (`vp`)** | latest                                                              | The unified toolchain (dev/build/test/check) |
-| **OpenCode**         | latest                                                              | The fallback coding agent                    |
-| **Postgres**         | any recent (16 is fine)                                             | The database                                 |
-| **Tesseract + `tesseract-ocr-dan`** | any recent                                            | Receipt OCR (Phase 3) — `-l dan` needs the Danish language data |
-| **git**              | any                                                                 | Cloning/pushing                              |
+| Tool                                | Version                                                             | Why                                                             |
+| ----------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Node**                            | **>= 24** (hard requirement — `package.json` `engines` enforces it) | Runtime. Older versions refuse to build                         |
+| **pnpm**                            | pins to 11.21.0 (via `devEngines`)                                  | Package manager; Vite+ drives it                                |
+| **Vite+ CLI (`vp`)**                | latest                                                              | The unified toolchain (dev/build/test/check)                    |
+| **OpenCode**                        | latest                                                              | The fallback coding agent                                       |
+| **Postgres**                        | any recent (16 is fine)                                             | The database                                                    |
+| **Tesseract + `tesseract-ocr-dan`** | any recent                                                          | Receipt OCR (Phase 3) — `-l dan` needs the Danish language data |
+| **git**                             | any                                                                 | Cloning/pushing                                                 |
 
 ## 2. Install Node >= 24
 
@@ -194,6 +194,7 @@ sudo apt install -y tesseract-ocr tesseract-ocr-dan
 ```
 
 **Verify:**
+
 ```bash
 tesseract --list-langs   # must include 'dan'
 ```
@@ -246,17 +247,17 @@ OpenCode reads `AGENTS.md` (project context + ground rules) and the referenced t
 
 ## Troubleshooting
 
-| Symptom                                       | Fix                                                                                      |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `node --version` < 24                         | Install/switch to Node 24 (nvm) — the project refuses to build otherwise                 |
-| `ssh: Permission denied (publickey)` on clone | Key not added to GitHub; re-check `ssh -T git@github.com`                                |
-| `vp: command not found`                       | Global install not on PATH after install — open a new terminal, or check `vp env doctor` |
-| `DATABASE_URL` not picked up                  | `.env` exists in repo root? correct `postgres://` prefix?                                |
-| `pnpm db:migrate` fails                       | Postgres not running, or `nicklas` lacks rights on `price_watcher`                       |
-| `vp check` fails                              | Usually Node too old, or deps not installed — run `vp install` first                     |
-| OpenCode wrong binary                         | `which -a opencode` to confirm which one resolves                                        |
-| Phase 3 task can't find `ocr_receipts.py` / receipts | Research repo not cloned at `~/grocery-price-watcher-research` — clone it (step 6) |
-| `tesseract --list-langs` missing `dan`        | `tesseract-ocr-dan` not installed — `sudo apt install -y tesseract-ocr tesseract-ocr-dan` |
+| Symptom                                              | Fix                                                                                       |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `node --version` < 24                                | Install/switch to Node 24 (nvm) — the project refuses to build otherwise                  |
+| `ssh: Permission denied (publickey)` on clone        | Key not added to GitHub; re-check `ssh -T git@github.com`                                 |
+| `vp: command not found`                              | Global install not on PATH after install — open a new terminal, or check `vp env doctor`  |
+| `DATABASE_URL` not picked up                         | `.env` exists in repo root? correct `postgres://` prefix?                                 |
+| `pnpm db:migrate` fails                              | Postgres not running, or `nicklas` lacks rights on `price_watcher`                        |
+| `vp check` fails                                     | Usually Node too old, or deps not installed — run `vp install` first                      |
+| OpenCode wrong binary                                | `which -a opencode` to confirm which one resolves                                         |
+| Phase 3 task can't find `ocr_receipts.py` / receipts | Research repo not cloned at `~/grocery-price-watcher-research` — clone it (step 6)        |
+| `tesseract --list-langs` missing `dan`               | `tesseract-ocr-dan` not installed — `sudo apt install -y tesseract-ocr tesseract-ocr-dan` |
 
 ## Where production runs (NOT this machine)
 

@@ -5,7 +5,7 @@
 
 ## Objective
 
-After a user scans a receipt, show them **per-line: what they paid vs. the going rate** — "coffee 42 kr — 3 kr below average." This is the payoff that turns the *scanner* into the beneficiary, not just a donor to the crowd layer. It's the individual price-insight that makes scanning feel valuable to *the person doing it*.
+After a user scans a receipt, show them **per-line: what they paid vs. the going rate** — "coffee 42 kr — 3 kr below average." This is the payoff that turns the _scanner_ into the beneficiary, not just a donor to the crowd layer. It's the individual price-insight that makes scanning feel valuable to _the person doing it_.
 
 ## Why this matters
 

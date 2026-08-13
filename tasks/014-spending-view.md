@@ -9,11 +9,11 @@ The **retention hook — and the whole user incentive for scanning receipts**: "
 
 ## Why this is the onboarding reward, not a garnish
 
-The receipt flow sells itself as *"your free grocery-spending tracker"* — the crowd-data moat is the invisible byproduct. A user's payoff for photographing a receipt is: they get their spending tracked for free, without typing anything. Without this personal payoff, uploading a receipt is a favor to the platform — and favors don't scale. **Frame and build it as the primary reward, not an add-on.**
+The receipt flow sells itself as _"your free grocery-spending tracker"_ — the crowd-data moat is the invisible byproduct. A user's payoff for photographing a receipt is: they get their spending tracked for free, without typing anything. Without this personal payoff, uploading a receipt is a favor to the platform — and favors don't scale. **Frame and build it as the primary reward, not an add-on.**
 
 ## Context
 
-The plan calls the spending view *"the retention hook that makes people keep uploading."* It depends on identity (Task 010) and uploads (Task 012) — a user's receipts accumulate with `user_id`, and this view shows them the value.
+The plan calls the spending view _"the retention hook that makes people keep uploading."_ It depends on identity (Task 010) and uploads (Task 012) — a user's receipts accumulate with `user_id`, and this view shows them the value.
 
 **Only for a signed-in user.** No auth = no spending view.
 
@@ -25,7 +25,7 @@ The plan calls the spending view *"the retention hook that makes people keep upl
    - A list of their recent receipts (date, store, total, item count)
    - Optionally a simple month-to-month comparison
 2. **Queries** — extend/add to `src/server/queries.ts`: receipts + totals for a given `user_id`, grouped by store, filtered by month.
-3. **Simple, honest UI** — Tailwind, consistent with the rest of the site. This is a personal dashboard, not public data — it must be clearly the *user's own* spending.
+3. **Simple, honest UI** — Tailwind, consistent with the rest of the site. This is a personal dashboard, not public data — it must be clearly the _user's own_ spending.
 4. **Make it the reward** — the upload-complete state links straight here ("View your spending report"); this is the "what do I get for scanning?" answer made visible.
 
 ## Important
