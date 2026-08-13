@@ -19,6 +19,146 @@ Working name: **Kurven** ("the basket"). Codebase + repo still `price-watcher`.
 
 SolidStart 2 · Solid 1.9 · TypeScript · TailwindCSS 4 · Kysely · PostgreSQL · Vite+ (`vp` toolchain) · Nitro · Tesseract (Danish OCR) · node-cron
 
+## Database
+
+```mermaid
+erDiagram
+    chain ||--o{ store : "has"
+    chain ||--o{ offer : "publishes"
+    store ||--o{ offer : "sells"
+    store ||--o{ price_point : "priced in"
+    product ||--o{ offer : "offered as"
+    product ||--o{ price_point : "priced as"
+    offer ||--o| price_point : "becomes history"
+    receipt ||--o{ receipt_item : "contains"
+    receipt ||--o{ price_point : "yields baseline"
+    product ||--o{ receipt_item : "matched to"
+    user ||--o{ receipt : "uploaded"
+    user ||--o{ login_token : "signs in via"
+    user ||--o{ list : "owns"
+    user ||--o{ user_store_distance : "routes from"
+    store ||--o{ user_store_distance : "to"
+    list ||--o{ list_item : "has"
+    list_template ||--o{ list_template_item : "seeds"
+    product ||--o{ list_item : "linked to"
+    product ||--o{ list_template_item : "linked to"
+
+    chain {
+        uuid id PK
+        text name
+        text tjek_dealer_id
+    }
+    store {
+        uuid id PK
+        uuid chain_id FK
+        text name
+        text address
+        float lat
+        float lon
+    }
+    product {
+        uuid id PK
+        text name
+        text brand
+        text ean
+    }
+    offer {
+        uuid id PK
+        uuid product_id FK
+        uuid store_id FK
+        text price
+        text unit_price
+        date valid_from
+        date valid_to
+        text source
+        text trust_tier
+        boolean internal
+    }
+    price_point {
+        uuid id PK
+        uuid offer_id FK
+        uuid product_id FK
+        uuid store_id FK
+        uuid receipt_id FK
+        text price
+        timestamptz observed_at
+        text source
+    }
+    user {
+        uuid id PK
+        text email
+        integer points
+        text home_address
+        float home_lat
+        float home_lon
+    }
+    login_token {
+        uuid id PK
+        uuid user_id FK
+        text token
+        timestamptz expires_at
+    }
+    receipt {
+        uuid id PK
+        uuid user_id FK
+        uuid store_id FK
+        text store_name
+        date receipt_date
+        text total
+        text trust_tier
+        integer points_awarded
+    }
+    receipt_item {
+        uuid id PK
+        uuid receipt_id FK
+        uuid product_id FK
+        text name
+        text price
+        text status
+    }
+    list {
+        uuid id PK
+        uuid user_id FK
+        uuid template_id FK
+        text name
+        text kind
+    }
+    list_item {
+        uuid id PK
+        uuid list_id FK
+        uuid product_id FK
+        text free_text
+        integer quantity
+        text unit
+        integer position
+    }
+    list_template {
+        uuid id PK
+        text name
+        text kind
+    }
+    list_template_item {
+        uuid id PK
+        uuid template_id FK
+        uuid product_id FK
+        text free_text
+        integer quantity
+    }
+    user_store_distance {
+        uuid user_id PK, FK
+        uuid store_id PK, FK
+        float distance_km
+        float round_trip_km
+    }
+```
+
+**Key design points:**
+
+- **`offer`** carries the feed's official prices; **`price_point`** holds every observed price (offer history + receipt baselines). `price_point.source` distinguishes `offer` vs `receipt`; `offer.internal` flags feed rows as not-publishable (the data & legal boundary).
+- **`receipt` → `price_point`** is the crowd-data moat: receipt-derived baselines power basket math, spending, and price-vs-average.
+- **`user_store_distance`** has a composite PK `(user_id, store_id)` — the OSRM round-trip distance cache.
+- `product` is the hub — lists, receipts, offers, and baselines all link to it.
+
 ## Project status
 
 - **Phase 0–3 done** — data access spike, ingestion pipeline, and the full receipt pipeline (OCR → upload → baselines → spending → gamification → price-vs-average). 74+ tests passing.
