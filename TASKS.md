@@ -33,7 +33,7 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 
 | #   | Task                                          | Status | Depends on     |
 | --- | --------------------------------------------- | ------ | -------------- |
-| 010 | User identity (magic-link) + receipt schema   | ⬜     | —              |
+| 010 | User identity (magic-link) + receipt schema | ✅ | Nick (vp test) + code review — migration 0007, auth.ts (login_token + signed session), signin.tsx |
 | 011 | App-side OCR + line-item parser               | ⬜     | 010            |
 | 012 | Signed-in receipt upload + baseline writing   | ⬜     | 010, 011       |
 | 013 | Receipt-derived prices on product page        | ⬜     | 010, 012       |
