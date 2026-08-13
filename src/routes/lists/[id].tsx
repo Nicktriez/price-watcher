@@ -124,6 +124,10 @@ export default function ListDetail() {
                 <a href="/lists" class="text-sky-700 hover:underline">
                   ← All lists
                 </a>
+                <span class="mx-2 text-gray-300">|</span>
+                <a href={`/compare/${l().id}`} class="font-medium text-sky-700 hover:underline">
+                  Where to shop →
+                </a>
               </p>
               <div class="mb-4 flex items-baseline gap-3">
                 <h1 class="text-2xl font-semibold">{l().name}</h1>
