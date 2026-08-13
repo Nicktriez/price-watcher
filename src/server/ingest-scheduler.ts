@@ -1,6 +1,7 @@
 import { pathToFileURL } from "node:url";
 import cron from "node-cron";
 import { ingestAllChains } from "../lib/tjek-ingest.ts";
+import { startFuelPriceScheduler } from "./fuel.ts";
 import { createRunLock, isSchedulerEnabled } from "./ingest-lock.ts";
 
 const SCHEDULE = "15 */6 * * *";
@@ -34,6 +35,7 @@ export function startScheduler(): void {
   cron.schedule(SCHEDULE, () => {
     void runOnce();
   });
+  startFuelPriceScheduler();
   console.log(`[ingest] scheduler started, cadence ${SCHEDULE}`);
 }
 

@@ -145,6 +145,14 @@ export interface ReceiptItemTable {
   created_at: string;
 }
 
+export interface FuelPriceTable {
+  id: string;
+  fuel_type: "petrol" | "diesel" | "ev_kwh";
+  price: string;
+  observed_at: string;
+  source: string;
+}
+
 export interface ListTable {
   id: string;
   user_id: string | null;
@@ -200,4 +208,5 @@ export interface Database {
   list_template: ListTemplateTable;
   list_template_item: ListTemplateItemTable;
   user_store_distance: UserStoreDistanceTable;
+  fuel_price: FuelPriceTable;
 }
