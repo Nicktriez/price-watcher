@@ -51,7 +51,7 @@ The core product — "where do I shop this week?" Lists + basket math + store ra
 | #   | Task                                          | Status | Verified by                                                                                                          | Depends on     |
 | --- | --------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- | -------------- |
 | 018 | Lists CRUD (List, ListItem)                   | ✅     | OpenCode (browser E2E: create/rename, 5 free-text + product-linked items, structured qty, reorder, per-user scoping) | 010 (identity) |
-| 019 | Recipe import (paste → ingredients → matched) | ⬜     |                                                                                                                      | 018            |
+| 019 | Recipe import (paste → ingredients → matched) | ✅     | OpenCode (browser E2E: paste→5 ingredients, method/servings dropped, qty prefilled, save-as-list; 10 unit tests)     | 018            |
 | 020 | List templates (onboarding)                   | ⬜     |                                                                                                                      | 018, Phase 2   |
 | 021 | Basket cost per store (the math)              | ⬜     |                                                                                                                      | 018, Phase 3   |
 | 022 | Store comparison view                         | ⬜     |                                                                                                                      | 021            |

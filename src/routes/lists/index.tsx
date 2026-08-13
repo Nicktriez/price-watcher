@@ -35,6 +35,11 @@ export default function ListsIndex() {
       >
         <main class="mx-auto max-w-3xl p-4 text-gray-900">
           <h1 class="mb-4 text-2xl font-semibold">Your lists</h1>
+          <p class="mb-4">
+            <A href="/lists/import" class="text-sky-700 hover:underline">
+              Import a recipe →
+            </A>
+          </p>
 
           <form onSubmit={handleCreate} class="mb-6 flex items-center gap-2">
             <input
