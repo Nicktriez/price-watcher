@@ -40,10 +40,11 @@ export default function StoreComparison() {
   const user = createAsync(() => getCurrentUser());
 
   const data = createAsync(async () => {
-    if (!user() || !params.id) return null;
+    const me = user();
+    if (!me || !params.id) return null;
     const list = await getList(params.id);
     if (!list) return null;
-    const verdict = await getStoreVerdicts(params.id, user()!.id);
+    const verdict = await getStoreVerdicts(params.id, me.id);
     return { list, verdict };
   });
 
