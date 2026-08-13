@@ -109,3 +109,25 @@ export async function getCatalogPdfUrl(catalogId: string): Promise<string | null
   );
   return pdf_url;
 }
+
+export interface TjekStore {
+  id: string;
+  street: string | null;
+  city: string | null;
+  zip_code: string | null;
+  name: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  dealer_id: string;
+}
+
+export async function getStores(dealerId: string): Promise<TjekStore[]> {
+  return fetchAllPages<TjekStore>((offset) => {
+    const params = new URLSearchParams({
+      dealer_id: dealerId,
+      limit: String(PAGE_LIMIT),
+      offset: String(offset),
+    });
+    return `/v2/stores?${params.toString()}`;
+  });
+}

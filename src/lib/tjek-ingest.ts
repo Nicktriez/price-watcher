@@ -1,8 +1,9 @@
-import { createHash } from "node:crypto";
 import { db } from "../db/client.ts";
 import { getCatalogs, getOffers, type TjekOffer } from "./tjek.ts";
 import { linkProducts } from "./product-matching.ts";
 import { computeUnitPrice } from "./unit-price.ts";
+import { uuidFromKey } from "./uuid.ts";
+import { syncStoresFromTjek } from "../server/store-sync.ts";
 
 const OFFER_NAMESPACE = "offer";
 const PRODUCT_NAMESPACE = "product";
@@ -11,14 +12,6 @@ const PRICE_POINT_NAMESPACE = "price_point";
 export interface IngestResult {
   inserted: number;
   updated: number;
-}
-
-function uuidFromKey(key: string): string {
-  const digest = createHash("sha256").update(key).digest();
-  digest[6] = (digest[6] & 0x0f) | 0x50;
-  digest[8] = (digest[8] & 0x3f) | 0x80;
-  const hex = digest.subarray(0, 16).toString("hex");
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 function offerUuid(dealerId: string, catalogId: string, tjekOfferId: string): string {
@@ -186,6 +179,7 @@ export async function ingestAllChains(): Promise<ChainIngestResult[]> {
     .execute();
   const results = await ingestAllChainsFrom(chains, ingestChain);
   await matchProducts();
+  await syncStoresFromTjek();
   return results;
 }
 

@@ -65,7 +65,7 @@ The differentiator — "is it worth the detour?" Store coordinates, OSRM routing
 
 | #   | Task                                  | Status | Depends on          |
 | --- | ------------------------------------- | ------ | ------------------- |
-| 024 | Store geocoding (lat/lon)             | ⬜     | Phase 2 store data  |
+| 024 | Store geocoding (lat/lon)             | ✅     | Phase 2 store data  |
 | 025 | OSRM routing + user address           | ⬜     | 024, 010 (identity) |
 | 026 | Fuel price (daily national-average)   | ⬜     | —                   |
 | 027 | Car profile per user                  | ⬜     | 010 (identity)      |
