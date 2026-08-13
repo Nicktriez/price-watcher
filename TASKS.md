@@ -61,4 +61,4 @@ The core product — "where do I shop this week?" Lists + basket math + store ra
 
 ## Phase 5+ (not started)
 
-Travel cost (Phase 5), crowd data + trust tiers (Phase 6), closed beta (Phase 7), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
+Travel cost (Phase 5), crowd data + trust tiers (Phase 6), closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).

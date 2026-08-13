@@ -403,6 +403,8 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Tasks:**
 
+0. **Usability precondition (do BEFORE inviting anyone):** the core flows must be _navigable without help_ — a non-technical user can build a list, upload a receipt, and view a store comparison without being walked through it. This is a **navigability bar, not a beauty bar** — the goal is that a beta user's M1 action (build a basket, get a ranking) isn't blocked by "can't find the button." If the UI is so rough that a non-technical invitee gets stuck, you're measuring usability, not retention — and the M1 signal (≥30% return) gets polluted. Test it: have one person who's never seen the site do the three flows cold, and fix anything that stops them.
+
 1. **Invite ~10–20 friendly users** — start with the communities the launch will target, but the friendly subset: a few friends/family, one or two people from the Danish price-watch groups, maybe one skeptic who'll actually try to break it. Mix of technical and non-technical.
 2. **Seed-data campaign:** explicitly ask each beta user to upload **3–5 receipts** of their own. The baseline-price pool needs real data from real stores before launch, and this is the cheapest way to get it (users are the donor to the moat they'll later benefit from).
 3. **Have them build and use a list** — the M1 action (build a basket, get a store ranking) needs Phase 4 (basket math) to exist first, so Beta sits _after_ Phase 4's core. Watch: do they build a list and come back the next week?
@@ -420,7 +422,33 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **If the M1 signal fails:** do NOT launch. The retention loop is the whole bet — if <30% return, something in the loop is wrong. Diagnose (is it the spending view? the gamification? the ranking itself?) and fix before spending the launch moment on a product people don't return to. Beta failing is data, not failure — better to learn it here than on Reddit.
 
-**When Beta is done:** Phase 7 hands off to Phase 8 (Monetization + Launch) with a seeded data lake, a validated retention loop, and a body of real receipts powering the crowd-data moat.
+**When Beta is done:** Phase 7 hands off to Phase 7b (Design Polish) with a seeded data lake, a validated retention loop, and a body of real receipts powering the crowd-data moat. Only then Phase 8 (Launch).
+
+---
+
+## Phase 7b — Design Polish (1 week, after Beta, before Launch)
+
+**Objective:** Make the site _look_ like a product worth sharing, now that it's proven people return to it. The beta validated the retention loop; this pass makes the presentation match. **Deliberately AFTER beta, not before** — if the M1 signal had failed, you'd have polished a product people don't return to. Polish is only worth it once you know the loop works.
+
+**Scope:** visual tightening + branding — NOT new features, NOT restructuring. The features are done; this makes them presentable.
+
+**Tasks:**
+
+1. **Design system (Tailwind):** a consistent set of colors, typography, spacing, and component styles across all routes. Currently each page uses ad-hoc Tailwind classes; unify them. Pick a palette that suits the product (fresh/grocery-appropriate, but not childish) and stick to it.
+2. **Branding:** lock the name (`Kurven`), a simple logo/wordmark, and the primary UI copy tone (Danish, direct, honest — matching the blog voice). Favicon + page titles.
+3. **The screenshots that matter:** polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) — these are the "screenshot-for-distribution" moments. A madplan screenshot that looks clean is the single most shareable asset (feeds the "madplan for 500 kr" blog-post content engine).
+4. **Mobile check:** receipts are uploaded from a phone camera — verify the upload + receipt flow is genuinely usable on mobile, not just desktop. (The beta likely surfaced some of this in feedback; this is where to fix it.)
+5. **Honest-UI consistency pass:** ensure the trust-tier / "user-reported" / "no discount" labeling (Tasks 014/017/022) reads cleanly and consistently in the polished design — the compliance framing must survive the visual redesign, not get lost in it.
+
+**Exit gate (launch-ready visuals):**
+
+- [ ] Consistent design system across all routes (no ad-hoc class soup)
+- [ ] Branding locked: name, logo/wordmark, favicon, page titles
+- [ ] Store comparison + madplan are screenshot-worthy (clean, shareable)
+- [ ] Mobile upload + receipt flow works
+- [ ] Trust-tier / user-reported labeling is consistent and still Omnibus-clean after the redesign
+
+**When done:** hands off to Phase 8 (Monetization + Launch) with a site that both works _and_ looks like a product.
 
 ---
 
