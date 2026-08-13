@@ -94,6 +94,9 @@ export interface UserTable {
   home_address: string | null;
   home_lat: number | null;
   home_lon: number | null;
+  fuel_type: "petrol" | "diesel" | "ev" | null;
+  efficiency: number | null;
+  ev_charging: "home" | "public" | null;
 }
 
 export interface UserStoreDistanceTable {
