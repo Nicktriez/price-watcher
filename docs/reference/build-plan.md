@@ -351,9 +351,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 5 — Travel Cost ("is it worth the detour?") (1–2 weeks) 🔄 CURRENT (2026-08-12)
+## Phase 5 — Travel Cost ("is it worth the detour?") (1–2 weeks) ✅ COMPLETE (2026-08-12)
 
-**Status:** Task 024 ✅, Task 025 ✅, Task 026 ✅, Task 027 (car profile) ✅ — fuel type + efficiency + EV charging (home/public), conditional UI (kWh/km for EV, charging only for EV), labeled Danish default, per-user; 94 tests pass (16 files). Next: Task 028 (fuel verdict) — final Phase 5 task.
+**Status:** Tasks 024–028 all ✅. Travel cost done: geocoding, OSRM round-trip, fuel feed, car profile, net-win verdict. 101 tests pass (17 files). Phase 5 complete — "is it worth the detour?" is answered honestly.
 
 **Objective:** Add the honest math from the fuel discussion.
 

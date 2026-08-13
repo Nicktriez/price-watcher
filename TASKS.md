@@ -59,9 +59,9 @@ The core product — "where do I shop this week?" Lists + basket math + store ra
 
 **Run order:** 018 → 019/020 (parallelizable after 018) → 021 → 022 → 023. 021 is the pure-math core — testable standalone before any UI.
 
-## Phase 5 (current — next up)
+## Phase 5 (complete)
 
-The differentiator — "is it worth the detour?" Store coordinates, OSRM routing, fuel price, car profile, and the net-win verdict.
+The differentiator — "is it worth the detour?" Store coordinates, OSRM routing, fuel price, car profile, and the net-win verdict. **Phase 5 status: done.**
 
 | #   | Task                                  | Status | Depends on                                                                                                                                                                                                                         |
 | --- | ------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -73,6 +73,6 @@ The differentiator — "is it worth the detour?" Store coordinates, OSRM routing
 
 **Run order:** 024 → 025 → 026 → 027 (025/026/027 parallelizable after 024) → 028 (the verdict, depends on all). 028 is the payoff — pure fuel math, testable standalone.
 
-## Phase 6+ (not started)
+## Phase 6 (current — next up)
 
-Crowd data + trust tiers (Phase 6), closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
+Crowd data + trust tiers — the differentiator. Closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
