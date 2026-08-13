@@ -297,7 +297,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 3 — Receipt Scanning + Baseline Prices (2–3 weeks) 🔄 IN PROGRESS (2026-08-12)
 
-**Status:** Task 010 ✅, Task 011 (OCR classifier GATE) ✅, Task 012 (OCR engine) ✅, Task 013 (signed-in upload + baseline) ✅ — 52 tests pass (8 files), incl. dedup (replace-or-keep, better parse wins), trust_tier=community, image deleted after parse, honest recovered-count feedback. Next: Task 014 (product-page baseline) / 015 (spending view) / 016 (gamification) → 017.
+**Status:** Tasks 010–013 ✅. Task 014 (product-page baseline) ✅ — baseline prices shown alongside offers, trust-tier badges, labeled "user-reported" (no discount/Omnibus language), empty states; 52 tests pass. Next: Task 015 (spending view) / 016 (gamification) → 017.
 
 **Objective:** Solve the baseline-price gap (Open Question #1) with the highest-quality crowd data there is: actual receipts. Moved early because it unblocks the basket math.
 
