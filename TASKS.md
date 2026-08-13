@@ -63,13 +63,13 @@ The core product — "where do I shop this week?" Lists + basket math + store ra
 
 The differentiator — "is it worth the detour?" Store coordinates, OSRM routing, fuel price, car profile, and the net-win verdict.
 
-| #   | Task                                  | Status | Depends on                                                                                                                                                     |
-| --- | ------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 024 | Store geocoding (lat/lon)             | ✅     | Phase 2 store data                                                                                                                                             |
-| 025 | OSRM routing + user address           | ✅     | OpenCode (browser E2E: save home address → round-trip km per store on compare, cached per user+store, no-home prompt, privacy note; 4 unit tests)              | 024, 010 (identity) |
-| 026 | Fuel price (daily national-average)   | ✅     | OpenCode (daily cron 06:30; OK.dk station-average petrol/diesel + Elspot+tariff EV, config fallback; timestamped history, honest failed-fetch; 4 parser tests) | —                   |
-| 027 | Car profile per user                  | ✅     | OpenCode (browser E2E: fuel type + conditional efficiency/charging fields, labeled default, save/clear per-user; 4 validation tests)                           | 010 (identity)      |
-| 028 | Verdict line (basket + fuel, net win) | ⬜     | 021, 025, 026, 027                                                                                                                                             |
+| #   | Task                                  | Status | Depends on                                                                                                                                                                                                                         |
+| --- | ------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 024 | Store geocoding (lat/lon)             | ✅     | Phase 2 store data                                                                                                                                                                                                                 |
+| 025 | OSRM routing + user address           | ✅     | OpenCode (browser E2E: save home address → round-trip km per store on compare, cached per user+store, no-home prompt, privacy note; 4 unit tests)                                                                                  | 024, 010 (identity) |
+| 026 | Fuel price (daily national-average)   | ✅     | OpenCode (daily cron 06:30; OK.dk station-average petrol/diesel + Elspot+tariff EV, config fallback; timestamped history, honest failed-fetch; 4 parser tests)                                                                     | —                   |
+| 027 | Car profile per user                  | ✅     | OpenCode (browser E2E: fuel type + conditional efficiency/charging fields, labeled default, save/clear per-user; 4 validation tests)                                                                                               | 010 (identity)      |
+| 028 | Verdict line (basket + fuel, net win) | ✅     | OpenCode (browser E2E: petrol + EV-public fuel math end-to-end, net-winner verdict in plain Danish, fuel/total columns sorted by total-with-fuel, labeled-default + no-distance honest paths, fuel-price sparklines; 7 unit tests) | 021, 025, 026, 027  |
 
 **Run order:** 024 → 025 → 026 → 027 (025/026/027 parallelizable after 024) → 028 (the verdict, depends on all). 028 is the payoff — pure fuel math, testable standalone.
 
