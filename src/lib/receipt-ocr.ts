@@ -60,6 +60,7 @@ export interface ParsedItem {
   price: number | null;
   status: "clean" | "garbled" | "wrapped";
   quality: number;
+  raw: string;
   note?: string;
 }
 
@@ -235,6 +236,7 @@ function toParsedItem(line: ClassifiedLine): ParsedItem {
     price: line.price,
     status,
     quality: line.quality,
+    raw: line.raw,
     ...(line.note ? { note: line.note } : {}),
   };
 }

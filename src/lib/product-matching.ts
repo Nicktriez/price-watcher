@@ -77,3 +77,15 @@ export function linkProducts(offers: OfferLike[]): LinkDecision[] {
 
   return decisions;
 }
+
+export function matchProductName(
+  products: { id: string; name: string }[],
+  itemName: string,
+): string | null {
+  const key = normalizeName(itemName);
+  if (!key) return null;
+  for (const product of products) {
+    if (normalizeName(product.name) === key) return product.id;
+  }
+  return null;
+}

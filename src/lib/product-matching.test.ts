@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vite-plus/test";
-import { linkProducts, normalizeName, type OfferLike } from "./product-matching.ts";
+import {
+  linkProducts,
+  matchProductName,
+  normalizeName,
+  type OfferLike,
+} from "./product-matching.ts";
 import nettoOffers from "./__fixtures__/netto.offers.json";
 import remaOffers from "./__fixtures__/rema1000.offers.json";
 
@@ -101,5 +106,27 @@ describe("linkProducts", () => {
     expect(again).toHaveLength(1);
     expect(again[0].offerId).toBe("lidl-new");
     expect(again[0].toProductId).toBe("11deC:3-stjernet pålæg");
+  });
+});
+
+describe("matchProductName", () => {
+  const products = [
+    { id: "p1", name: "Skyllemiddel" },
+    { id: "p2", name: "Schulstad brød 470g" },
+    { id: "p3", name: "REMA 1000 Dansk kylling" },
+  ];
+
+  it("matches an item name to a product by normalized name", () => {
+    expect(matchProductName(products, "SKYLLEMIDDEL")).toBe("p1");
+    expect(matchProductName(products, "skyllemiddel")).toBe("p1");
+  });
+
+  it("returns null when nothing matches", () => {
+    expect(matchProductName(products, "GRAPEBRUS")).toBeNull();
+  });
+
+  it("normalizes size suffixes and brand prefixes on both sides", () => {
+    expect(matchProductName(products, "Schulstad brød 470g")).toBe("p2");
+    expect(matchProductName(products, "dansk kylling")).toBe("p3");
   });
 });

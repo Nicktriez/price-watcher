@@ -72,9 +72,10 @@ export interface OfferTable {
 
 export interface PricePointTable {
   id: string;
-  offer_id: string;
+  offer_id: string | null;
   product_id: string;
   store_id: string | null;
+  receipt_id: string | null;
   price: string;
   currency: string;
   observed_at: string;
