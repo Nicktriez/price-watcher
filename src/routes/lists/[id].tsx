@@ -1,0 +1,283 @@
+import { createAsync, Navigate, useNavigate, useParams } from "@solidjs/router";
+import { createSignal, For, Show } from "solid-js";
+import { getCurrentUser } from "~/server/auth";
+import {
+  addListItem,
+  deleteList,
+  getList,
+  removeListItem,
+  renameList,
+  reorderListItems,
+  searchProducts,
+  updateListItem,
+} from "~/server/lists";
+
+export default function ListDetail() {
+  const params = useParams();
+  const navigate = useNavigate();
+  const user = createAsync(() => getCurrentUser());
+  const [version, setVersion] = createSignal(0);
+  const refresh = () => setVersion((v) => v + 1);
+
+  const list = createAsync(async () => {
+    version();
+    return user() ? getList(params.id!) : null;
+  });
+
+  const [q, setQ] = createSignal("");
+  const [qty, setQty] = createSignal("");
+  const [unit, setUnit] = createSignal("");
+  const suggestions = createAsync(async () => (q().trim() ? searchProducts(q()) : []));
+
+  const addProduct = async (productId: string) => {
+    await addListItem(params.id!, {
+      productId,
+      quantity: qty() ? Number(qty()) : null,
+      unit: unit() || null,
+    });
+    setQ("");
+    setQty("");
+    setUnit("");
+    refresh();
+  };
+
+  const addFreeText = async (e: Event) => {
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const data = new FormData(form);
+    const raw = data.get("name");
+    const name = (typeof raw === "string" ? raw : "").trim();
+    if (!name) return;
+    const qRaw = data.get("quantity");
+    const qVal = typeof qRaw === "string" && qRaw.trim() !== "" ? Number(qRaw) : null;
+    const uRaw = data.get("unit");
+    await addListItem(params.id!, {
+      freeText: name,
+      quantity: qVal,
+      unit: typeof uRaw === "string" && uRaw.trim() !== "" ? uRaw : null,
+    });
+    refresh();
+    (form as HTMLFormElement).reset();
+  };
+
+  const handleRename = async () => {
+    const name = window.prompt("Rename list", list()?.name);
+    if (!name || !name.trim()) return;
+    await renameList(params.id!, name);
+    refresh();
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Delete this list and all its items?")) return;
+    await deleteList(params.id!);
+    navigate("/lists");
+  };
+
+  const handleEditQty = async (itemId: string, current: number | null) => {
+    const value = window.prompt("Quantity", current?.toString() ?? "");
+    if (value === null) return;
+    const q = value.trim() === "" ? null : Number(value);
+    await updateListItem(params.id!, itemId, { quantity: Number.isNaN(q ?? NaN) ? null : q });
+    refresh();
+  };
+
+  const move = async (index: number, dir: -1 | 1) => {
+    const items = list()?.items;
+    if (!items) return;
+    const target = index + dir;
+    if (target < 0 || target >= items.length) return;
+    const ordered = items.map((i) => i.id);
+    [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
+    await reorderListItems(params.id!, ordered);
+    refresh();
+  };
+
+  const handleRemove = async (itemId: string) => {
+    await removeListItem(params.id!, itemId);
+    refresh();
+  };
+
+  return (
+    <Show
+      when={user() !== undefined}
+      fallback={<main class="mx-auto max-w-3xl p-4 text-gray-900" />}
+    >
+      <Show
+        when={user()}
+        fallback={
+          <main class="mx-auto max-w-3xl p-4 text-gray-900">
+            <Navigate href="/signin" />
+          </main>
+        }
+      >
+        <Show
+          when={list()}
+          fallback={
+            <main class="mx-auto max-w-3xl p-4 text-gray-900">
+              <p>List not found.</p>
+            </main>
+          }
+        >
+          {(l) => (
+            <main class="mx-auto max-w-3xl p-4 text-gray-900">
+              <p class="mb-2 text-sm">
+                <a href="/lists" class="text-sky-700 hover:underline">
+                  ← All lists
+                </a>
+              </p>
+              <div class="mb-4 flex items-baseline gap-3">
+                <h1 class="text-2xl font-semibold">{l().name}</h1>
+                <span class="text-xs text-gray-500">{l().kind}</span>
+                <button
+                  type="button"
+                  onClick={handleRename}
+                  class="text-xs text-sky-700 hover:underline"
+                >
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  class="text-xs text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+
+              <section class="mb-6 rounded border border-gray-200 p-3">
+                <h2 class="mb-2 text-sm font-semibold">Add a product</h2>
+                <div class="mb-2 flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={q()}
+                    onInput={(e) => setQ(e.currentTarget.value)}
+                    placeholder="Search products…"
+                    class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  />
+                  <input
+                    type="number"
+                    value={qty()}
+                    onInput={(e) => setQty(e.currentTarget.value)}
+                    placeholder="Qty"
+                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={unit()}
+                    onInput={(e) => setUnit(e.currentTarget.value)}
+                    placeholder="Unit"
+                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  />
+                </div>
+                <Show when={suggestions()?.length}>
+                  <ul class="space-y-1">
+                    <For each={suggestions()}>
+                      {(p) => (
+                        <li>
+                          <button
+                            type="button"
+                            onClick={() => addProduct(p.id)}
+                            class="w-full rounded px-2 py-1 text-left text-sm hover:bg-gray-100"
+                          >
+                            {p.name}
+                            {p.brand && <span class="ml-2 text-xs text-gray-500">{p.brand}</span>}
+                          </button>
+                        </li>
+                      )}
+                    </For>
+                  </ul>
+                </Show>
+              </section>
+
+              <section class="mb-6 rounded border border-gray-200 p-3">
+                <h2 class="mb-2 text-sm font-semibold">Or add free text</h2>
+                <form onSubmit={addFreeText} class="flex items-center gap-2">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="e.g. Spaghetti 500g"
+                    required
+                    class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  />
+                  <input
+                    type="number"
+                    name="quantity"
+                    placeholder="Qty"
+                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  />
+                  <input
+                    type="text"
+                    name="unit"
+                    placeholder="Unit"
+                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  />
+                  <button type="submit" class="rounded bg-sky-600 px-3 py-1.5 text-sm text-white">
+                    Add
+                  </button>
+                </form>
+              </section>
+
+              <Show
+                when={l().items.length}
+                fallback={<p class="text-gray-500">This list is empty. Add items above.</p>}
+              >
+                <ul class="space-y-2">
+                  <For each={l().items}>
+                    {(item, i) => (
+                      <li class="flex items-center justify-between gap-3 rounded border border-gray-200 px-3 py-2 text-sm">
+                        <div class="flex items-center gap-2">
+                          <div class="flex flex-col">
+                            <button
+                              type="button"
+                              onClick={() => move(i(), -1)}
+                              class="text-xs text-gray-400 hover:text-gray-700"
+                              aria-label="Move up"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => move(i(), 1)}
+                              class="text-xs text-gray-400 hover:text-gray-700"
+                              aria-label="Move down"
+                            >
+                              ▼
+                            </button>
+                          </div>
+                          <span class="text-gray-800">{item.productName ?? item.freeText}</span>
+                          <span class="text-xs text-gray-500">
+                            {item.quantity != null
+                              ? `${item.quantity} ${item.unit ?? ""}`.trim()
+                              : ""}
+                          </span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          {item.productName && (
+                            <button
+                              type="button"
+                              onClick={() => handleEditQty(item.id, item.quantity)}
+                              class="text-xs text-sky-700 hover:underline"
+                            >
+                              Qty
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemove(item.id)}
+                            class="text-xs text-red-600 hover:underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </li>
+                    )}
+                  </For>
+                </ul>
+              </Show>
+            </main>
+          )}
+        </Show>
+      </Show>
+    </Show>
+  );
+}

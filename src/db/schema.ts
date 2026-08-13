@@ -140,6 +140,8 @@ export interface ListTable {
   name: string;
   kind: "recipe" | "cleaning" | "custom";
   template_id: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ListItemTable {
@@ -149,6 +151,8 @@ export interface ListItemTable {
   free_text: string | null;
   quantity: number | null;
   unit: string | null;
+  position: number;
+  created_at: string;
 }
 
 export interface Database {

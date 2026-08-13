@@ -48,14 +48,14 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 
 The core product — "where do I shop this week?" Lists + basket math + store ranking + the weekly madplan.
 
-| #   | Task                                          | Status | Depends on     |
-| --- | --------------------------------------------- | ------ | -------------- |
-| 018 | Lists CRUD (List, ListItem)                   | ⬜     | 010 (identity) |
-| 019 | Recipe import (paste → ingredients → matched) | ⬜     | 018            |
-| 020 | List templates (onboarding)                   | ⬜     | 018, Phase 2   |
-| 021 | Basket cost per store (the math)              | ⬜     | 018, Phase 3   |
-| 022 | Store comparison view                         | ⬜     | 021            |
-| 023 | Weekly madplan with budget                    | ⬜     | 020, 021, 022  |
+| #   | Task                                          | Status | Verified by                                                                                                          | Depends on     |
+| --- | --------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 018 | Lists CRUD (List, ListItem)                   | ✅     | OpenCode (browser E2E: create/rename, 5 free-text + product-linked items, structured qty, reorder, per-user scoping) | 010 (identity) |
+| 019 | Recipe import (paste → ingredients → matched) | ⬜     |                                                                                                                      | 018            |
+| 020 | List templates (onboarding)                   | ⬜     |                                                                                                                      | 018, Phase 2   |
+| 021 | Basket cost per store (the math)              | ⬜     |                                                                                                                      | 018, Phase 3   |
+| 022 | Store comparison view                         | ⬜     |                                                                                                                      | 021            |
+| 023 | Weekly madplan with budget                    | ⬜     |                                                                                                                      | 020, 021, 022  |
 
 **Run order:** 018 → 019/020 (parallelizable after 018) → 021 → 022 → 023. 021 is the pure-math core — testable standalone before any UI.
 
