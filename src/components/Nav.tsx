@@ -37,6 +37,12 @@ export default function Nav() {
         <li class={`border-b-2 ${active("/settings")} mx-1.5 sm:mx-6`}>
           <a href="/settings">Settings</a>
         </li>
+        <li class={`border-b-2 ${active("/madplan")} mx-1.5 sm:mx-6`}>
+          <a href="/madplan">Madplan</a>
+        </li>
+        <li class={`border-b-2 ${active("/spending")} mx-1.5 sm:mx-6`}>
+          <a href="/spending">Spending</a>
+        </li>
         <li class="ml-auto mx-1.5 sm:mx-6">
           <Suspense fallback={null}>
             <Show when={user() !== undefined}>

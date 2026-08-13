@@ -93,7 +93,7 @@ Small dev-convenience tasks that unblock testing. Run these before/parallel to t
 | #   | Task                                                      | Status | Depends on                                                                                                                                                                                                           |
 | --- | --------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 033 | Temporary navbar dev links (Lists, Settings, Sign in/out) | ✅     | OpenCode (browser E2E: anon shows Lists/Settings/Sign in; signed-in shows Sign out, clicking redirects to / and flips to Sign in; compare page renders — no hydration regression; SSR/client hydrated state matches) | —   |
-| 034 | Add Madplan + Spending to navbar (dev links)              | ⬜     | 033                                                                                                                                                                                                                  |
+| 034 | Add Madplan + Spending to navbar (dev links)              | ✅     | OpenCode (browser E2E: nav shows all six feature links; active highlight on /madplan and /spending while signed in; sign in/out unchanged)                                                                           | 033 |
 
 **Note:** Tasks 033/034 are TEMPORARY — remove the dev links before launch (Phase 8).
 
