@@ -329,7 +329,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 4 — Lists + Basket Math (2–3 weeks) 🔄 CURRENT (2026-08-12)
 
-**Status:** Task 018 (lists CRUD) ✅, Task 019 (recipe import) ✅ — rule-based line-splitter + quantity parser + product suggestions (manual mapping, no AI); 69 tests pass (10 files). Next: Task 020 (templates), then 021 (basket math) → 022 → 023.
+**Status:** Task 018 ✅, Task 019 ✅, Task 020 (templates) ✅ — 8 seeded Danish templates, one-transaction clone, empty state (templates + blank list); 69 tests pass (10 files). Next: Task 021 (basket math) → 022 → 023.
 
 **Objective:** The core product — "where do I shop this week?"
 
