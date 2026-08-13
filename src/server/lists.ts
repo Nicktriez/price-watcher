@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { db } from "~/db/client";
+import { computeBasketCosts, type OfferSource } from "~/lib/basket-cost";
 import { getCurrentUser } from "./auth.ts";
 
 export type ListKind = "recipe" | "cleaning" | "custom";
@@ -328,4 +329,66 @@ export async function useTemplate(templateId: string): Promise<string> {
 
     return listId;
   });
+}
+
+export async function getBasketCosts(listId: string, userId: string) {
+  if (!(await ownedList(userId, listId))) throw new Error("not-found");
+
+  const rows = await db
+    .selectFrom("list_item")
+    .select(["product_id", "quantity", "unit"])
+    .where("list_id", "=", listId)
+    .where("product_id", "is not", null)
+    .execute();
+  const items = rows.map((r) => ({
+    productId: r.product_id as string,
+    quantity: r.quantity,
+    unit: r.unit,
+  }));
+  if (items.length === 0) return [];
+
+  const productIds = [...new Set(items.map((i) => i.productId))];
+
+  const offerRows = await db
+    .selectFrom("offer")
+    .innerJoin("chain", "chain.tjek_dealer_id", "offer.dealer_id")
+    .select((eb) => [
+      "offer.product_id",
+      "offer.price",
+      "offer.unit",
+      "offer.size_from",
+      "offer.unit_price",
+      "offer.unit_price_unit",
+      eb.ref("chain.id").as("chain_id"),
+      eb.ref("chain.name").as("chain_name"),
+    ])
+    .where("offer.product_id", "in", productIds)
+    .where("offer.valid_to", ">=", new Date().toISOString())
+    .execute();
+
+  const offers: Record<string, OfferSource[]> = {};
+  const storeNames: Record<string, string> = {};
+  for (const o of offerRows) {
+    (offers[o.chain_id] ??= []).push({
+      productId: o.product_id,
+      price: parseFloat(o.price),
+      unit: o.unit,
+      sizeFrom: o.size_from,
+      unitPrice: o.unit_price == null ? null : parseFloat(o.unit_price),
+      unitPriceUnit: o.unit_price_unit,
+    });
+    storeNames[o.chain_id] = o.chain_name;
+  }
+
+  const baselineRows = await db
+    .selectFrom("price_point")
+    .select(["product_id", db.fn.avg("price").as("avg")])
+    .where("source", "=", "receipt")
+    .where("product_id", "in", productIds)
+    .groupBy("product_id")
+    .execute();
+  const baselines: Record<string, number> = {};
+  for (const b of baselineRows) baselines[b.product_id] = parseFloat(String(b.avg));
+
+  return computeBasketCosts({ items, offers, storeNames, baselines });
 }

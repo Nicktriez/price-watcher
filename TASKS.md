@@ -48,14 +48,14 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 
 The core product — "where do I shop this week?" Lists + basket math + store ranking + the weekly madplan.
 
-| #   | Task                                          | Status | Verified by                                                                                                                                 | Depends on     |
-| --- | --------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| 018 | Lists CRUD (List, ListItem)                   | ✅     | OpenCode (browser E2E: create/rename, 5 free-text + product-linked items, structured qty, reorder, per-user scoping)                        | 010 (identity) |
-| 019 | Recipe import (paste → ingredients → matched) | ✅     | OpenCode (browser E2E: paste→5 ingredients, method/servings dropped, qty prefilled, save-as-list; 10 unit tests)                            | 018            |
-| 020 | List templates (onboarding)                   | ✅     | OpenCode (browser E2E: 8 seeded DK templates, Use template clones in one transaction, product-linked + free-text items, template read-only) | 018, Phase 2   |
-| 021 | Basket cost per store (the math)              | ⬜     |                                                                                                                                             | 018, Phase 3   |
-| 022 | Store comparison view                         | ⬜     |                                                                                                                                             | 021            |
-| 023 | Weekly madplan with budget                    | ⬜     |                                                                                                                                             | 020, 021, 022  |
+| #   | Task                                          | Status | Verified by                                                                                                                                   | Depends on     |
+| --- | --------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 018 | Lists CRUD (List, ListItem)                   | ✅     | OpenCode (browser E2E: create/rename, 5 free-text + product-linked items, structured qty, reorder, per-user scoping)                          | 010 (identity) |
+| 019 | Recipe import (paste → ingredients → matched) | ✅     | OpenCode (browser E2E: paste→5 ingredients, method/servings dropped, qty prefilled, save-as-list; 10 unit tests)                              | 018            |
+| 020 | List templates (onboarding)                   | ✅     | OpenCode (browser E2E: 8 seeded DK templates, Use template clones in one transaction, product-linked + free-text items, template read-only)   | 018, Phase 2   |
+| 021 | Basket cost per store (the math)              | ✅     | OpenCode (pure computeBasketCosts: unit-normalized, offer/baseline/no-price split; 5 unit tests incl. 10-item list; real-data run on Kødsovs) | 018, Phase 3   |
+| 022 | Store comparison view                         | ⬜     |                                                                                                                                               | 021            |
+| 023 | Weekly madplan with budget                    | ⬜     |                                                                                                                                               | 020, 021, 022  |
 
 **Run order:** 018 → 019/020 (parallelizable after 018) → 021 → 022 → 023. 021 is the pure-math core — testable standalone before any UI.
 
