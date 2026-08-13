@@ -297,7 +297,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 3 — Receipt Scanning + Baseline Prices (2–3 weeks) 🔄 IN PROGRESS (2026-08-12)
 
-**Status:** Task 010 (identity + receipt schema) ✅ complete. Next: **Task 011 (OCR classifier GATE)** — unblocked (10 receipts gathered). Then Task 012 (OCR parser) → 013 (upload) → 014/015/016 → 017. Task numbers match build order.
+**Status:** Task 010 (identity + receipt schema) ✅, Task 011 (OCR classifier GATE) ✅ complete — gate passed. Next: **Task 012 (OCR parser)** → 013 (upload) → 014/015/016 → 017. Task numbers match build order.
 
 **Objective:** Solve the baseline-price gap (Open Question #1) with the highest-quality crowd data there is: actual receipts. Moved early because it unblocks the basket math.
 
@@ -318,7 +318,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 **Verification:**
 
 - [ ] 10 test Danish receipts parse to ≥90% correct line items (spike in Phase 0)
-- [ ] **OCR recovery classifier refined — MUST DO before proceeding.** The Phase 0 spike (`research/notes/ocr-receipts.md`, Run 1 + Run 2) found the `item_recovery` metric counts name-only items as "clean" (contradicting its own name+price definition) and collapses distinct failure modes into one number. Before Phase 3's pipeline is built on it: (a) fix `item_recovery` to count name+price-both as clean; (b) classify the failure modes separately — degraded-photo (real loss), wrapped-line/SPAR long-name (parser fix), crumple-fold (OCR retry), **and (NEW, top priority) footer/boilerplate mislabelled as items (Netto) — a deterministic parser filter, not an OCR fix** (see Run 2: Tesseract reads Netto's footer perfectly; the parser counts URLs/legal/hours/brand lines as `kind=item`). **Trigger: ≥10 receipts gathered with multiple samples per failure mode (met 2026-08-13: 10 receipts).** This gate is a hard precondition for Task 1 below (the OCR→parse flow).
+- [x] **OCR recovery classifier refined — MUST DO before proceeding.** ✅ DONE (2026-08-13, Task 011) — `src/lib/ocr-classifier.ts` + `ocr-classifier.test.ts`: `item_recovery` now counts name+price-both, footer lines filtered (10/10 Netto footer lines), wrapped line-joining, crumple flag, modes reported separately. Verified by OpenCode against 10 fixtures × both PSM variants.
 - [ ] Baseline prices appear on product pages and are visually distinguished from offers
 - [ ] Receipt image deleted after parse; extracted data anonymized
 - [ ] Magic-link sign-in works; receipts are tied to a `user_id`
