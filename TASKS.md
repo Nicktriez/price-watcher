@@ -44,6 +44,21 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 
 **Run order:** 010 → 011 (gate) → 012 → 013 → then 014/015/016 (parallelizable after 013) + 017 (after 014 provides the baseline). Numbers now match build order.
 
-## Phase 4+ (not started)
+## Phase 4 (current — next up)
 
-Lists + basket math (Phase 4), travel cost (Phase 5), crowd data + trust tiers (Phase 6), monetization + launch (Phase 7), agent layer (Phase 8), Tjek-independent ingestion (Phase 9, conditional).
+The core product — "where do I shop this week?" Lists + basket math + store ranking + the weekly madplan.
+
+| #   | Task                                          | Status | Depends on     |
+| --- | --------------------------------------------- | ------ | -------------- |
+| 018 | Lists CRUD (List, ListItem)                   | ⬜     | 010 (identity) |
+| 019 | Recipe import (paste → ingredients → matched) | ⬜     | 018            |
+| 020 | List templates (onboarding)                   | ⬜     | 018, Phase 2   |
+| 021 | Basket cost per store (the math)              | ⬜     | 018, Phase 3   |
+| 022 | Store comparison view                         | ⬜     | 021            |
+| 023 | Weekly madplan with budget                    | ⬜     | 020, 021, 022  |
+
+**Run order:** 018 → 019/020 (parallelizable after 018) → 021 → 022 → 023. 021 is the pure-math core — testable standalone before any UI.
+
+## Phase 5+ (not started)
+
+Travel cost (Phase 5), crowd data + trust tiers (Phase 6), closed beta (Phase 7), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).

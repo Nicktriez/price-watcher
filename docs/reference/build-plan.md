@@ -327,7 +327,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 4 — Lists + Basket Math (2–3 weeks)
+## Phase 4 — Lists + Basket Math (2–3 weeks) 🔄 CURRENT (2026-08-12)
+
+**Status:** Tasks defined (018–023, in `tasks/`). Next: Task 018 (lists CRUD), then 019/020 → 021 (basket math) → 022 → 023 (madplan).
 
 **Objective:** The core product — "where do I shop this week?"
 
