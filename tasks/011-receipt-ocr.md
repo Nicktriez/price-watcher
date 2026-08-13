@@ -28,11 +28,12 @@ The Phase 0 spike (in `grocery-price-watcher-research`) already proved Tesseract
    - total
    - per-field confidence (high/medium/low)
 
-2. **Line-item parsing with the three-way status** (per the spike):
+2. **Line-item parsing with the four-way status** (per the spike, incl. Run 2):
    - `clean` — name AND price both recovered
    - `garbled` — degraded, price unreadable (real loss, flagged honestly)
    - `wrapped` — SPAR-style: name wraps, price on the next line → **implement line-joining** to recover the price
-   - This maps directly to the `receipt_item.status` column from Task 010.
+   - `footer` — Netto-style boilerplate (URLs, legal/returns, hours, brand lines) → **filter out, never count as an item** (see Task 016 — this is the top-priority classifier fix)
+   - This maps to the `receipt_item.status` column from Task 010.
 
 3. **Confidence logic** — the spike found cross-variant disagreement is a reliable low-confidence signal. Run ≥2 PSM modes / rotations and downgrade confidence when variants disagree on a value.
 
@@ -50,8 +51,9 @@ The Phase 0 spike (in `grocery-price-watcher-research`) already proved Tesseract
 
 - [ ] `src/lib/receipt-ocr.ts` (or similar) runs Tesseract with `-l dan`, both PSM modes, multiple rotations
 - [ ] Returns store, date, line items, total with per-field confidence
-- [ ] Line items classified `clean`/`garbled`/`wrapped` matching the spike's three failure modes
+- [ ] Line items classified `clean`/`garbled`/`wrapped`/`footer` matching the spike's failure modes
 - [ ] **Wrapped SPAR items get line-joined** (the price on the next line is recovered)
+- [ ] **Footer/boilerplate lines are filtered out** (never counted as items)
 - [ ] Store extracted from receipt content, never filename
 - [ ] `vp check` + `vp test` pass
-- [ ] A test parses the 6 real receipts from the research repo fixture and reports results per receipt
+- [ ] A test parses the 10 real receipts from the research repo fixture and reports results per receipt
