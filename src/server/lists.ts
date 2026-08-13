@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { db } from "~/db/client";
 import { computeBasketCosts, type OfferSource } from "~/lib/basket-cost";
+import { assembleMadplan, type MealOption } from "~/lib/madplan";
 import { getCurrentUser } from "./auth.ts";
 
 export type ListKind = "recipe" | "cleaning" | "custom";
@@ -347,6 +348,12 @@ export async function getBasketCosts(listId: string, userId: string) {
   }));
   if (items.length === 0) return [];
 
+  return computeBasketCostsForItems(items);
+}
+
+export async function computeBasketCostsForItems(
+  items: { productId: string; quantity: number | null; unit: string | null }[],
+) {
   const productIds = [...new Set(items.map((i) => i.productId))];
 
   const offerRows = await db
@@ -391,4 +398,93 @@ export async function getBasketCosts(listId: string, userId: string) {
   for (const b of baselineRows) baselines[b.product_id] = parseFloat(String(b.avg));
 
   return computeBasketCosts({ items, offers, storeNames, baselines });
+}
+
+export interface MadplanResult {
+  meals: { templateId: string; name: string; cost: number }[];
+  planTotal: number;
+  daysFilled: number;
+  requestedDays: number;
+  fits: boolean;
+  cheapestStore: { storeId: string; storeName: string; total: number } | null;
+}
+
+export async function generateMadplan(
+  budgetInput: number,
+  daysInput: number,
+): Promise<MadplanResult> {
+  const budget = Number.isFinite(budgetInput) && budgetInput > 0 ? budgetInput : 500;
+  const days = Number.isInteger(daysInput) && daysInput >= 1 ? Math.min(daysInput, 7) : 7;
+
+  const templates = await db.selectFrom("list_template").select(["id", "name"]).execute();
+
+  const mealOptions: MealOption[] = [];
+  for (const template of templates) {
+    const items = await db
+      .selectFrom("list_template_item")
+      .select(["product_id", "quantity", "unit"])
+      .where("template_id", "=", template.id)
+      .where("product_id", "is not", null)
+      .execute();
+    if (items.length === 0) continue;
+    const costs = await computeBasketCostsForItems(
+      items.map((i) => ({ productId: i.product_id as string, quantity: i.quantity, unit: i.unit })),
+    );
+    const priced = costs
+      .filter((c) => c.basketTotal > 0)
+      .sort((a, b) => a.basketTotal - b.basketTotal);
+    if (priced.length === 0) continue;
+    mealOptions.push({ templateId: template.id, name: template.name, cost: priced[0].basketTotal });
+  }
+
+  const plan = assembleMadplan(mealOptions, budget, days);
+
+  const combinedItems = new Map<
+    string,
+    { productId: string; quantity: number; unit: string | null }
+  >();
+  for (const meal of plan.meals) {
+    const items = await db
+      .selectFrom("list_template_item")
+      .select(["product_id", "quantity", "unit"])
+      .where("template_id", "=", meal.templateId)
+      .where("product_id", "is not", null)
+      .execute();
+    for (const i of items) {
+      const key = i.product_id as string;
+      const existing = combinedItems.get(key);
+      const qty = i.quantity ?? 1;
+      if (existing) {
+        existing.quantity += qty;
+      } else {
+        combinedItems.set(key, { productId: key, quantity: qty, unit: i.unit });
+      }
+    }
+  }
+
+  let cheapestStore: MadplanResult["cheapestStore"] = null;
+  if (combinedItems.size > 0) {
+    const combinedCosts = await computeBasketCostsForItems([...combinedItems.values()]);
+    const priced = combinedCosts.filter((c) => c.basketTotal > 0);
+    const itemsInBasket = combinedItems.size;
+    const decentCoverage = priced
+      .filter((c) => (c.offerItems + c.baselineItems) / itemsInBasket >= 0.5)
+      .sort((a, b) => a.basketTotal - b.basketTotal);
+    if (decentCoverage.length > 0) {
+      cheapestStore = {
+        storeId: decentCoverage[0].storeId,
+        storeName: decentCoverage[0].storeName,
+        total: decentCoverage[0].basketTotal,
+      };
+    }
+  }
+
+  return {
+    meals: plan.meals.map((m) => ({ templateId: m.templateId, name: m.name, cost: m.cost })),
+    planTotal: plan.total,
+    daysFilled: plan.daysFilled,
+    requestedDays: days,
+    fits: plan.fits,
+    cheapestStore,
+  };
 }
