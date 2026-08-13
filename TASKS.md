@@ -84,4 +84,16 @@ Crowd data + trust tiers — the differentiator. User-reported shelf prices, the
 | 031 | Crowd-report gamification + leaderboard       | ⬜     | 029, 030, 016         |
 | 032 | Moderation (report, auto-expiry, ignore-list) | ⬜     | 029, 030              |
 
-**Run order:** 029 → 030 → 031/032 (parallelizable after 030). 030 (trust tiers) is the pure-logic core — testable standalone before any UI. Closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
+**Run order:** 029 → 030 → 031/032 (parallelizable after 030). 030 (trust tiers) is the pure-logic core — testable standalone before any UI.
+
+## Dev tasks (next up, outside Phase 6)
+
+Small dev-convenience tasks that unblock testing. Run these before/parallel to the Phase 6 feature work.
+
+| #   | Task                                                      | Status | Depends on |
+| --- | --------------------------------------------------------- | ------ | ---------- |
+| 033 | Temporary navbar dev links (Lists, Settings, Sign in/out) | ⬜     | —          |
+
+**Note:** Task 033 is TEMPORARY — remove the dev links before launch (Phase 8).
+
+Closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
