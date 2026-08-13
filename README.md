@@ -14,6 +14,8 @@ Working name: **Kurven** ("the basket"). Codebase + repo still `price-watcher`.
 - **Your spending** — monthly total by store, from your own receipts.
 - **Gamification** — points + streaks for uploading receipts. Points once per physical receipt; a cleaner re-scan upgrades, never re-awards.
 - **Price vs. average** — each scanned receipt line shows whether you paid above or below the going rate.
+- **Madplan** — plan a week of meals under a budget; the app assembles meals from templates and picks the cheapest store, with a shareable output.
+- **Travel cost** — "is it worth the detour?" Basket + round-trip fuel per store, with a net-win verdict (petrol/diesel/EV, home vs public charging).
 
 ## Stack
 
@@ -91,6 +93,16 @@ erDiagram
         text home_address
         float home_lat
         float home_lon
+        text fuel_type
+        float efficiency
+        text ev_charging
+    }
+    fuel_price {
+        uuid id PK
+        text fuel_type
+        numeric price
+        timestamptz observed_at
+        text source
     }
     login_token {
         uuid id PK
@@ -161,9 +173,9 @@ erDiagram
 
 ## Project status
 
-- **Phase 0–3 done** — data access spike, ingestion pipeline, and the full receipt pipeline (OCR → upload → baselines → spending → gamification → price-vs-average). 74+ tests passing.
-- **Phase 4 in progress** — lists, recipe import, templates, basket math, store comparison are done; the weekly madplan is the remaining task.
-- **Roadmap** — travel cost, crowd trust tiers, closed beta, design polish, launch. See `docs/reference/build-plan.md`.
+- **Phase 0–5 done** — data access spike, ingestion pipeline, the receipt pipeline (OCR → upload → baselines → spending → gamification → price-vs-average), lists/basket math/madplan, and travel cost (OSRM round-trip + fuel verdict). 101+ tests passing.
+- **Phase 6 in progress** — crowd data + trust tiers (report a price, GasBuddy trust model, report gamification, moderation).
+- **Roadmap** — closed beta (7), design polish (7b), launch (8), agent layer (9), Tjek-independent ingestion (10, conditional). See `docs/reference/build-plan.md`.
 
 ## Setup
 
@@ -175,22 +187,24 @@ Once set up: `vp dev` (dev server) · `vp check` (format/lint/type) · `vp test`
 
 Everything under `PREFIX` (default: `http://localhost:3000`).
 
-| Route            | What it is                                                                           | Sign-in  |
-| ---------------- | ------------------------------------------------------------------------------------ | -------- |
-| `/`              | **Current offers** — offers index, filter by chain                                   | public   |
-| `/products/[id]` | **Product page** — current offers + user-reported baseline prices, trust-tier badges | public   |
-| `/stores/[id]`   | **Store page** — a store's current offers                                            | public   |
-| `/about`         | About page                                                                           | public   |
-| `/signin`        | **Magic-link sign-in** — request an email OTP code                                   | —        |
-| `/upload`        | **Upload a receipt** — photograph → OCR → line items → baselines + points            | required |
-| `/spending`      | **Your spending** — monthly total, by store, recent receipts                         | required |
-| `/lists`         | **Your lists** + the templates to start from                                         | required |
-| `/lists/import`  | **Recipe import** — paste a recipe, map ingredients, save as a list                  | required |
-| `/lists/[id]`    | **List detail** — add/edit/remove/reorder items                                      | required |
-| `/compare/[id]`  | **Store comparison** — cheapest store for this list + savings                        | required |
-| `/receipts/[id]` | **Receipt detail** — line-by-line price vs. average                                  | required |
+| Route            | What it is                                                                            | Sign-in  |
+| ---------------- | ------------------------------------------------------------------------------------- | -------- |
+| `/`              | **Current offers** — offers index, filter by chain                                    | public   |
+| `/products/[id]` | **Product page** — current offers + user-reported baseline prices, trust-tier badges  | public   |
+| `/stores/[id]`   | **Store page** — a store's current offers                                             | public   |
+| `/about`         | About page                                                                            | public   |
+| `/signin`        | **Magic-link sign-in** — request an email OTP code                                    | —        |
+| `/upload`        | **Upload a receipt** — photograph → OCR → line items → baselines + points             | required |
+| `/spending`      | **Your spending** — monthly total, by store, recent receipts                          | required |
+| `/lists`         | **Your lists** + the templates to start from                                          | required |
+| `/lists/import`  | **Recipe import** — paste a recipe, map ingredients, save as a list                   | required |
+| `/lists/[id]`    | **List detail** — add/edit/remove/reorder items                                       | required |
+| `/compare/[id]`  | **Store comparison** — cheapest store for this list + savings + fuel-adjusted verdict | required |
+| `/madplan`       | **Weekly madplan** — plan N days of meals under a budget, cheapest store + share      | required |
+| `/settings`      | **Settings** — home address (travel cost) + car profile (fuel type, efficiency, EV)   | required |
+| `/receipts/[id]` | **Receipt detail** — line-by-line price vs. average                                   | required |
 
-**The two to try first:** `/` (current offers) and, once signed in, `/lists` → pick a template → `/compare/[id]` to see the store ranking. `/upload` + `/spending` show the receipt/retention loop.
+**The two to try first:** `/` (current offers) and, once signed in, `/lists` → pick a template → `/compare/[id]` to see the store ranking (now with fuel-adjusted totals once you set a home address + car in `/settings`). `/upload` + `/spending` show the receipt/retention loop, and `/madplan` is the budget planner.
 
 ## Data & honesty
 
