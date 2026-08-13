@@ -13,7 +13,7 @@
 
 Full detail: `research/verdicts/etilbudsavis.md` (engineering) + the ownership check (see research review, 2026-08-11).
 
-**On "selling the site to another country" (Nick's clarification):** that ambition means selling/leasing the **codebase + name** (buyer may rename), **never the data**. **Hard constraint: the Tjek-dependent stack (Phases 1–8) is internal-only and can never be included in a sale/lease** — it reads our competitor's feed, and we won't hand that dependency to a buyer. The sellable/leasable artifact is **our own Tjek-independent ingestion API — the output of Phase 9** — which has no Tjek dependency and adapts to the buyer's country's chains. **Therefore export is gated on Phase 9, which is gated on traction.** The code is country-neutral (Chain/Store/Offer are data, not code), so once Phase 9 exists, the stack exports cleanly with no Tjek involvement. Don't build white-label/multi-country tooling before then (see YAGNI).
+**On "selling the site to another country" (Nick's clarification):** that ambition means selling/leasing the **codebase + name** (buyer may rename), **never the data**. **Hard constraint: the Tjek-dependent stack (Phases 1–9) is internal-only and can never be included in a sale/lease** — it reads our competitor's feed, and we won't hand that dependency to a buyer. The sellable/leasable artifact is **our own Tjek-independent ingestion API — the output of Phase 10** — which has no Tjek dependency and adapts to the buyer's country's chains. **Therefore export is gated on Phase 10, which is gated on traction.** The code is country-neutral (Chain/Store/Offer are data, not code), so once Phase 10 exists, the stack exports cleanly with no Tjek involvement. Don't build white-label/multi-country tooling before then (see YAGNI).
 
 **Tech Stack:** SolidStart (Solid meta-framework) + TailwindCSS, Vite+ as toolchain (via `vp migrate`), Node.js + TypeScript, Kysely (typed SQL builder), PostgreSQL, node-cron/BullMQ for ingestion, Tjek.com read API (all chains, JSON, no auth) with signed PDF per catalog as ground-truth fallback, OSRM (HTTP API), Tesseract (Danish) for receipt OCR, Entire.io (agent-session records + git mirror), affiliate networks (Partner-ads / Tradetracker). **Hosting: separate Hetzner VPS** (Nick's decision, 2026-08) — self-managed Postgres + app + cron on one box, EU data residency, NOT the agent VPS.
 
@@ -116,14 +116,14 @@ Full detail: `research/verdicts/etilbudsavis.md` (engineering) + the ownership c
 
 Goals are **engagement-weighted**, not signup-count vanity. A price watcher with signups but no baskets, receipts, or returns is a graveyard, not a success. Danish market ≈ 5.9M people; eTilbudsavis claims 1.9M users. Goals are staged by phase and are starting targets to calibrate against real data.
 
-| Milestone                | Trigger (Phase)             | Goal                                                                                           | Why it means success                                                                                                                                                  |
-| ------------------------ | --------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **M1 — MVP validated**   | after Phase 4 (basket math) | 100 real users each built ≥1 basket and got a store ranking; **≥30% return the next week**     | Proves people actually want "cheapest store for my basket" — not just that the page loads                                                                             |
-| **M2 — Launch traction** | after Phase 7 (launch)      | 1,000 weekly-active users who built a basket; **≥200 receipts uploaded/week**                  | Proves the crowd+receipt data loop actually runs — the foundation                                                                                                     |
-| **M3 — Traction gate**   | Phase 9 gate                | 5,000 weekly-active users **AND** ≥500 receipts/week **AND** organic growth without paid spend | This IS the "real users / a threat" threshold Phase 9's gate refers to — visible enough to Tjek to be a cutoff risk, big enough that losing the feed must not kill us |
-| **M4 — Viability**       | ongoing                     | affiliate revenue ≥ server + LLM costs                                                         | Business self-sustains without Nick's freelance income                                                                                                                |
+| Milestone                | Trigger (Phase)             | Goal                                                                                           | Why it means success                                                                                                                                                   |
+| ------------------------ | --------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M1 — MVP validated**   | after Phase 4 (basket math) | 100 real users each built ≥1 basket and got a store ranking; **≥30% return the next week**     | Proves people actually want "cheapest store for my basket" — not just that the page loads                                                                              |
+| **M2 — Launch traction** | after Phase 8 (launch)      | 1,000 weekly-active users who built a basket; **≥200 receipts uploaded/week**                  | Proves the crowd+receipt data loop actually runs — the foundation                                                                                                      |
+| **M3 — Traction gate**   | Phase 10 gate               | 5,000 weekly-active users **AND** ≥500 receipts/week **AND** organic growth without paid spend | This IS the "real users / a threat" threshold Phase 10's gate refers to — visible enough to Tjek to be a cutoff risk, big enough that losing the feed must not kill us |
+| **M4 — Viability**       | ongoing                     | affiliate revenue ≥ server + LLM costs                                                         | Business self-sustains without Nick's freelance income                                                                                                                 |
 
-**Reading these:** M3 is the load-bearing one — it's the operational definition of "traction" that unlocks Phase 9 and the export product. Until M3, Phase 9 stays on the shelf (YAGNI). Use M1/M2 to decide whether to keep building; use M3 to decide whether to harden; use M4 to decide whether it's a business.
+**Reading these:** M3 is the load-bearing one — it's the operational definition of "traction" that unlocks Phase 10 and the export product. Until M3, Phase 10 stays on the shelf (YAGNI). Use M1/M2 to decide whether to keep building; use M3 to decide whether to harden; use M4 to decide whether it's a business.
 
 ---
 
@@ -170,7 +170,7 @@ Full chain/format context: `research/notes/chains.md`.
    - ⏳ **Open cleanup:** (a) rename package from `example-with-tailwindcss` → `price-watcher`; (b) confirm Node `>=24` constraint matches dev machine.
 2. Models (Kysely schema + migrations): `Chain`, `Store` (address, lat/lon), `Product` (name, brand, EAN when known), `Offer` (product_id, store_id, price, unit_price, valid_from, valid_to, source, trust_tier, raw_url), `List`, `ListItem`, later `User`. **Add an internal/publishable flag (or split tables) to enforce the Data & legal boundary — feed rows are internal, crowd/receipt rows are publishable.**
 3. **Tjek ingestion worker** (REMA first, dealer `11deC`): `GET /v2/catalogs?dealer_id=…` → `GET /v2/offers/search?catalog_id=…` → upsert `Offer` records. Idempotent (re-running the same week doesn't duplicate). Use `run_from`/`run_till` from each catalog as the truth, not a fixed weekday.
-4. **Start weekly capture now:** node-cron/BullMQ job runs the collector every ~6h (cheap, ≪1 req/s) to build `PricePoint` history from day one — the when-to-buy verdict (Phase 8) and Omnibus compliance need history _before_ the feature ships. Never backfill a graph you forgot to collect.
+4. **Start weekly capture now:** node-cron/BullMQ job runs the collector every ~6h (cheap, ≪1 req/s) to build `PricePoint` history from day one — the when-to-buy verdict (Phase 9) and Omnibus compliance need history _before_ the feature ships. Never backfill a graph you forgot to collect.
 5. Basic UI: offers index (filter by chain), product page, store page.
 6. Seed with REMA's data for the current week.
 
@@ -393,7 +393,36 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 7 — Monetization + Launch (ongoing)
+## Phase 7 — Closed Beta (2–3 weeks, after Phase 6, before launch)
+
+**Objective:** Validate the retention loop with real users and **seed the crowd-data lake** before going public. A crowdsourced model dies on cold start — the site must have a body of user-reported/receipt prices _before_ launch, or the first public visitor finds an empty data lake. Beta is where that pool gets filled and where the M1 signal is tested ahead of the launch moment.
+
+**Scope discipline:** this is a **closed pilot with ~10–20 invited users**, not a "public beta" operation. No signup infrastructure, no waitlist, no landing page — the magic-link sign-in (Phase 3) already handles invitations; Nick just sends people links. Boring on purpose.
+
+**Tasks:**
+
+1. **Invite ~10–20 friendly users** — start with the communities the launch will target, but the friendly subset: a few friends/family, one or two people from the Danish price-watch groups, maybe one skeptic who'll actually try to break it. Mix of technical and non-technical.
+2. **Seed-data campaign:** explicitly ask each beta user to upload **3–5 receipts** of their own. The baseline-price pool needs real data from real stores before launch, and this is the cheapest way to get it (users are the donor to the moat they'll later benefit from).
+3. **Have them build and use a list** — the M1 action (build a basket, get a store ranking) needs Phase 4 (basket math) to exist first, so Beta sits _after_ Phase 4's core. Watch: do they build a list and come back the next week?
+4. **Measure the M1 signal early:** ≥30% return next week is the launch-readiness bar. Beta is where you find out if the retention loop (spending view → gamification → price-vs-average) actually retains — _before_ spending the launch moment on it.
+5. **Edge-case harvest:** real users uploading crumpled/duplicate/adversarial receipts is where the dedup + anti-gaming logic (Tasks 013/016) gets its real-world stress test — exactly what unit tests can't simulate. Log every dedup/keep/replace decision during beta; it's free QA on the anti-abuse design.
+6. **Feedback channel:** a single pinned thread (Discord/Signal/email) for bug reports + "what's missing" — no issue tracker, no process. Nick reads it weekly.
+
+**Exit gate (launch-readiness):**
+
+- [ ] **M1 signal: ≥30% of beta users return the next week** (build a basket, come back)
+- [ ] **≥50 real receipts seeded** into the baseline pool (the cold-start hedge)
+- [ ] Beta users can build a list and get a store ranking without help
+- [ ] Dedup/gamification held up under real uploads — no double-points or duplicate baselines observed
+- [ ] No launch-blocking bugs; the few that surfaced are either fixed or have a known workaround
+
+**If the M1 signal fails:** do NOT launch. The retention loop is the whole bet — if <30% return, something in the loop is wrong. Diagnose (is it the spending view? the gamification? the ranking itself?) and fix before spending the launch moment on a product people don't return to. Beta failing is data, not failure — better to learn it here than on Reddit.
+
+**When Beta is done:** Phase 7 hands off to Phase 8 (Monetization + Launch) with a seeded data lake, a validated retention loop, and a body of real receipts powering the crowd-data moat.
+
+---
+
+## Phase 8 — Monetization + Launch (ongoing)
 
 **Objective:** Make money without a sales team.
 
@@ -413,7 +442,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 8 — Agent Layer (differentiator, after launch)
+## Phase 9 — Agent Layer (differentiator, after launch)
 
 **Objective:** The thing incumbents don't have — proactive alerts.
 
@@ -434,7 +463,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 9 — Tjek-Independent Ingestion (CONDITIONAL — only on traction)
+## Phase 10 — Tjek-Independent Ingestion (CONDITIONAL — only on traction)
 
 **Gate:** NOT build-now. Only start this when the Tjek feed is load-bearing **and** the project hits **M3 (Traction gate): ≥5,000 weekly-active users, ≥500 receipts/week, organic growth without paid spend** (see Success Metrics above). Until M3, the crowd/receipt layer (Phase 3) is the hedge. YAGNI — do not build redundancy to protect a success that hasn't happened yet.
 
@@ -444,7 +473,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **What it is NOT:** a "build our own Tjek-like API." That's a B2B sales problem — getting retailers to publish to _us_ instead of Tjek requires contracts and trust, not code. You cannot code your way into retailers feeding your platform. Don't mistake this phase for that.
 
-**Also NOT a feed destination / "drop-in API retailers connect to alongside Tjek."** That's a separate long-term ambition — becoming a distribution channel retailers publish to — and it is NOT this phase. It's gated on having an audience first (retailers dual-publish for traffic, and we have none until we're a threat) and is unlocked by the Phase 7 affiliate/partnership feed deals, not by new infrastructure. Phase 9 is purely about us reading the chains' own surfaces so we stop depending on Tjek's single feed. The marketplace/platform ambition is downstream of real traction; don't build either side of it before there's an audience.
+**Also NOT a feed destination / "drop-in API retailers connect to alongside Tjek."** That's a separate long-term ambition — becoming a distribution channel retailers publish to — and it is NOT this phase. It's gated on having an audience first (retailers dual-publish for traffic, and we have none until we're a threat) and is unlocked by the Phase 8 affiliate/partnership feed deals, not by new infrastructure. Phase 10 is purely about us reading the chains' own surfaces so we stop depending on Tjek's single feed. The marketplace/platform ambition is downstream of real traction; don't build either side of it before there's an audience.
 
 **Tasks (harder than they look — most chains' own surfaces are ALSO Tjek white-label viewers):**
 
@@ -486,5 +515,5 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 | Tjek feed disappears / gates auth                 | Low-frequency capture keeps us under radars; per-chain own surfaces documented as fallback in `research/notes/`; crowd + receipts are independent data                                           |
 | Retailer / Tjek ToS (AI training, redistribution) | Data & legal boundary enforced in the model (feed = internal, crowd = publishable); no AI/ML training on feed; no GTM built on reselling feed; seek Integration agreement before expanding reuse |
 | eTilbudsavis incumbent                            | Differentiate on baskets + travel cost + crowd shelf data — not on flyer browsing; eTilbudsavis has no own catalogs (thin viewer over same feed)                                                 |
-| Scope creep                                       | The NOT-doing list is enforced; ship phases in order, launch after Phase 7                                                                                                                       |
+| Scope creep                                       | The NOT-doing list is enforced; ship phases in order, launch after Phase 8                                                                                                                       |
 | Solo momentum                                     | Launch a usable MVP (Phases 1–4) before building crowd/travel — real users before polish                                                                                                         |
