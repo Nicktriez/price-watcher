@@ -90,9 +90,9 @@ Crowd data + trust tiers — the differentiator. User-reported shelf prices, the
 
 Small dev-convenience tasks that unblock testing. Run these before/parallel to the Phase 6 feature work.
 
-| #   | Task                                                      | Status | Depends on |
-| --- | --------------------------------------------------------- | ------ | ---------- |
-| 033 | Temporary navbar dev links (Lists, Settings, Sign in/out) | ⬜     | —          |
+| #   | Task                                                      | Status | Depends on                                                                                                                                                                                                           |
+| --- | --------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 033 | Temporary navbar dev links (Lists, Settings, Sign in/out) | ✅     | OpenCode (browser E2E: anon shows Lists/Settings/Sign in; signed-in shows Sign out, clicking redirects to / and flips to Sign in; compare page renders — no hydration regression; SSR/client hydrated state matches) | —   |
 
 **Note:** Task 033 is TEMPORARY — remove the dev links before launch (Phase 8).
 
