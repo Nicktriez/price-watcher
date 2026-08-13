@@ -28,13 +28,15 @@ SolidStart 2 · Solid 1.9 · TypeScript · TailwindCSS 4 · Kysely · PostgreSQL
 ## Setup
 
 ```bash
-pnpm install          # install deps (via vp)
-cp .env.example .env  # DATABASE_URL + TJEK_BASE_URL (see docs/setup-dev.md)
-pnpm run db:migrate   # run migrations
-vp dev                # start the dev server
+vp install           # install dependencies (pnpm-managed via Vite+)
+# create .env by hand (it's gitignored — no .env.example committed):
+#   DATABASE_URL=postgres://nicklas:YOUR_PASSWORD@localhost:5432/price_watcher
+#   TJEK_BASE_URL=https://squid-api.tjek.com
+pnpm db:migrate      # run migrations
+vp dev               # start the dev server
 ```
 
-Commands: `vp dev` (dev server) · `vp check` (format/lint/type) · `vp test` (tests) · `vp build` (production build).
+See `docs/setup-dev.md` for the full walkthrough (Postgres install, DB user creation, `.env`), and `docs/bootstrap-new-machine.md` for a blank-machine setup. Commands: `vp dev` (dev server) · `vp check` (format/lint/type) · `vp test` (tests) · `vp build` (production build).
 
 ## Routes you should visit
 
