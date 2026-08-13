@@ -13,8 +13,8 @@ The platform benefits from every receipt (baseline prices, the moat). But a user
 
 ## Context
 
-- Depends on: identity (Task 010), receipt schema + line items (Task 010/011), upload (Task 012), and **baseline prices existing** (the "average" to compare against comes from other receipts via `price_point` where `source='receipt'`).
-- The baseline/going-rate comparison already exists in the data layer (Task 013 surfaces it publicly on product pages). This task makes it **personal** — applied to the user's own receipt lines.
+- Depends on: identity (Task 010), receipt schema + line items (Task 010/012), upload (Task 013), and **baseline prices existing** (the "average" to compare against comes from other receipts via `price_point` where `source='receipt'`).
+- The baseline/going-rate comparison already exists in the data layer (Task 014 surfaces it publicly on product pages). This task makes it **personal** — applied to the user's own receipt lines.
 
 ## What to build
 
@@ -28,7 +28,7 @@ The platform benefits from every receipt (baseline prices, the moat). But a user
    - above average → neutral/informational, no shaming
    - no reference price → "no comparison yet" (honest empty state; don't fabricate)
 
-3. **Personal, not public** — this is the scanner's own receipt comparison, tied to their `user_id`. It complements (but is distinct from) the public baseline prices on the product page (Task 013).
+3. **Personal, not public** — this is the scanner's own receipt comparison, tied to their `user_id`. It complements (but is distinct from) the public baseline prices on the product page (Task 014).
 
 ## Important
 

@@ -1,17 +1,17 @@
-# Task 012 — Signed-in Receipt Upload Flow + Baseline Price Writing
+# Task 013 — Signed-in Receipt Upload Flow + Baseline Price Writing
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 3 (Task 1, Task 3, Task 4) + `docs/setup-dev.md`
 
 ## Objective
 
-The user-facing path: **signed-in user photographs a receipt → upload → OCR → parse → write baseline prices tied to their `user_id`.** This wires Task 010's identity + schema and Task 011's OCR engine into a working flow.
+The user-facing path: **signed-in user photographs a receipt → upload → OCR → parse → write baseline prices tied to their `user_id`.** This wires Task 010's identity + schema and Task 012's OCR engine into a working flow.
 
 ## Context
 
 Phase 3 is the crowd-data moat — receipts are the highest-quality, Tjek-independent data. The retention hook is that a user's receipts become _their_ spending history. So uploads are **tied to a signed-in user** (Task 010's magic-link identity), NOT anonymous.
 
-**Sequencing:** depends on Task 010 (identity + schema) + Task 011 (OCR engine). Don't start until those exist.
+**Sequencing:** depends on Task 010 (identity + schema) + Task 012 (OCR engine). Don't start until those exist.
 
 ## What to build
 
@@ -19,7 +19,7 @@ Phase 3 is the crowd-data moat — receipts are the highest-quality, Tjek-indepe
 
 2. **Upload route** (e.g. `src/routes/upload.tsx` or a POST API route): accepts a receipt image (JPEG/PNG), responsive web form, no app needed.
 
-3. **Store the image** temporarily → run Task 011's OCR → parse → produce `receipt` + `receipt_item` rows, with `user_id` set from the session.
+3. **Store the image** temporarily → run Task 012's OCR → parse → produce `receipt` + `receipt_item` rows, with `user_id` set from the session.
 
 4. **Write baseline prices** — for each clean item, upsert into `price_point` with `source='receipt'`: product, store, price, observed_at.
 

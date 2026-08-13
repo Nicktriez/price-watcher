@@ -297,7 +297,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 3 — Receipt Scanning + Baseline Prices (2–3 weeks) 🔄 IN PROGRESS (2026-08-12)
 
-**Status:** Task 010 (identity + receipt schema) ✅ complete. Next: Task 011 (OCR parser) — **gated on Task 016** (classifier refinement), which needs ≥10 receipts with multiple samples per failure mode. Gather more receipts in parallel while 011/016 waits.
+**Status:** Task 010 (identity + receipt schema) ✅ complete. Next: **Task 011 (OCR classifier GATE)** — unblocked (10 receipts gathered). Then Task 012 (OCR parser) → 013 (upload) → 014/015/016 → 017. Task numbers match build order.
 
 **Objective:** Solve the baseline-price gap (Open Question #1) with the highest-quality crowd data there is: actual receipts. Moved early because it unblocks the basket math.
 

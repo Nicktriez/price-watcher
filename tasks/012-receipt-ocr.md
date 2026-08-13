@@ -1,11 +1,11 @@
-# Task 011 — Receipt OCR + Line-Item Parser (app-side)
+# Task 012 — Receipt OCR + Line-Item Parser (app-side)
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 3 (Task 1, Task 2) + the research spike in the research repo `research/ocr_receipts.py` + `research/notes/ocr-receipts.md`
 
 ## Objective
 
-Build the receipt OCR + parse logic into the app. This is the engine that turns a receipt image into structured `receipt` + `receipt_item` rows (Task 010's schema). It runs AFTER a user uploads an image (the upload flow is Task 012) — this task is the OCR/parse logic itself.
+Build the receipt OCR + parse logic into the app. This is the engine that turns a receipt image into structured `receipt` + `receipt_item` rows (Task 010's schema). It runs AFTER a user uploads an image (the upload flow is Task 013) — this task is the OCR/parse logic itself.
 
 ## The research you're porting
 
@@ -32,7 +32,7 @@ The Phase 0 spike (in `grocery-price-watcher-research`) already proved Tesseract
    - `clean` — name AND price both recovered
    - `garbled` — degraded, price unreadable (real loss, flagged honestly)
    - `wrapped` — SPAR-style: name wraps, price on the next line → **implement line-joining** to recover the price
-   - `footer` — Netto-style boilerplate (URLs, legal/returns, hours, brand lines) → **filter out, never count as an item** (see Task 016 — this is the top-priority classifier fix)
+   - `footer` — Netto-style boilerplate (URLs, legal/returns, hours, brand lines) → **filter out, never count as an item** (see Task 011 — this is the top-priority classifier fix)
    - This maps to the `receipt_item.status` column from Task 010.
 
 3. **Confidence logic** — the spike found cross-variant disagreement is a reliable low-confidence signal. Run ≥2 PSM modes / rotations and downgrade confidence when variants disagree on a value.

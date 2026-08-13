@@ -62,7 +62,7 @@ Now that `user` exists, `receipt.user_id` is a **real FK** (NOT nullable-deferre
 
 ## Important
 
-- **User identity is the early dependency** — this task must land before the upload flow (Task 012) so uploads can be tied to a user.
+- **User identity is the early dependency** — this task must land before the upload flow (Task 013) so uploads can be tied to a user.
 - **`trust_tier` is NOT 'official'** — receipts are community/single crowd data. Enforces the data/legal boundary.
 - **`receipt_item.status` encodes the three OCR failure modes** (clean/garbled/wrapped) from the spike.
 - Don't build anything beyond magic-link identity — no password auth, no roles, no reset.

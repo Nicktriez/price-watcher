@@ -1,11 +1,11 @@
-# Task 016 — Refine OCR Recovery Classifier (Phase 3 GATE)
+# Task 011 — Refine OCR Recovery Classifier (Phase 3 GATE)
 
 **Repo:** `~/price-watcher` (app code) — research reference in `~/grocery-price-watcher-research/research/ocr_receipts.py` + `research/notes/ocr-receipts.md` (Run 1 + Run 2)
 **Plan source:** `docs/reference/build-plan.md` → Phase 3 verification gate
 
 ## Objective
 
-Fix the `item_recovery` metric and separate the OCR failure modes. **This is a hard gate — the plan requires it before the OCR→parse pipeline (Task 011/012) is treated as reliable.**
+Fix the `item_recovery` metric and separate the OCR failure modes. **This is a hard gate — the plan requires it before the OCR→parse pipeline (Task 012/013) is treated as reliable.**
 
 ## Why this gate exists
 

@@ -1,4 +1,4 @@
-# Task 014 — Per-User Spending View
+# Task 015 — Per-User Spending View
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 3 (Task 5)
@@ -13,7 +13,7 @@ The receipt flow sells itself as _"your free grocery-spending tracker"_ — the 
 
 ## Context
 
-The plan calls the spending view _"the retention hook that makes people keep uploading."_ It depends on identity (Task 010) and uploads (Task 012) — a user's receipts accumulate with `user_id`, and this view shows them the value.
+The plan calls the spending view _"the retention hook that makes people keep uploading."_ It depends on identity (Task 010) and uploads (Task 013) — a user's receipts accumulate with `user_id`, and this view shows them the value.
 
 **Only for a signed-in user.** No auth = no spending view.
 

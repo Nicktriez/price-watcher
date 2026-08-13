@@ -1,4 +1,4 @@
-# Task 013 — Receipt-derived Prices on the Product Page
+# Task 014 — Receipt-derived Prices on the Product Page
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 3 (verification: "Baseline prices appear on product pages and are visually distinguished from offers")

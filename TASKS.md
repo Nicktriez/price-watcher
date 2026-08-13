@@ -33,16 +33,16 @@ Identity + receipts + baseline prices. **Identity was moved earlier** (magic-lin
 
 | #   | Task                                          | Status | Depends on     |
 | --- | --------------------------------------------- | ------ | -------------- |
-| 010 | User identity (magic-link) + receipt schema | ✅ | Nick (vp test) + code review — migration 0007, auth.ts (login_token + signed session), signin.tsx |
-| 011 | App-side OCR + line-item parser               | ⬜     | 010            |
-| 012 | Signed-in receipt upload + baseline writing   | ⬜     | 010, 011       |
-| 013 | Receipt-derived prices on product page        | ⬜     | 010, 012       |
-| 014 | Per-user spending view (retention hook)       | ⬜     | 010, 012       |
-| 015 | Receipt gamification (points + streaks)       | ⬜     | 010, 012       |
-| 016 | Refine OCR recovery classifier (Phase 3 GATE) | 🟡 ready — trigger met (10 receipts); spec updated with footer-filter top priority | 011 |
-| 017 | "Your price vs. average" on scanned receipts  | ⬜     | 010, 012, 013  |
+| 010 | User identity (magic-link) + receipt schema    | ✅     | —              |
+| 011 | Refine OCR recovery classifier (Phase 3 GATE)  | 🟡 ready — trigger met (10 receipts); footer-filter top priority | 010 |
+| 012 | App-side OCR + line-item parser               | ⬜     | 010, 011       |
+| 013 | Signed-in receipt upload + baseline writing   | ⬜     | 010, 011, 012  |
+| 014 | Receipt-derived prices on product page        | ⬜     | 010, 013       |
+| 015 | Per-user spending view (retention hook)       | ⬜     | 010, 013       |
+| 016 | Receipt gamification (points + streaks)       | ⬜     | 010, 013       |
+| 017 | "Your price vs. average" on scanned receipts  | ⬜     | 010, 013, 014  |
 
-**Run order:** 010 → 011 → 012 → then 013/014/015 (parallelizable after 012) + 016 (gate, when ≥10 receipts gathered) + 017 (after 013 provides the baseline).
+**Run order:** 010 → 011 (gate) → 012 → 013 → then 014/015/016 (parallelizable after 013) + 017 (after 014 provides the baseline). Numbers now match build order.
 
 ## Phase 4+ (not started)
 
