@@ -297,7 +297,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 3 — Receipt Scanning + Baseline Prices (2–3 weeks) 🔄 IN PROGRESS (2026-08-12)
 
-**Status:** Task 010 (identity + receipt schema) ✅, Task 011 (OCR classifier GATE) ✅ complete — gate passed. Next: **Task 012 (OCR parser)** → 013 (upload) → 014/015/016 → 017. Task numbers match build order.
+**Status:** Task 010 ✅, Task 011 (OCR classifier GATE) ✅, Task 012 (OCR engine) ✅ — unit tests pass (42 passed) + OpenCode's full 10-receipt OCR run (store-from-content, totals, Netto footer filter, SPAR wrapped). Next: Task 013 (upload) → 014/015/016 → 017.
 
 **Objective:** Solve the baseline-price gap (Open Question #1) with the highest-quality crowd data there is: actual receipts. Moved early because it unblocks the basket math.
 
