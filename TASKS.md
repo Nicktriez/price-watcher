@@ -59,6 +59,20 @@ The core product — "where do I shop this week?" Lists + basket math + store ra
 
 **Run order:** 018 → 019/020 (parallelizable after 018) → 021 → 022 → 023. 021 is the pure-math core — testable standalone before any UI.
 
-## Phase 5+ (not started)
+## Phase 5 (current — next up)
 
-Travel cost (Phase 5), crowd data + trust tiers (Phase 6), closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
+The differentiator — "is it worth the detour?" Store coordinates, OSRM routing, fuel price, car profile, and the net-win verdict.
+
+| #   | Task                                  | Status | Depends on          |
+| --- | ------------------------------------- | ------ | ------------------- |
+| 024 | Store geocoding (lat/lon)             | ⬜     | Phase 2 store data  |
+| 025 | OSRM routing + user address           | ⬜     | 024, 010 (identity) |
+| 026 | Fuel price (daily national-average)   | ⬜     | —                   |
+| 027 | Car profile per user                  | ⬜     | 010 (identity)      |
+| 028 | Verdict line (basket + fuel, net win) | ⬜     | 021, 025, 026, 027  |
+
+**Run order:** 024 → 025 → 026 → 027 (025/026/027 parallelizable after 024) → 028 (the verdict, depends on all). 028 is the payoff — pure fuel math, testable standalone.
+
+## Phase 6+ (not started)
+
+Crowd data + trust tiers (Phase 6), closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
