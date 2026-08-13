@@ -87,6 +87,10 @@ export interface UserTable {
   email: string;
   created_at: string;
   updated_at: string;
+  points: number;
+  receipt_count: number;
+  current_streak: number;
+  last_receipt_date: string | null;
 }
 
 export interface LoginTokenTable {
@@ -111,6 +115,7 @@ export interface ReceiptTable {
   image_path: string | null;
   source: "receipt" | "import";
   trust_tier: "community" | "single";
+  points_awarded: number;
   created_at: string;
   updated_at: string;
 }

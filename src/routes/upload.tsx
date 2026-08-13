@@ -64,6 +64,12 @@ export default function Upload() {
                     <li>
                       Items: {result()!.cleanCount} recovered, {result()!.garbledCount} unreadable
                     </li>
+                    {result()!.pointsEarned != null && (
+                      <li class="font-medium text-amber-700">
+                        You earned {result()!.pointsEarned} points
+                        {result()!.streak ? ` · ${result()!.streak}-day streak` : ""}
+                      </li>
+                    )}
                   </ul>
                   {result()!.dedup !== "new" && (
                     <p class="mt-2 text-gray-500">

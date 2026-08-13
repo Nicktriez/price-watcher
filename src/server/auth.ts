@@ -64,7 +64,16 @@ export async function requestLoginCode(emailInput: string): Promise<{ ok: true }
   if (!user) {
     user = await db
       .insertInto("user")
-      .values({ id: randomUUID(), email, created_at: now, updated_at: now })
+      .values({
+        id: randomUUID(),
+        email,
+        created_at: now,
+        updated_at: now,
+        points: 0,
+        receipt_count: 0,
+        current_streak: 0,
+        last_receipt_date: null,
+      })
       .returning("id")
       .executeTakeFirstOrThrow();
   }

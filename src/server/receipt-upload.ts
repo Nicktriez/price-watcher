@@ -4,13 +4,22 @@ import { randomUUID } from "node:crypto";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { sql } from "kysely";
 import { db } from "~/db/client";
 import { decideDedup, receiptFingerprint, type DedupDecision } from "~/lib/receipt-dedup";
 import { ocrReceipt } from "~/lib/receipt-ocr";
 import { matchProductName } from "~/lib/product-matching";
+import { computeAward, computeStreak } from "~/lib/receipt-points";
 import { getCurrentUser } from "./auth.ts";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
+function toIsoDateOnly(v: Date | string | null): string | null {
+  if (v == null) return null;
+  const d = typeof v === "string" ? new Date(v) : v;
+  if (Number.isNaN(d.getTime())) return null;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 function danishToIso(d: string): string | null {
   const m = d.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
@@ -39,6 +48,8 @@ export interface UploadResult {
   cleanCount?: number;
   garbledCount?: number;
   footerCount?: number;
+  pointsEarned?: number;
+  streak?: number;
   message?: string;
 }
 
@@ -46,6 +57,7 @@ interface MatchingReceipt {
   receiptId: string;
   cleanCount: number;
   itemCount: number;
+  pointsAwarded: number;
 }
 
 async function findMatchingReceipt(
@@ -54,7 +66,7 @@ async function findMatchingReceipt(
 ): Promise<MatchingReceipt | null> {
   const receipts = await db
     .selectFrom("receipt")
-    .select(["id", "store_name", "receipt_date", "total"])
+    .select(["id", "store_name", "receipt_date", "total", "points_awarded"])
     .where("user_id", "=", userId)
     .execute();
 
@@ -76,6 +88,7 @@ async function findMatchingReceipt(
         receiptId: receipt.id,
         cleanCount: items.filter((i) => i.price != null).length,
         itemCount: items.length,
+        pointsAwarded: receipt.points_awarded,
       };
     }
   }
@@ -147,6 +160,50 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
   const isoDate = parsed.date.value ? danishToIso(parsed.date.value) : null;
   const observedAt = isoDate ? `${isoDate}T00:00:00.000Z` : now;
 
+  const userStats = await db
+    .selectFrom("user")
+    .select(["current_streak", "last_receipt_date"])
+    .where("id", "=", user.id)
+    .executeTakeFirst();
+
+  const receiptDate = isoDate ?? now.slice(0, 10);
+  const recovery = parsed.items.length ? recoverable.length / parsed.items.length : 0;
+  const { streak, streakBonus } = computeStreak(
+    userStats?.current_streak ?? 0,
+    toIsoDateOnly(userStats?.last_receipt_date ?? null),
+    receiptDate,
+  );
+  const award = computeAward(recovery, streakBonus);
+
+  let pointsEarned = award;
+  if (decision === "new") {
+    await db
+      .updateTable("user")
+      .set({
+        points: sql`points + ${award}`,
+        receipt_count: sql`receipt_count + 1`,
+        current_streak: streak,
+        last_receipt_date: receiptDate,
+        updated_at: now,
+      })
+      .where("id", "=", user.id)
+      .execute();
+  } else if (existing) {
+    pointsEarned = Math.max(0, award - existing.pointsAwarded);
+    if (pointsEarned > 0) {
+      await db
+        .updateTable("user")
+        .set({ points: sql`points + ${pointsEarned}`, updated_at: now })
+        .where("id", "=", user.id)
+        .execute();
+    }
+    await db
+      .updateTable("user")
+      .set({ current_streak: streak, last_receipt_date: receiptDate, updated_at: now })
+      .where("id", "=", user.id)
+      .execute();
+  }
+
   await db
     .insertInto("receipt")
     .values({
@@ -162,6 +219,7 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
       image_path: null,
       source: "receipt",
       trust_tier: "community",
+      points_awarded: award,
       created_at: now,
       updated_at: now,
     })
@@ -221,6 +279,8 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
     cleanCount: recoverable.length,
     garbledCount,
     footerCount: parsed.footer_count,
+    pointsEarned,
+    streak,
     message: `We parsed ${recoverable.length} item${recoverable.length === 1 ? "" : "s"} from your receipt.`,
   };
 }
