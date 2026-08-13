@@ -329,7 +329,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 4 — Lists + Basket Math (2–3 weeks) 🔄 CURRENT (2026-08-12)
 
-**Status:** Task 018 ✅, Task 019 ✅, Task 020 ✅, Task 021 (basket cost) ✅ — pure unit-testable function, unit-price normalization (g→kg, ml/cl→l), cheapest-by-unit-price offer pick, offer/baseline/no-price split; 74 tests pass (11 files). Next: Task 022 (comparison view) → 023 (madplan).
+**Status:** Task 018 ✅, Task 019 ✅, Task 020 ✅, Task 021 ✅, Task 022 (comparison view) ✅ — ranked cheapest-first, verdict + savings, offer/baseline split, baseline-heavy marked "user-reported" (no discount language), empty-state; 74 tests pass. Next: Task 023 (madplan) — final Phase 4 task.
 
 **Objective:** The core product — "where do I shop this week?"
 
