@@ -78,6 +78,54 @@ export interface PricePointTable {
   price: string;
   currency: string;
   observed_at: string;
+  source: "offer" | "receipt";
+}
+
+export interface UserTable {
+  id: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LoginTokenTable {
+  id: string;
+  user_id: string;
+  token: string;
+  expires_at: string;
+  used_at: string | null;
+  created_at: string;
+}
+
+export interface ReceiptTable {
+  id: string;
+  user_id: string;
+  store_id: string | null;
+  chain_id: string | null;
+  store_name: string | null;
+  receipt_date: string | null;
+  total: string | null;
+  currency: string;
+  confidence: JSONColumnType<JsonObject> | null;
+  image_path: string | null;
+  source: "receipt" | "import";
+  trust_tier: "community" | "single";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReceiptItemTable {
+  id: string;
+  receipt_id: string;
+  product_id: string | null;
+  name: string;
+  quantity: string | null;
+  unit: string | null;
+  price: string | null;
+  raw_line: string;
+  status: "clean" | "garbled" | "wrapped";
+  confidence: "high" | "medium" | "low";
+  created_at: string;
 }
 
 export interface ListTable {
@@ -103,6 +151,10 @@ export interface Database {
   product: ProductTable;
   offer: OfferTable;
   price_point: PricePointTable;
+  user: UserTable;
+  login_token: LoginTokenTable;
+  receipt: ReceiptTable;
+  receipt_item: ReceiptItemTable;
   list: ListTable;
   list_item: ListItemTable;
 }

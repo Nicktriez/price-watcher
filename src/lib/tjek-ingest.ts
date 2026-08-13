@@ -60,6 +60,7 @@ async function upsertPricePoint(
       price,
       currency: offer.pricing.currency,
       observed_at: observedAt,
+      source: "offer",
     })
     .onConflict((oc) => oc.column("id").doNothing())
     .execute();
