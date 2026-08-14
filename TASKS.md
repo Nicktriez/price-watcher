@@ -98,4 +98,20 @@ Small dev-convenience tasks that unblock testing. Run these before/parallel to t
 
 **Note:** Tasks 033/034 are TEMPORARY — remove the dev links before launch (Phase 8).
 
+## Phase 7b (Design Polish — next up, after Phase 7 closed beta)
+
+Design direction + branding. **Sequence matters:** 035 produces the winning visual direction → 036 unifies the codebase around it → 037 branding → then 038/039/040/041. Phase 7 (closed beta) itself is operations (recruiting/measurement — Nick's job, not OpenCode); the Hetzner deploy is Ultron's infra work.
+
+| #   | Task                                          | Status | Depends on        |
+| --- | --------------------------------------------- | ------ | ----------------- |
+| 035 | Design variants (3 throwaway HTML mockups)    | ⬜     | Nick picks winner |
+| 036 | Design system (Tailwind tokens from winner)   | ⬜     | 035               |
+| 037 | Branding (Skujeg wordmark, titles, copy tone) | ⬜     | 036               |
+| 038 | Screenshot-worthy store comparison + madplan  | ⬜     | 036               |
+| 039 | Mobile check: receipt upload flow             | ⬜     | 036               |
+| 040 | Honest-UI consistency pass                    | ⬜     | 036               |
+| 041 | Danish-consistency pass                       | ⬜     | 036, 040          |
+
+**Run order:** 035 → 036 → then 037/038/039/040 (parallelizable after 036) → 041 last (needs the honest-UI pass done).
+
 Closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
