@@ -427,11 +427,11 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 **Deploy (Ultron's infra work — DECIDED 2026-08-14):** separate Hetzner VPS, NOT the agent VPS, NOT the laptop.
 
 - **Domain:** `skujeg.dk` — BOUGHT (2026-08-14). Brand = "Sku' jeg?" (Should I?). Beta subdomain `beta.skujeg.dk` → A record → Hetzner IP. HTTPS required for magic-link.
-- **VPS:** Hetzner CX22 — 2 vCPU / 4 GB / 40 GB NVMe, €3.79/mo (verified 2026). Falkenstein/Nuremberg (EU residency), Ubuntu 24.04. Do NOT overspec.
+- **VPS:** Hetzner **CX23** — 2 vCPU / 4 GB / 40 GB NVMe (same spec as CX22, at a lower price — Nick's pick, 2026-08-14). Falkenstein (EU residency), Ubuntu 24.04. Do NOT overspec.
 - **Node >=24** (project `engines`; agent VPS is Node 22 — fresh box).
 - **SSH:** Ultron uses the existing `ultron-vps-nicktriez` root key (full trust on a disposable box — acceptable).
 - **Setup:** clone `price-watcher`, `pnpm install`, self-managed Postgres (EU residency), env, `vp build`, pm2/systemd, TLS.
-- **Nick's action list:** order CX22 (get IP) → add Ultron's SSH key to root → create `beta.skujeg.dk` A record → tell Ultron the IP.
+- **Nick's action list:** order CX23 (get IP) → add Ultron's SSH key to root → create `beta.skujeg.dk` A record → tell Ultron the IP.
 
 **Legal (DECIDED — one real item before invites):** a **privacy policy in Danish** is required before real users, because the site collects email (sign-in), receipt images (personal data, deleted after parse per Task 013), and home address (OSRM distance, Task 025). Plus accurate cookie handling.
 
