@@ -117,9 +117,9 @@ The last coding work before anyone is invited. **Task 042 + 043 must pass before
 
 Two parallel tracks: **deploy** (Ultron's infra — Hetzner CX22 + `beta.skujeg.dk`) and **legal** (privacy policy). Invites wait for BOTH deploy-live AND the privacy policy live.
 
-| #   | Task                                               | Status | Depends on |
-| --- | -------------------------------------------------- | ------ | ---------- |
-| 038 | Privacy policy + GDPR page (Danish, Nick-approved) | ⬜     | —          |
+| #   | Task                                               | Status | Depends on                                                                                                                                                                                                                                                                                                                    |
+| --- | -------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 038 | Privacy policy + GDPR page (Danish, Nick-approved) | 🟡     | OpenCode (draft /privacy in Danish: email, receipt images deleted after parse, address distance-only, never sold, contact; cookie section states only pw-session, no tracking/analytics, banner-trigger noted; footer link; settings note consistent). **AWAITS NICK'S APPROVAL of the policy text** before beta — human gate | —   |
 
 Deploy (Ultron, not a task file): Hetzner CX22 €3.79/mo, Node ≥24, Postgres, pm2, TLS → `beta.skujeg.dk`.
 

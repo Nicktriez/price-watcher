@@ -24,6 +24,9 @@ export default function Footer() {
           <A href="/settings" class="hover:underline">
             Indstillinger
           </A>
+          <A href="/privacy" class="hover:underline">
+            Privatliv
+          </A>
           <A href="/about" class="hover:underline">
             Om
           </A>
