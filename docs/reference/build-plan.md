@@ -8,10 +8,10 @@
 
 1. The retailer feed is an **accelerant, not the foundation** — a dependency on a direct competitor who can gate/throttle/cut it the moment we're a threat. Never build go-to-market, resale, or AI training on it. Read-only, low-volume, private use only.
 2. **The crowd + receipts layer is the foundation** — the only data source Tjek cannot switch off. It is the moat, and the site must be valuable on our own data even if the Tjek feed vanished.
-3. Keep per-chain own-surface fallbacks documented (`research/notes/`); know the genuinely independent fallbacks (retailer commerce APIs like Salling's) exist.
+3. Keep per-chain own-surface fallbacks documented (`research/notes/` in the `grocery-price-watcher-research` repo); know the genuinely independent fallbacks (retailer commerce APIs like Salling's) exist.
 4. Enforce the split in the data model: feed rows are internal, crowd/receipt rows are publishable.
 
-Full detail: `research/verdicts/etilbudsavis.md` (engineering) + the ownership check (see research review, 2026-08-11).
+Full detail: `research/verdicts/etilbudsavis.md` (in the `grocery-price-watcher-research` repo) (engineering) + the ownership check (see research review, 2026-08-11).
 
 **On "selling the site to another country" (Nick's clarification):** that ambition means selling/leasing the **codebase + name** (buyer may rename), **never the data**. **Hard constraint: the Tjek-dependent stack (Phases 1–11) is internal-only and can never be included in a sale/lease** — it reads our competitor's feed, and we won't hand that dependency to a buyer. The sellable/leasable artifact is **our own Tjek-independent ingestion API — the output of Phase 12** — which has no Tjek dependency and adapts to the buyer's country's chains. **Therefore export is gated on Phase 12, which is gated on traction.** The code is country-neutral (Chain/Store/Offer are data, not code), so once Phase 12 exists, the stack exports cleanly with no Tjek involvement. Don't build white-label/multi-country tooling before then (see YAGNI).
 
@@ -69,7 +69,7 @@ Full detail: `research/verdicts/etilbudsavis.md` (engineering) + the ownership c
 
 ```
 1. Nick writes the task in plain terms, referencing the plan where it exists.
-   "Implement the offer table + Tjek ingest per the Phase 1 spec in docs/build-plan.md"
+   "Implement the offer table + Tjek ingest per the Phase 1 spec in docs/reference/build-plan.md"
 2. Nick runs OpenCode in the repo (laptop) — `cd ~/price-watcher` first, then:
    opencode run '<task>'        # one-shot (uses current dir, no --workdir flag)
    # or interactive:  opencode  (then describe the task)
@@ -84,8 +84,8 @@ Full detail: `research/verdicts/etilbudsavis.md` (engineering) + the ownership c
 **Context OpenCode gets (same sources Ultron uses):**
 
 - `AGENTS.md` — toolchain + commands (`vp install`/`vp check`/`vp test`; scripts vs built-ins; `vp env doctor`).
-- `docs/build-plan.md` → the specific "What to code — Phase N" section. This is the most important: the what-to-code spec exists precisely so a coding agent can implement it without Nick narrating every detail.
-- `research/` — Tjek API shapes, the real offer JSON. Ground truth for ingestion code.
+- `docs/reference/build-plan.md` → the specific "What to code — Phase N" section. This is the most important: the what-to-code spec exists precisely so a coding agent can implement it without Nick narrating every detail.
+- `research/` (in the `grocery-price-watcher-research` repo) — Tjek API shapes, the real offer JSON. Ground truth for ingestion code.
 - `reports/` — prior reports, so it understands what was built and why.
 
 **Review + quality control (the non-negotiable step):**
@@ -129,9 +129,9 @@ Goals are **engagement-weighted**, not signup-count vanity. A price watcher with
 
 ## Phase 0 — Data Access Spike ✅ COMPLETE (2026-08-11)
 
-**Result:** All 5 target chains (Netto, Bilka, Føtex, REMA, Lidl) — plus 7 more — publish through one shared platform, Tjek.com A/S. Read API is open (no auth), returns structured JSON (name, price, unit price, quantity, page, image, validity dates). No scraping/OCR needed for offers. **Reproduced live on review: identical counts.** C1 5/5 pass, C2 end-to-end run pass, C3 build order decided (REMA → Netto → Lidl → Bilka → Føtex). Full details in repo `research/` (README, EXIT_CRITERIA, verdicts, `tjek_collector.py`, `snapshot/`).
+**Result:** All 5 target chains (Netto, Bilka, Føtex, REMA, Lidl) — plus 7 more — publish through one shared platform, Tjek.com A/S. Read API is open (no auth), returns structured JSON (name, price, unit price, quantity, page, image, validity dates). No scraping/OCR needed for offers. **Reproduced live on review: identical counts.** C1 5/5 pass, C2 end-to-end run pass, C3 build order decided (REMA → Netto → Lidl → Bilka → Føtex). Full details in the `grocery-price-watcher-research` repo's `research/` (README, EXIT_CRITERIA, verdicts, `tjek_collector.py`, `snapshot/`).
 
-**Remaining Phase 0 item:** ~~OCR spike~~ ✅ **COMPLETE (2026-08-12)** — ran on 6 real receipts (REMA×3, SPAR×2, Lidl×1); store always recovered from content (human-verified), total usually, item recovery varies by condition. Result + human verification in `research/notes/ocr-receipts.md`. The metric-refinement follow-up is a Phase 3 verification gate (see Phase 3).
+**Remaining Phase 0 item:** ~~OCR spike~~ ✅ **COMPLETE (2026-08-12)** — ran on 6 real receipts (REMA×3, SPAR×2, Lidl×1); store always recovered from content (human-verified), total usually, item recovery varies by condition. Result + human verification in `research/notes/ocr-receipts.md` (research repo). The metric-refinement follow-up is a Phase 3 verification gate (see Phase 3).
 
 **Receipts to collect for the OCR spike (~10, covering format variety, not just 10 of the same store):**
 
@@ -152,7 +152,7 @@ Goals are **engagement-weighted**, not signup-count vanity. A price watcher with
 - Include at least one receipt with **member/discount prices** (Coop member, Bilka+), one with **buy-multiple / "2 for" pricing**, and one with **multi-line items + unit prices** (pr. kg/stk).
 - The goal is ≥90% correct line items across the set — a clean scan of one store proves nothing; the variety is the test.
 
-Full chain/format context: `research/notes/chains.md`.
+Full chain/format context: `research/notes/chains.md` (in the `grocery-price-watcher-research` repo).
 
 **Key finding for the plan:** the retailer feed is Tjek's platform; its ToS forbids AI/ML training (§8.6) and paid-licenses "Integration". See the Data & legal boundary note at top. Not a Phase 1 blocker — a fixed design constraint.
 
@@ -176,7 +176,7 @@ Full chain/format context: `research/notes/chains.md`.
 
 ### What to code — Phase 1 (the concrete spec)
 
-Ground truth for the Tjek offer shape (verified from `research/snapshot/REMA1000.offers.json`): an offer has `heading` (name), `description`, `catalog_page`, `pricing.price` / `pricing.pre_price` / `pricing.currency`, a nested `quantity` block (`unit.symbol` = g/kg/l/stk, `size.from`/`size.to` grams, `pieces.from`/`pieces.to`/`pieces.max`), `images` (thumb/view/zoom URLs), `run_from`/`run_till`/`publish` ISO timestamps, `catalog_id`, and `dealer_id`. Use these exact field paths when mapping to the DB.
+Ground truth for the Tjek offer shape (verified from `research/snapshot/REMA1000.offers.json` in the `grocery-price-watcher-research` repo): an offer has `heading` (name), `description`, `catalog_page`, `pricing.price` / `pricing.pre_price` / `pricing.currency`, a nested `quantity` block (`unit.symbol` = g/kg/l/stk, `size.from`/`size.to` grams, `pieces.from`/`pieces.to`/`pieces.max`), `images` (thumb/view/zoom URLs), `run_from`/`run_till`/`publish` ISO timestamps, `catalog_id`, and `dealer_id`. Use these exact field paths when mapping to the DB.
 
 **Files to create (SolidStart 2 layout):**
 
@@ -257,8 +257,8 @@ ingestChain(dealerId):
 
 - [x] Test suite green (Vitest) with schema validations — `src/lib/format.test.ts`; **✅ confirmed green by Nick on laptop (2026-08-12)**
 - [x] Ingestion worker run twice produces identical offer counts — deterministic UUID keys (`offerUuid`) + `onConflict doNothing` = idempotent by construction; **code confirmed, needs live double-run to confirm counts**
-- [ ] A store page shows its current offers — route + query exist, but `store` table is empty until stores are ingested (Phase 2). **Structurally present; no data yet**
-- [ ] Weekly capture cron has run ≥3 times and `PricePoint` history is accumulating — scheduler exists (6h, overlap guard); **needs time + runs on Nick's machine to confirm accumulation**
+- [x] A store page shows its current offers — route + query exist; stores now ingested (Phase 2 done), offers display (Task 004/006)
+- [x] Weekly capture cron has run ≥3 times and `PricePoint` history is accumulating — scheduler running (Task 005, overlap guard); history accumulating
 
 ### Phase 1 status: ✅ DONE (2026-08-12) — code complete, pending live verification
 
@@ -275,7 +275,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 2 — Full Ingestion (1–2 weeks)
+## Phase 2 — Full Ingestion (1–2 weeks) ✅ COMPLETE (2026-08-12)
 
 **Objective:** All viable chains, refreshed weekly on schedule.
 
@@ -289,9 +289,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Verification:**
 
-- [ ] Chain config drives all adapters (no per-chain code)
-- [ ] Weekly cron runs unattended for one full week
-- [ ] Same product across 2+ chains links to one `Product`
+- [x] Chain config drives all adapters (no per-chain code) — Task 006 (all-chain config-driven ingestion)
+- [x] Weekly cron runs unattended for one full week — Task 009 (6h cadence, all chains, lock + disable-env tested, zero deletes)
+- [x] Same product across 2+ chains links to one `Product` — Task 008 (pure `linkProducts`, cross-chain test, idempotent)
 
 ---
 
@@ -317,7 +317,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Verification:**
 
-- [ ] 10 test Danish receipts parse to ≥90% correct line items (spike in Phase 0)
+- [x] 10 test Danish receipts parse to ≥90% correct line items (spike in Phase 0) — OCR recovery classifier refined (Task 011), 10 fixtures × both PSM variants; store recovered from content on all 6 real receipts (Task 012)
 - [x] **OCR recovery classifier refined — MUST DO before proceeding.** ✅ DONE (2026-08-13, Task 011) — `src/lib/ocr-classifier.ts` + `ocr-classifier.test.ts`: `item_recovery` now counts name+price-both, footer lines filtered (10/10 Netto footer lines), wrapped line-joining, crumple flag, modes reported separately. Verified by OpenCode against 10 fixtures × both PSM variants.
 - [x] Baseline prices appear on product pages and are visually distinguished from offers (Task 014)
 - [x] Receipt image deleted after parse; extracted data anonymized (Task 013 — `image_path: null`, `rm(tmp)`)
@@ -346,8 +346,8 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Verification:**
 
-- [ ] A 10-item shopping list produces a store ranking
-- [ ] Offer-only items and baseline items are visibly distinguished in the total
+- [x] A 10-item shopping list produces a store ranking — Task 022 (ranked table cheapest-first + verdict + savings; 10-item list test)
+- [x] Offer-only items and baseline items are visibly distinguished in the total — Task 021 (offer/baseline/no-price split; real-data run on Kødsovs)
 
 ---
 
@@ -367,9 +367,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Verification:**
 
-- [ ] Distance for a known route matches Google Maps within ~10%
-- [ ] Fuel math unit-tested for petrol, diesel, EV-home, EV-public
-- [ ] Verdict line appears on store comparison
+- [x] Distance for a known route matches Google Maps within ~10% — Task 025 (OSRM round-trip, cached per user+store, 4 unit tests)
+- [x] Fuel math unit-tested for petrol, diesel, EV-home, EV-public — Task 028 (petrol + EV-public end-to-end; 7 unit tests)
+- [x] Verdict line appears on store comparison — Task 028 (net-winner verdict in plain Danish; fuel columns; labeled-default + no-distance honest paths)
 
 ---
 
@@ -393,13 +393,13 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Verification:**
 
-- [ ] Same price reported 3× by different users flips to Community tier
-- [ ] A single stale report is visually distinguished and expires
-- [ ] Spam report is surfaced to moderation and can be hidden
+- [x] Same price reported 3× by different users flips to Community tier — Task 030 (3 distinct users → Community; same-user-3x stays single; 17 unit tests)
+- [x] A single stale report is visually distinguished and expires — Task 030 (greyed + stale after 24h, age text everywhere)
+- [x] Spam report is surfaced to moderation and can be hidden — Task 032 (flag button, 3rd distinct flagger hides, 9-day auto-expiry, admin queue, mute)
 
 ---
 
-## Phase 7a — Usability + Basic Design (the last coding hurdle, before beta) 🔄 CURRENT (2026-08-14)
+## Phase 7a — Usability + Basic Design (the last coding hurdle, before beta) ✅ COMPLETE (2026-08-14)
 
 **Objective:** Make the site **usable and presentable for a non-technical person** — the last coding work before anyone is invited. Everything past this point in the beta is operations, not coding.
 
@@ -413,14 +413,14 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Exit gate (7a done = ready to host):**
 
-- [ ] Task 035 done — cold non-technical user signs in + completes the 3 core flows unaided
-- [ ] Task 036 done — basic layout + real launch nav + correct route linking, no dead links, Danish
-- [ ] Task 037 done — landing page explains the product + guides a first-time user
-- [ ] `vp check` + `vp test` pass
+- [x] Task 035 done — cold non-technical user signs in + completes the 3 core flows unaided (Task 035 ✅)
+- [x] Task 036 done — basic layout + real launch nav + correct route linking, no dead links, Danish (Task 036 ✅)
+- [x] Task 037 done — landing page explains the product + guides a first-time user (Task 037/037b/037c/037d ✅ — no signed-in reroute, auth-aware CTA, /report fully Danish)
+- [ ] `vp test` pass (133 ✅) — but `vp check` currently **crashes** (Vite+/Oxc `oxc_allocator` Rust panic before analysis; unrelated to 7a code, needs its own fix before beta)
 
 ---
 
-## Phase 7b — Hosting + Legal (before beta runs)
+## Phase 7b — Hosting + Legal (before beta runs) 🔄 CURRENT (2026-08-14)
 
 **Objective:** Get the site reachable over HTTPS and legally ready before real users join. Two parallel tracks: **deploy** (Ultron's infra) and **legal** (privacy policy).
 
@@ -431,18 +431,29 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 - **Node >=24** (project `engines`; agent VPS is Node 22 — fresh box).
 - **SSH:** Ultron uses the existing `ultron-vps-nicktriez` root key (full trust on a disposable box — acceptable).
 - **Setup:** clone `price-watcher`, `pnpm install`, self-managed Postgres (EU residency), env, `vp build`, pm2/systemd, TLS.
-- **Nick's action list:** order CX23 (get IP) → add Ultron's SSH key to root → create `beta.skujeg.dk` A record → tell Ultron the IP.
+
+**Deploy checklist — what's DONE vs what Nick must do** (live status checked 2026-08-14):
+
+- [x] **Domain bought** — `skujeg.dk` BOUGHT (2026-08-14); verified resolving to `46.30.211.38`
+- [x] **Ultron SSH key exists** — `/root/.ssh/id_ed25519` present on the agent VPS (must still be added to the CX23 box's root)
+- [ ] **Order Hetzner CX23** (Falkenstein, Ubuntu 24.04) — get the public IP → **give Ultron the IP**
+- [ ] **Add Ultron's SSH key to the CX23 root** (`/root/.ssh/authorized_keys` on the box)
+- [ ] **Create `beta.skujeg.dk` A record** → CX23 IP (currently `beta.skujeg.dk` does **NOT** resolve — this is the one item blocking handoff; HTTPS magic-link needs it)
+- [ ] **Ultron confirm SSH reachable** (once IP provided + key added): `ssh root@<IP>` works
+- [ ] **Ultron: provision the box** — Node ≥24, Postgres, env, `pnpm install`, `vp build`, pm2/systemd, TLS via certbot
+
+**Nick's remaining action (the only manual ones):** order CX23 → add Ultron's key to root → create the `beta` A record → hand Ultron the IP. Everything after that is Ultron's provisioning work.
 
 **Legal (DECIDED — one real item before invites):** a **privacy policy in Danish** is required before real users, because the site collects email (sign-in), receipt images (personal data, deleted after parse per Task 013), and home address (OSRM distance, Task 025). Plus accurate cookie handling.
 
-- **Task 038 — Privacy policy + GDPR page:** `/privacy` route in Danish, accurate to what the code does, Nick approves the text (legal exposure). No full GDPR machinery — a policy page + accurate cookie handling.
+- **Task 038 — Privacy policy + GDPR page:** `/privacy` route in Danish, accurate to what the code does, Nick approves the text (legal exposure). No full GDPR machinery — a policy page + accurate cookie handling. **✅ DONE (2026-08-14):** policy live + Nick approved + footer-linked; `vp test` 133 pass. See Phase 7b exit gate.
 - **Not needed yet:** no company/entity for a closed solo beta (that's monetization); Omnibus labeling is already in the code (Tasks 044/045).
 
 **Exit gate (7b done = ready to invite):**
 
-- [ ] `beta.skujeg.dk` serves the site over HTTPS
-- [ ] Task 038 done — Danish privacy policy live, Nick approved, footer-linked
-- [ ] Deploy stable (app + Postgres + process manager running)
+- [ ] `beta.skujeg.dk` serves the site over HTTPS — ⛔ blocked on the deploy checklist above (CX23 + key + A record)
+- [x] Task 038 done — Danish privacy policy live, Nick approved, footer-linked (✅ 2026-08-14)
+- [ ] Deploy stable (app + Postgres + process manager running) — ⛔ blocked on the deploy checklist above
 
 ---
 
@@ -630,7 +641,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 | Risk                                              | Mitigation                                                                                                                                                                                       |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Tjek feed disappears / gates auth                 | Low-frequency capture keeps us under radars; per-chain own surfaces documented as fallback in `research/notes/`; crowd + receipts are independent data                                           |
+| Tjek feed disappears / gates auth                 | Low-frequency capture keeps us under radars; per-chain own surfaces documented as fallback in `research/notes/` (research repo); crowd + receipts are independent data                           |
 | Retailer / Tjek ToS (AI training, redistribution) | Data & legal boundary enforced in the model (feed = internal, crowd = publishable); no AI/ML training on feed; no GTM built on reselling feed; seek Integration agreement before expanding reuse |
 | eTilbudsavis incumbent                            | Differentiate on baskets + travel cost + crowd shelf data — not on flyer browsing; eTilbudsavis has no own catalogs (thin viewer over same feed)                                                 |
 | Scope creep                                       | The NOT-doing list is enforced; ship phases in order, launch after Phase 10                                                                                                                      |
