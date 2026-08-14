@@ -1,24 +1,43 @@
 import { A } from "@solidjs/router";
-import Counter from "~/components/Counter";
 
 export default function About() {
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">About Page</h1>
-      <Counter />
-      <p class="mt-8">
-        Visit{" "}
-        <a href="https://solidjs.com" target="_blank" class="text-sky-600 hover:underline">
-          solidjs.com
-        </a>{" "}
-        to learn how to build Solid apps.
+    <main class="mx-auto max-w-3xl p-4 text-gray-900">
+      <h1 class="mb-4 text-2xl font-semibold">Om Sku' jeg?</h1>
+      <p class="mb-4 text-gray-700">
+        Sku' jeg? er en dansk prissammenligning for dagligvarer. Formålet er ét spørgsmål:{" "}
+        <span class="font-medium">skal jeg købe det her?</span>
       </p>
-      <p class="my-4">
-        <A href="/" class="text-sky-600 hover:underline">
-          Home
+
+      <section class="space-y-3 text-sm text-gray-700">
+        <div class="rounded border border-gray-200 p-3">
+          <p class="font-medium">Ugens tilbud</p>
+          <p>
+            Vi samler de aktuelle tilbud fra butikkerne, så du hurtigt kan se, hvad der er på
+            tilbud, og hvor.
+          </p>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <p class="font-medium">Din indkøbsliste</p>
+          <p>
+            Byg din liste og sammenlign butikkerne — vi medregner endda køretur og brændstof, så
+            "det billigste" betyder det, der faktisk er billigst for dig.
+          </p>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <p class="font-medium">Ærlige priser</p>
+          <p>
+            Brugerrapporterede priser vises altid ærligt — en enkelt rapport er markeret som
+            "brugerrapporteret", og først når flere uafhængige brugere er enige, bliver den en
+            Community-pris. Vi kalder aldrig en brugerpris for en rabat.
+          </p>
+        </div>
+      </section>
+
+      <p class="mt-6">
+        <A href="/offers" class="text-sky-700 hover:underline">
+          → Se ugens tilbud
         </A>
-        {" - "}
-        <span>About Page</span>
       </p>
     </main>
   );

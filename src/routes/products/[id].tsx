@@ -61,8 +61,8 @@ export default function ProductPage() {
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
       <p class="mb-4">
-        <A href="/" class="text-sky-700 hover:underline">
-          Back to offers
+        <A href="/offers" class="text-sky-700 hover:underline">
+          ← Tilbage til tilbud
         </A>
       </p>
 
