@@ -41,7 +41,10 @@ Trust tiers are the honesty backbone of the whole site — the thing that distin
 - **Pure, testable tier logic** — the Community flip (3 reports within tolerance) must be unit-tested. It's the plan's core verification.
 - **Tolerance is the hard part** — define "agree" clearly (a ±% or ±kr config). Without a tolerance, "3 reports agree" is undefined.
 - **Staleness from age, not a boolean** — compute it from the timestamp so it's always honest, never a stale-forever flag.
-- **Independent users** — "3+ reports" means 3+ _different_ `user_id`s (a single user reporting 3× is 1 report, not Community). This is the anti-gaming core.
+- **Independent users** — "3+ reports" means 3+ _different_ `user_id`s (a single user reporting 3× is 1 report, not Community). This is the anti-gaming core. Enforce with `COUNT(DISTINCT user_id)`, never `COUNT(*)` — Task 029 stores every report with no dedup, so counting rows would let one user inflate the tier.
+- **Free-text grouping DECISION REQUIRED (unresolved — do not guess):** `crowd_report.product_id` is nullable (Task 029 free-text fallback). Free-text reports have no product to group under, so they can never reach Community if we only group by `product_id`. Decide and document ONE of: (a) group free-text by normalized name (trim + lowercase) so agreeing free-text reports can reach Community, or (b) keep free-text reports Single until moderation (032) links them to a product. State which in the code + note it here. This must be a conscious choice, not an accident.
+- **Tolerance is a range, not equality** — compare with the config range, and on numeric (float) prices compare in øre or with an epsilon to avoid precision drift, never `===`.
+- **"Fresh" is tier-specific** — the 24h stale rule is for **Single** only. Community/Official don't expire at 24h; they just show their age as text. Don't give Community a 24h expiry too.
 - **Never a discount** — community/single is always "user-reported."
 - **Don't build moderation or gamification here** — that's Tasks 031/032.
 
@@ -49,8 +52,9 @@ Trust tiers are the honesty backbone of the whole site — the thing that distin
 
 - [ ] Pure trust-tier function: official / community (≥3 independent users within tolerance) / single
 - [ ] "Agree" tolerance is defined and config-driven
-- [ ] 3 reports by different users within tolerance flips to Community (unit-tested)
+- [ ] 3 reports by **different** users within tolerance flips to Community (unit-tested); **same user** reporting 3× within tolerance does **NOT** (stays Single) — distinct `user_id` test included
 - [ ] Single report is visually distinguished as user-reported and stale after 24h
 - [ ] Every displayed price shows its age as text ("2 days old")
 - [ ] Compliance: community/single never called a "discount"
+- [ ] Free-text grouping decision (see Important) made + documented in code and here
 - [ ] `vp check` + `vp test` pass
