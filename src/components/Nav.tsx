@@ -5,10 +5,8 @@ import { getCurrentUser, signOut } from "~/server/auth";
 // Real launch nav (supersedes the 033/034 dev links: settings/madplan/spending
 // moved to the footer). Task 036.
 //
-// Note: "Forside" points at / (the landing). Signed-in users are rerouted to
-// /offers by the landing itself (Task 037) — reading the session outside a
-// Suspense boundary doesn't update reactively in SolidStart 2.0, so the href
-// can't be made session-conditional without a full nav re-render.
+// "Forside" is / (the landing, same for everyone, Task 037b) and "Tilbud" is
+// /offers. No session-conditional href.
 export default function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
