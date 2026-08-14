@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "~/db/client";
+import { ageLabel, computeCrowdTier, isStaleSingle, type TierReport } from "~/lib/trust-tier";
 
 function iso(v: string | Date): string {
   return v instanceof Date ? v.toISOString() : v;
@@ -124,6 +125,77 @@ export async function getProductById(productId: string) {
       observedAt: iso(b.observed_at as string | Date),
     })),
   };
+}
+
+export interface CrowdPriceGroup {
+  storeId: string;
+  storeName: string;
+  tier: "community" | "single";
+  price: number;
+  userCount: number;
+  reportedAt: string;
+  age: string;
+  stale: boolean;
+}
+
+/**
+ * Crowd shelf-price reports for a product, grouped by store and tiered with
+ * the GasBuddy model (>=3 distinct reporters within tolerance = Community).
+ * Free-text reports (no product_id) group by normalized name and surface on
+ * product pages once moderation (Task 032) links them.
+ */
+export async function getProductCrowdPrices(productId: string): Promise<CrowdPriceGroup[]> {
+  if (!isUuid(productId)) return [];
+
+  const rows = await db
+    .selectFrom("crowd_report")
+    .innerJoin("store", "store.id", "crowd_report.store_id")
+    .select((eb) => [
+      eb.ref("crowd_report.store_id").as("store_id"),
+      eb.ref("store.name").as("store_name"),
+      eb.ref("crowd_report.user_id").as("user_id"),
+      eb.ref("crowd_report.price").as("price"),
+      eb.ref("crowd_report.reported_at").as("reported_at"),
+    ])
+    .where("crowd_report.product_id", "=", productId)
+    .execute();
+
+  const byStore = new Map<string, { storeName: string; reports: TierReport[]; latest: Date }>();
+  for (const row of rows) {
+    const entry = byStore.get(row.store_id) ?? {
+      storeName: row.store_name,
+      reports: [],
+      latest: new Date(0),
+    };
+    entry.reports.push({
+      userId: row.user_id,
+      price: parseFloat(row.price),
+      reportedAt: row.reported_at,
+    });
+    const at = new Date(row.reported_at);
+    if (at.getTime() > entry.latest.getTime()) entry.latest = at;
+    byStore.set(row.store_id, entry);
+  }
+
+  const now = new Date();
+  const groups: CrowdPriceGroup[] = [];
+  for (const [storeId, entry] of byStore) {
+    const tier = computeCrowdTier(entry.reports);
+    if (tier.tier == null || tier.representativePrice == null) continue;
+    groups.push({
+      storeId,
+      storeName: entry.storeName,
+      tier: tier.tier,
+      price: tier.representativePrice,
+      userCount: tier.distinctUsers,
+      reportedAt: entry.latest.toISOString(),
+      age: ageLabel(entry.latest, now),
+      stale: tier.tier === "single" && isStaleSingle(entry.latest, now),
+    });
+  }
+
+  groups.sort((a, b) => a.storeName.localeCompare(b.storeName, "da"));
+  return groups;
 }
 
 export async function getPriceHistory(productId: string, days = 30) {

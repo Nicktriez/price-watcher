@@ -1,7 +1,8 @@
 import { A, createAsync, useParams } from "@solidjs/router";
 import { For, Show } from "solid-js";
 import { fmtDate, fmtPrice } from "~/lib/format";
-import { getPriceHistory, getProductById } from "~/server/queries";
+import { ageLabel } from "~/lib/trust-tier";
+import { getPriceHistory, getProductById, getProductCrowdPrices } from "~/server/queries";
 
 function Sparkline({ points }: { points: { observed_at: string; price: string }[] }) {
   const width = 240;
@@ -54,6 +55,7 @@ export default function ProductPage() {
   const params = useParams();
   const product = createAsync(async () => (params.id ? getProductById(params.id) : null));
   const history = createAsync(async () => (params.id ? getPriceHistory(params.id, 30) : null));
+  const crowd = createAsync(async () => (params.id ? getProductCrowdPrices(params.id) : []));
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
@@ -129,7 +131,54 @@ export default function ProductPage() {
                       </div>
                       <div class="text-right">
                         <span class="font-semibold">{fmtPrice(b.price)} kr</span>
-                        <span class="ml-2 text-xs text-gray-500">{fmtDate(b.observedAt)}</span>
+                        <span class="ml-2 text-xs text-gray-500">
+                          {ageLabel(b.observedAt)} · {fmtDate(b.observedAt)}
+                        </span>
+                      </div>
+                    </li>
+                  )}
+                </For>
+              </ul>
+            </Show>
+
+            <h2 class="mb-2 mt-6 text-lg font-semibold">Crowd shelf prices</h2>
+            <p class="mb-2 text-xs text-gray-500">
+              Prices people saw on the shelf today. 3+ independent reports within tolerance become a
+              Community price; a single report stays "user-reported" and goes stale after 24h.
+            </p>
+            <Show
+              when={crowd() && crowd()!.length}
+              fallback={<p class="text-gray-500">No crowd shelf prices for this product yet.</p>}
+            >
+              <ul class="space-y-2">
+                <For each={crowd()}>
+                  {(g) => (
+                    <li
+                      class={`flex items-baseline justify-between gap-3 rounded border p-3 text-sm ${
+                        g.tier === "single" && g.stale
+                          ? "border-gray-200 bg-gray-50 text-gray-500"
+                          : g.tier === "community"
+                            ? "border-amber-200 bg-amber-50"
+                            : "border-gray-200"
+                      }`}
+                    >
+                      <div>
+                        <TrustBadge tier={g.tier} />
+                        <span class="ml-2 text-gray-700">{g.storeName}</span>
+                        <Show when={g.tier === "community"}>
+                          <span class="ml-2 text-xs text-gray-500">
+                            {g.userCount} independent reports
+                          </span>
+                        </Show>
+                      </div>
+                      <div class="text-right">
+                        <span class="font-semibold">{fmtPrice(String(g.price))} kr</span>
+                        <span class="ml-2 text-xs text-gray-500">{g.age}</span>
+                        <Show when={g.tier === "single" && g.stale}>
+                          <span class="ml-2 rounded bg-gray-200 px-1.5 py-0.5 text-xs text-gray-600">
+                            stale
+                          </span>
+                        </Show>
                       </div>
                     </li>
                   )}

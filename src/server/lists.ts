@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { db } from "~/db/client";
 import { computeBasketCosts, type OfferSource } from "~/lib/basket-cost";
 import { assembleMadplan, type MealOption } from "~/lib/madplan";
+import { computeCrowdTier, type TierReport } from "~/lib/trust-tier";
 import { getCurrentUser } from "./auth.ts";
 
 export type ListKind = "recipe" | "cleaning" | "custom";
@@ -397,7 +398,49 @@ export async function computeBasketCostsForItems(
   const baselines: Record<string, number> = {};
   for (const b of baselineRows) baselines[b.product_id] = parseFloat(String(b.avg));
 
-  return computeBasketCosts({ items, offers, storeNames, baselines });
+  const crowdRows = await db
+    .selectFrom("crowd_report")
+    .innerJoin("store", "store.id", "crowd_report.store_id")
+    .innerJoin("chain", "chain.id", "store.chain_id")
+    .select((eb) => [
+      eb.ref("store.chain_id").as("chain_id"),
+      eb.ref("chain.name").as("chain_name"),
+      eb.ref("crowd_report.product_id").as("product_id"),
+      eb.ref("crowd_report.user_id").as("user_id"),
+      eb.ref("crowd_report.price").as("price"),
+      eb.ref("crowd_report.reported_at").as("reported_at"),
+    ])
+    .where("crowd_report.product_id", "in", productIds)
+    .where("crowd_report.product_id", "is not", null)
+    .execute();
+
+  // Community crowd prices are aggregated per chain (the compare's shopping
+  // destination), so a chain with crowd prices but no offer still appears.
+  const crowdGroups = new Map<string, Map<string, TierReport[]>>();
+  for (const c of crowdRows) {
+    if (c.product_id == null) continue;
+    storeNames[c.chain_id] = c.chain_name;
+    const chainGroup = crowdGroups.get(c.chain_id) ?? new Map<string, TierReport[]>();
+    const productGroup = chainGroup.get(c.product_id) ?? [];
+    productGroup.push({
+      userId: c.user_id,
+      price: parseFloat(c.price),
+      reportedAt: c.reported_at,
+    });
+    chainGroup.set(c.product_id, productGroup);
+    crowdGroups.set(c.chain_id, chainGroup);
+  }
+  const crowdPrices: Record<string, Record<string, number>> = {};
+  for (const [chainId, productGroups] of crowdGroups) {
+    for (const [productId, reports] of productGroups) {
+      const tier = computeCrowdTier(reports);
+      if (tier.tier === "community" && tier.representativePrice != null) {
+        (crowdPrices[chainId] ??= {})[productId] = tier.representativePrice;
+      }
+    }
+  }
+
+  return computeBasketCosts({ items, offers, storeNames, baselines, crowdPrices });
 }
 
 export interface MadplanResult {

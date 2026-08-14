@@ -18,9 +18,11 @@ export interface StoreVerdict extends VerdictStore {
   roundTripKm: number | null;
   hasFuelFigure: boolean;
   offerItems: number;
+  crowdItems: number;
   baselineItems: number;
   noPriceItems: number;
   offerTotal: number;
+  crowdTotal: number;
   baselineTotal: number;
 }
 
@@ -92,9 +94,11 @@ export async function getStoreVerdicts(listId: string, userId: string): Promise<
         roundTripKm: distance?.roundTripKm ?? null,
         hasFuelFigure: fuelCost != null,
         offerItems: b.offerItems,
+        crowdItems: b.crowdItems,
         baselineItems: b.baselineItems,
         noPriceItems: b.noPriceItems,
         offerTotal: b.offerTotal,
+        crowdTotal: b.crowdTotal,
         baselineTotal: b.baselineTotal,
       };
     });

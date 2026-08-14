@@ -134,6 +134,25 @@ describe("computeBasketCosts", () => {
     expect(basket.lines.find((l) => l.productId === "b")?.source).toBe("baseline");
   });
 
+  it("uses a community crowd price before a receipt baseline, tracked separately", () => {
+    const result = computeBasketCosts({
+      items: [item("a", 1, "stk"), item("b", 500, "g")],
+      offers: { s1: [offer("a", 5, 1, 5, "kr/stk")] },
+      storeNames: { s1: "S1" },
+      baselines: { a: 99, b: 20 },
+      crowdPrices: { s1: { b: 12.5 } },
+    });
+    const basket = result[0];
+    expect(basket.offerItems).toBe(1); // a via offer
+    expect(basket.crowdItems).toBe(1); // b via community crowd, not baseline
+    expect(basket.baselineItems).toBe(0);
+    expect(basket.lines.find((l) => l.productId === "b")?.source).toBe("crowd");
+    expect(basket.lines.find((l) => l.productId === "b")?.price).toBeCloseTo(12.5, 2);
+    expect(basket.crowdTotal).toBeCloseTo(12.5, 2);
+    expect(basket.baselineTotal).toBeCloseTo(0, 2);
+    expect(basket.basketTotal).toBeCloseTo(17.5, 2);
+  });
+
   it("flags items with no offer and no baseline as no-price without guessing", () => {
     const result = computeBasketCosts({
       items: [item("unknown", 1, "stk")],

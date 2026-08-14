@@ -142,7 +142,7 @@ export default function StoreComparison() {
                             <th class="py-2 pr-2 text-right">Fuel (round trip)</th>
                             <th class="py-2 pr-2 text-right">Total w/ fuel</th>
                             <th class="py-2 pr-2 text-right">vs. most expensive</th>
-                            <th class="py-2 text-right">Offers / user-reported</th>
+                            <th class="py-2 text-right">Official / community / user-reported</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -150,8 +150,8 @@ export default function StoreComparison() {
                             {(store) => {
                               const savings = mostExpensive - store.basketTotal;
                               const baselineHeavy =
-                                store.baselineTotal > 0 &&
-                                store.baselineTotal / store.basketTotal >= 0.5;
+                                store.crowdTotal + store.baselineTotal > 0 &&
+                                (store.crowdTotal + store.baselineTotal) / store.basketTotal >= 0.5;
                               const isNetWinner =
                                 netWinner != null && store.storeId === netWinner.storeId;
                               return (
@@ -215,10 +215,18 @@ export default function StoreComparison() {
                                     <span class="text-sky-700">
                                       {fmtPrice(String(store.offerTotal))} kr
                                     </span>
-                                    <span class="text-gray-400"> + </span>
-                                    <span class="text-amber-700">
-                                      {fmtPrice(String(store.baselineTotal))} kr
-                                    </span>
+                                    <Show when={store.crowdTotal > 0}>
+                                      <span class="text-gray-400"> + </span>
+                                      <span class="text-amber-600">
+                                        {fmtPrice(String(store.crowdTotal))} kr
+                                      </span>
+                                    </Show>
+                                    <Show when={store.baselineTotal > 0}>
+                                      <span class="text-gray-400"> + </span>
+                                      <span class="text-amber-700">
+                                        {fmtPrice(String(store.baselineTotal))} kr
+                                      </span>
+                                    </Show>
                                   </td>
                                 </tr>
                               );
@@ -249,9 +257,10 @@ export default function StoreComparison() {
                         </p>
                       </Show>
                       <p class="text-xs text-gray-500">
-                        Blue = current offers. Amber = user-reported prices from receipts — not
-                        official offers. Fuel cost uses the national average price and your car
-                        profile; driving distances are round-trip to the nearest store.
+                        Blue = current offers (official). Amber = user-reported prices — community
+                        crowd prices (3+ people agree) and receipt baselines — never a discount.
+                        Fuel cost uses the national average price and your car profile; driving
+                        distances are round-trip to the nearest store.
                       </p>
 
                       <section class="mt-4 rounded border border-gray-200 p-3">

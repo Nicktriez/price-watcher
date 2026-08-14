@@ -17,7 +17,7 @@ export interface BasketLineResult {
   productId: string;
   quantity: number | null;
   unit: string | null;
-  source: "offer" | "baseline" | "no-price";
+  source: "offer" | "crowd" | "baseline" | "no-price";
   price: number | null;
 }
 
@@ -25,9 +25,11 @@ export interface StoreBasket {
   storeId: string;
   storeName: string;
   offerItems: number;
+  crowdItems: number;
   baselineItems: number;
   noPriceItems: number;
   offerTotal: number;
+  crowdTotal: number;
   baselineTotal: number;
   basketTotal: number;
   lines: BasketLineResult[];
@@ -84,6 +86,7 @@ export function pickBestOffer(item: BasketItem, offers: OfferSource[]): OfferSou
 export function priceItem(
   item: BasketItem,
   storeOffers: OfferSource[],
+  crowdPrices: Record<string, number>,
   baselines: Record<string, number>,
 ): BasketLineResult {
   const best = pickBestOffer(item, storeOffers);
@@ -97,6 +100,10 @@ export function priceItem(
       return { ...item, source: "offer", price: round2(converted * best.unitPrice!) };
     }
   }
+  const crowd = crowdPrices[item.productId];
+  if (crowd != null) {
+    return { ...item, source: "crowd", price: round2(crowd) };
+  }
   const baseline = baselines[item.productId];
   if (baseline != null) {
     return { ...item, source: "baseline", price: round2(baseline) };
@@ -109,29 +116,36 @@ export function computeBasketCosts(params: {
   offers: Record<string, OfferSource[]>;
   storeNames: Record<string, string>;
   baselines: Record<string, number>;
+  crowdPrices?: Record<string, Record<string, number>>;
 }): StoreBasket[] {
-  const { items, offers, storeNames, baselines } = params;
-  const stores = Object.keys(offers);
+  const { items, offers, storeNames, baselines, crowdPrices = {} } = params;
+  const stores = [...new Set([...Object.keys(offers), ...Object.keys(crowdPrices)])];
 
   return stores.map((storeId) => {
     const storeOffers = offers[storeId] ?? [];
+    const storeCrowd = crowdPrices[storeId] ?? {};
     const basket: StoreBasket = {
       storeId,
       storeName: storeNames[storeId] ?? storeId,
       offerItems: 0,
+      crowdItems: 0,
       baselineItems: 0,
       noPriceItems: 0,
       offerTotal: 0,
+      crowdTotal: 0,
       baselineTotal: 0,
       basketTotal: 0,
       lines: [],
     };
 
     for (const item of items) {
-      const line = priceItem(item, storeOffers, baselines);
+      const line = priceItem(item, storeOffers, storeCrowd, baselines);
       if (line.source === "offer") {
         basket.offerItems += 1;
         basket.offerTotal += line.price!;
+      } else if (line.source === "crowd") {
+        basket.crowdItems += 1;
+        basket.crowdTotal += line.price!;
       } else if (line.source === "baseline") {
         basket.baselineItems += 1;
         basket.baselineTotal += line.price!;
@@ -142,8 +156,9 @@ export function computeBasketCosts(params: {
     }
 
     basket.offerTotal = round2(basket.offerTotal);
+    basket.crowdTotal = round2(basket.crowdTotal);
     basket.baselineTotal = round2(basket.baselineTotal);
-    basket.basketTotal = round2(basket.offerTotal + basket.baselineTotal);
+    basket.basketTotal = round2(basket.offerTotal + basket.crowdTotal + basket.baselineTotal);
     return basket;
   });
 }
