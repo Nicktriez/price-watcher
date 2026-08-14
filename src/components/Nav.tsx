@@ -2,7 +2,8 @@ import { createAsync, useLocation, useNavigate } from "@solidjs/router";
 import { createSignal, Show, Suspense } from "solid-js";
 import { getCurrentUser, signOut } from "~/server/auth";
 
-// TEMP: dev links — remove before launch (Phase 8)
+// Real launch nav (supersedes the 033/034 dev links: settings/madplan/spending
+// moved to the footer). Task 036.
 export default function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,8 +29,8 @@ export default function Nav() {
         <li class={`border-b-2 ${active("/")} mx-1.5 sm:mx-6`}>
           <a href="/">Forside</a>
         </li>
-        <li class={`border-b-2 ${active("/about")} mx-1.5 sm:mx-6`}>
-          <a href="/about">Om</a>
+        <li class={`border-b-2 ${active("/offers")} mx-1.5 sm:mx-6`}>
+          <a href="/offers">Tilbud</a>
         </li>
         <li class={`border-b-2 ${active("/lists")} mx-1.5 sm:mx-6`}>
           <a href="/lists">Lister</a>
@@ -37,14 +38,11 @@ export default function Nav() {
         <li class={`border-b-2 ${active("/upload")} mx-1.5 sm:mx-6`}>
           <a href="/upload">Upload kvittering</a>
         </li>
-        <li class={`border-b-2 ${active("/settings")} mx-1.5 sm:mx-6`}>
-          <a href="/settings">Indstillinger</a>
+        <li class={`border-b-2 ${active("/report")} mx-1.5 sm:mx-6`}>
+          <a href="/report">Rapporter en pris</a>
         </li>
-        <li class={`border-b-2 ${active("/madplan")} mx-1.5 sm:mx-6`}>
-          <a href="/madplan">Madplan</a>
-        </li>
-        <li class={`border-b-2 ${active("/spending")} mx-1.5 sm:mx-6`}>
-          <a href="/spending">Forbrug</a>
+        <li class={`border-b-2 ${active("/about")} mx-1.5 sm:mx-6`}>
+          <a href="/about">Om</a>
         </li>
         <li class="ml-auto mx-1.5 sm:mx-6">
           <Suspense fallback={null}>
