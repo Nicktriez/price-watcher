@@ -1,4 +1,4 @@
-# Task 047 — Report Page: Fix English Leakage (Danish)
+# Task 037d — Report Page: Fix English Leakage (Danish)
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 6 task (Task 029 — report a price) + Danish-consistency (Task 045). **Found 2026-08-14:** the report page was missed by earlier Danish passes.
