@@ -443,6 +443,14 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 3. **The screenshots that matter:** polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) — these are the "screenshot-for-distribution" moments. A madplan screenshot that looks clean is the single most shareable asset (feeds the "madplan for 500 kr" blog-post content engine).
 4. **Mobile check:** receipts are uploaded from a phone camera — verify the upload + receipt flow is genuinely usable on mobile, not just desktop. (The beta likely surfaced some of this in feedback; this is where to fix it.)
 5. **Honest-UI consistency pass:** ensure the trust-tier / "user-reported" / "no discount" labeling (Tasks 014/017/022) reads cleanly and consistently in the polished design — the compliance framing must survive the visual redesign, not get lost in it.
+6. **Danish-consistency pass (audit, not i18n):** every user-facing string in the UI must be Danish. Today there's English leakage (e.g. `/reported-items` H1 "Reported items", tier badges "Community"/"User-reported") while most of the site is Danish — mixed-language UI reads as broken to a Danish user. Grep for hardcoded strings, translate the stragglers, and confirm the trust/compliance labels stay Omnibus-clean in Danish. Also check links (nav, footer, CTAs) resolve and are correctly labelled in Danish.
+
+## Language policy (DECIDED — do not build full English i18n yet)
+
+- **Launch language is Danish.** The site is Danish-first; the branding voice (Phase 7b #2) is "Danish, direct, honest."
+- **English is OUT of scope for launch.** A full English locale/toggle (i18n framework, `/en/` routing, translation keys, dual voices) is not built now — it's the export ambition in disguise, and export is gated on Phase 10/traction. Potential audience: non-Danish speakers living in Denmark (expats). Real but secondary; not worth a multi-week i18n lift pre-launch.
+- **Keep the eventual switch painless, not pre-built:** during the Danish-consistency pass, avoid deeply-buried hardcoded strings where extraction would be painful later. No i18n framework — just don't make a future locale pass harder than it has to be.
+- **Revisit when:** there's real expat demand OR Phase 10 (export) starts. Not before.
 
 **Exit gate (launch-ready visuals):**
 
@@ -451,6 +459,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 - [ ] Store comparison + madplan are screenshot-worthy (clean, shareable)
 - [ ] Mobile upload + receipt flow works
 - [ ] Trust-tier / user-reported labeling is consistent and still Omnibus-clean after the redesign
+- [ ] Danish-consistency pass done: no English leakage in user-facing UI; links resolve + are labelled in Danish (language policy documented)
 
 **When done:** hands off to Phase 8 (Monetization + Launch) with a site that both works _and_ looks like a product.
 
