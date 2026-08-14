@@ -80,16 +80,16 @@ export default function Report() {
         }
       >
         <main class="mx-auto max-w-3xl p-4 text-gray-900">
-          <h1 class="mb-1 text-2xl font-semibold">Report a shelf price</h1>
+          <h1 class="mb-1 text-2xl font-semibold">Rapportér en pris</h1>
           <p class="mb-6 text-sm text-gray-600">
-            Saw a price in a store that isn't in any offer? Report it — it helps others (and you)
-            spot real prices.
+            Så du en pris i en butik, som ikke er i nogen tilbudsavis? Rapportér den — det hjælper
+            andre (og dig) med at se rigtige priser.
           </p>
 
           <form onSubmit={handleSubmit} class="space-y-5">
             <div>
               <label for="store-search" class="mb-1 block text-sm text-gray-600">
-                Store
+                Butik
               </label>
               <Show
                 when={selectedStore()}
@@ -103,7 +103,7 @@ export default function Report() {
                         handleStoreInput(e.currentTarget.value);
                         setSelectedStore(null);
                       }}
-                      placeholder="Search by store name or city…"
+                      placeholder="Søg på butikkens navn eller by…"
                       class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
                     />
                     <Show when={stores().length}>
@@ -144,7 +144,7 @@ export default function Report() {
                       }}
                       class="text-sky-700 hover:underline"
                     >
-                      Change
+                      Skift
                     </button>
                   </div>
                 )}
@@ -153,7 +153,7 @@ export default function Report() {
 
             <div>
               <label for="product-search" class="mb-1 block text-sm text-gray-600">
-                Product
+                Produkt
               </label>
               <Show
                 when={!useFreeText()}
@@ -164,7 +164,7 @@ export default function Report() {
                       id="free-text"
                       value={freeText()}
                       onInput={(e) => setFreeText(e.currentTarget.value)}
-                      placeholder="Name of the product…"
+                      placeholder="Navnet på produktet…"
                       class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
                     />
                     <button
@@ -175,7 +175,7 @@ export default function Report() {
                       }}
                       class="mt-1 text-sm text-sky-700 hover:underline"
                     >
-                      Search the catalog instead
+                      Søg i kataloget i stedet
                     </button>
                   </div>
                 }
@@ -192,7 +192,7 @@ export default function Report() {
                           handleProductInput(e.currentTarget.value);
                           setSelectedProduct(null);
                         }}
-                        placeholder="Search by product name…"
+                        placeholder="Søg på produktets navn…"
                         class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
                       />
                       <Show when={products().length}>
@@ -222,7 +222,7 @@ export default function Report() {
                           onClick={() => setUseFreeText(true)}
                           class="mt-1 text-sm text-sky-700 hover:underline"
                         >
-                          Can't find it? Report it with a free-text name
+                          Kan du ikke finde den? Rapportér med et fritekst-navn
                         </button>
                       </Show>
                     </>
@@ -239,7 +239,7 @@ export default function Report() {
                         }}
                         class="text-sky-700 hover:underline"
                       >
-                        Change
+                        Skift
                       </button>
                     </div>
                   )}
@@ -249,7 +249,7 @@ export default function Report() {
 
             <div>
               <label for="price" class="mb-1 block text-sm text-gray-600">
-                Price (kr)
+                Pris (kr)
               </label>
               <input
                 type="number"
@@ -258,7 +258,7 @@ export default function Report() {
                 step="0.01"
                 value={price()}
                 onInput={(e) => setPrice(e.currentTarget.value)}
-                placeholder="e.g. 12.95"
+                placeholder="fx 12,95"
                 required
                 class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
               />
@@ -266,7 +266,7 @@ export default function Report() {
 
             <div>
               <label for="photo" class="mb-1 block text-sm text-gray-600">
-                Photo (optional evidence)
+                Billede (valgfrit bevis)
               </label>
               <input
                 type="file"
@@ -276,7 +276,7 @@ export default function Report() {
                 class="w-full text-sm"
               />
               <p class="mt-1 text-xs text-gray-500">
-                Optional — a price alone is useful. A photo helps later verification.
+                Valgfrit — en pris alene er nyttig. Et billede hjælper med senere verifikation.
               </p>
             </div>
 
@@ -285,7 +285,7 @@ export default function Report() {
               disabled={submitting() || !selectedStore() || price() === ""}
               class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white disabled:opacity-50"
             >
-              {submitting() ? "Reporting…" : "Report price"}
+              {submitting() ? "Rapporterer…" : "Rapportér pris"}
             </button>
           </form>
 
@@ -302,8 +302,9 @@ export default function Report() {
                 >
                   <p class="font-medium text-green-700">{r().message}</p>
                   <p class="mt-2 text-xs text-gray-600">
-                    User-reported — this price is never shown as an offer or a discount, only as a
-                    single user report (it may become a community price once several people agree).
+                    Brugerrapporteret — denne pris vises aldrig som et tilbud eller en rabat, kun
+                    som en enkelt brugerrapport (den kan blive en Community-pris, når flere
+                    uafhængige brugere er enige).
                   </p>
                 </Show>
               </div>
@@ -311,8 +312,8 @@ export default function Report() {
           </Show>
 
           <p class="mt-6 text-xs text-gray-500">
-            Your report is stored with a timestamp and tied to your account (for anti-spam and
-            points). It never enters the offer feed and is never marked "official".
+            Din rapport gemmes med et tidsstempel og knyttes til din konto (mod spam og til point).
+            Den kommer aldrig ind i tilbudsstrømmen og markeres aldrig "officiel".
           </p>
         </main>
       </Show>
