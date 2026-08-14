@@ -17,7 +17,7 @@ Task 037b made the landing page session-free (no `getCurrentUser()`, no auth bra
 
 1. **Make the landing's sign-in CTA auth-aware** in `src/routes/index.tsx`:
    - **Signed-out:** show the current "Log ind og kom i gang" button (→ `/signin`), plus the existing secondary CTAs.
-   - **Signed-in:** do NOT show "Log ind og kom i gang". Instead show a signed-in action — e.g. **"Opret indkøbsliste"** (→ `/lists`) or **"Se ugens tilbud"** (→ `/offers`) as the primary button. The exact signed-in primary CTA is Nick's call; default to "Opret indkøbsliste" (→ `/lists`).
+   - **Signed-in:** do NOT show "Log ind og kom i gang". Instead show the signed-in action **"Opret indkøbsliste"** (→ `/lists`) as the primary button. **DECIDED (Nick, 2026-08-14):** "Opret indkøbsliste" → `/lists` is the signed-in primary CTA — it's the M1 action (build a basket → ranking), it's where a returning user actually wants to go (their lists), and offers are one nav-click away under "Tilbud" anyway.
 2. **Same page for everyone** — keep the rest of the landing identical for signed-in and signed-out (hero, what-you-get, how-it-works, and the other CTAs). Only the sign-in button is conditional. **No redirect, no layout split.**
 3. **Reuse the working session pattern** — mirror how `Nav.tsx` conditionally renders the sign in/out control (the `createAsync` + `getCurrentUser` + Suspense-safe read). Don't invent a new session mechanism.
 
@@ -32,7 +32,7 @@ Task 037b made the landing page session-free (no `getCurrentUser()`, no auth bra
 ## Acceptance criteria
 
 - [ ] A **signed-out** user sees "Log ind og kom i gang" (→ `/signin`) on the landing
-- [ ] A **signed-in** user does NOT see "Log ind og kom i gang" — instead sees a signed-in action (default "Opret indkøbsliste" → `/lists`)
+- [ ] A **signed-in** user does NOT see "Log ind og kom i gang" — instead sees "Opret indkøbsliste" (→ `/lists`)
 - [ ] The landing is still the same page for everyone (no redirect, no layout split — only the one button differs)
 - [ ] Session handling reuses the working Nav.tsx pattern (reactivity-safe)
 - [ ] Plain Danish, no English leakage
