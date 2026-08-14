@@ -102,10 +102,11 @@ Small dev-convenience tasks that unblock testing. Run these before/parallel to t
 
 The last coding work before anyone is invited. **Task 042 + 043 must pass before any invite** — this is the difference between measuring retention and measuring usability.
 
-| #   | Task                                                        | Status | Depends on                 |
-| --- | ----------------------------------------------------------- | ------ | -------------------------- |
-| 035 | Usability precondition: 3 core flows navigable without help | ⬜     | — (GATES the beta invites) |
-| 036 | Basic design + correct route linking                        | ⬜     | 035                        |
+| #   | Task                                                     | Status | Depends on                 |
+| --- | -------------------------------------------------------- | ------ | -------------------------- |
+| 035 | Usability precondition: sign-in + 3 core flows navigable | ⬜     | — (GATES the beta invites) |
+| 036 | Basic design + correct route linking (real launch nav)   | ⬜     | 035                        |
+| 037 | Landing page (first-time user home)                      | ⬜     | 036                        |
 
 **Invite model (DECIDED): no invite system.** The magic-link sign-in enforces the closed beta; Nick controls who gets links; `beta.skujeg.dk` is closed by obscurity. No new code.
 
@@ -115,7 +116,7 @@ Two parallel tracks: **deploy** (Ultron's infra — Hetzner CX22 + `beta.skujeg.
 
 | #   | Task                                               | Status | Depends on |
 | --- | -------------------------------------------------- | ------ | ---------- |
-| 037 | Privacy policy + GDPR page (Danish, Nick-approved) | ⬜     | —          |
+| 038 | Privacy policy + GDPR page (Danish, Nick-approved) | ⬜     | —          |
 
 Deploy (Ultron, not a task file): Hetzner CX22 €3.79/mo, Node ≥24, Postgres, pm2, TLS → `beta.skujeg.dk`.
 
@@ -125,18 +126,18 @@ Deploy (Ultron, not a task file): Hetzner CX22 €3.79/mo, Node ≥24, Postgres,
 
 ## Phase 9 — Complete the Design (IF the beta succeeded)
 
-Gated on Phase 8 success. Polish a product you know people return to. **Sequence:** 038 → 039 → then 040/041/042/043 (parallel) → 044 last.
+Gated on Phase 8 success. Polish a product you know people return to. **Sequence:** 039 → 040 → then 041/042/043/044 (parallel) → 045 last.
 
 | #   | Task                                          | Status | Depends on        |
 | --- | --------------------------------------------- | ------ | ----------------- |
-| 038 | Design variants (3 throwaway HTML mockups)    | ⬜     | Nick picks winner |
-| 039 | Design system (Tailwind tokens from winner)   | ⬜     | 038               |
-| 040 | Branding (Skujeg wordmark, titles, copy tone) | ⬜     | 039               |
-| 041 | Screenshot-worthy store comparison + madplan  | ⬜     | 039               |
-| 042 | Mobile check: receipt upload flow             | ⬜     | 039               |
-| 043 | Honest-UI consistency pass                    | ⬜     | 039               |
-| 044 | Danish-consistency pass                       | ⬜     | 039, 043          |
+| 039 | Design variants (3 throwaway HTML mockups)    | ⬜     | Nick picks winner |
+| 040 | Design system (Tailwind tokens from winner)   | ⬜     | 039               |
+| 041 | Branding (Skujeg wordmark, titles, copy tone) | ⬜     | 040               |
+| 042 | Screenshot-worthy store comparison + madplan  | ⬜     | 040               |
+| 043 | Mobile check: receipt upload flow             | ⬜     | 040               |
+| 044 | Honest-UI consistency pass                    | ⬜     | 040               |
+| 045 | Danish-consistency pass                       | ⬜     | 040, 044          |
 
-**Run order:** 038 → 039 → then 040/041/042/043 (parallelizable after 039) → 044 last (needs the honest-UI pass done).
+**Run order:** 039 → 040 → then 041/042/043/044 (parallelizable after 040) → 045 last (needs the honest-UI pass done).
 
 Then: monetization + launch (Phase 10), agent layer (Phase 11), Tjek-independent ingestion (Phase 12, conditional).

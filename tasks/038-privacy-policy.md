@@ -1,4 +1,4 @@
-# Task 037 — Privacy Policy + GDPR Page (Phase 7b legal gate)
+# Task 038 — Privacy Policy + GDPR Page (Phase 7b legal gate)
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 7b (legal before releasing)
@@ -18,7 +18,7 @@ The site collects real personal data: **email** (magic-link sign-in), **receipt 
    - Why: sign-in, receipt parsing, distance calculation
    - How long it's kept: receipt images deleted after parse (Task 013); other data as described
    - That data is never sold; receipt images are not exposed
-   - Contact for data requests (Nick's email)
+   - Contact for data requests (Nick's email: `jensen0710@gmail.com`)
 2. **Cookie/consent handling** — only if the site actually sets non-essential cookies/tracking. If it uses none beyond what's strictly necessary (session cookie for sign-in), state that. Do NOT add a cookie banner for a single necessary session cookie — that's over-engineering. Verify what cookies exist and handle accordingly.
 3. **Wire the address-collection privacy note** — the settings/home-address flow (Task 025) already has a privacy note; confirm it's consistent with the policy.
 

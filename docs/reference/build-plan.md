@@ -405,15 +405,17 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Coding tasks (the gate):**
 
-- **Task 035 — Usability precondition:** the three core flows (build a list, upload a receipt, view a store comparison) are navigable without help by a cold, non-technical user. Fix blockers and dead ends, plain Danish labels, no relying on the dev-navbar.
-- **Task 036 — Basic design + correct route linking:** a clean, consistent basic layout (navbar, home, page structure), every public route reachable by a real link, the "Sku' jeg?" hook landing on the home page. **Basic + correct, NOT the full design system** (that's Phase 9, only if the beta succeeds).
+- **Task 035 — Usability precondition (incl. sign-in):** the core flows — sign-in via magic-link, build a list, upload a receipt, view a store comparison — are navigable without help by a cold, non-technical user. Fix blockers and dead ends, plain Danish labels, no relying on the dev-navbar. **Sign-in is flow #0** (everything gates on it). The compare path starts FROM a list (`/compare/[id]`).
+- **Task 036 — Basic design + correct route linking:** a clean, consistent basic layout, the real launch nav replacing the dev-navbar (033/034), every public route reachable by a real link. **Basic + correct, NOT the full design system** (that's Phase 9, only if the beta succeeds).
+- **Task 037 — Landing page:** rebuild `index.tsx` into a landing page — hero that explains the product + lands the "Sku' jeg?" hook, clear entry points to the flows, a "what you get" section, sign-in affordance, offer browsing kept.
 
 **The invite question (DECIDED): NO invite system, do NOT open the subdomain.** The beta is enforced by the existing magic-link sign-in (Task 010) and closed by obscurity — Nick controls who gets links; nobody finds an unannounced `beta.skujeg.dk`. No new code. Add an invite-code gate ONLY if strangers actually appear (they won't at this stage) — don't pre-build it.
 
 **Exit gate (7a done = ready to host):**
 
-- [ ] Task 035 done — cold non-technical user completes the 3 core flows unaided
-- [ ] Task 036 done — basic layout + correct route linking, no dead links, Danish
+- [ ] Task 035 done — cold non-technical user signs in + completes the 3 core flows unaided
+- [ ] Task 036 done — basic layout + real launch nav + correct route linking, no dead links, Danish
+- [ ] Task 037 done — landing page explains the product + guides a first-time user
 - [ ] `vp check` + `vp test` pass
 
 ---
@@ -433,13 +435,13 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Legal (DECIDED — one real item before invites):** a **privacy policy in Danish** is required before real users, because the site collects email (sign-in), receipt images (personal data, deleted after parse per Task 013), and home address (OSRM distance, Task 025). Plus accurate cookie handling.
 
-- **Task 037 — Privacy policy + GDPR page:** `/privacy` route in Danish, accurate to what the code does, Nick approves the text (legal exposure). No full GDPR machinery — a policy page + accurate cookie handling.
-- **Not needed yet:** no company/entity for a closed solo beta (that's monetization); Omnibus labeling is already in the code (Tasks 043/044).
+- **Task 038 — Privacy policy + GDPR page:** `/privacy` route in Danish, accurate to what the code does, Nick approves the text (legal exposure). No full GDPR machinery — a policy page + accurate cookie handling.
+- **Not needed yet:** no company/entity for a closed solo beta (that's monetization); Omnibus labeling is already in the code (Tasks 044/045).
 
 **Exit gate (7b done = ready to invite):**
 
 - [ ] `beta.skujeg.dk` serves the site over HTTPS
-- [ ] Task 037 done — Danish privacy policy live, Nick approved, footer-linked
+- [ ] Task 038 done — Danish privacy policy live, Nick approved, footer-linked
 - [ ] Deploy stable (app + Postgres + process manager running)
 
 ---
@@ -492,7 +494,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Objective:** Only after the beta proves people return to it, make the site _look_ like a product worth sharing. Polish a product you know works, not one you hope will. **Gated on Phase 8 success** — if M1 failed, you do NOT polish; you fix the loop first.
 
-**Design tasks (038–044):** design variants (038, Nick picks winner by looking) → design system (039) → branding Skujeg (040) → screenshot-worthy comparison + madplan (041) → mobile receipt upload (042) → honest-UI consistency (043) → Danish-consistency (044).
+**Design tasks (039–045):** design variants (039, Nick picks winner by looking) → design system (040) → branding Skujeg (041) → screenshot-worthy comparison + madplan (042) → mobile receipt upload (043) → honest-UI consistency (044) → Danish-consistency (045).
 
 **Language policy (DECIDED — do not build full English i18n yet):**
 
@@ -503,7 +505,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Exit gate (launch-ready visuals):**
 
-- [ ] Design direction chosen (Task 038): winner picked by looking, tokens documented
+- [ ] Design direction chosen (Task 039): winner picked by looking, tokens documented
 - [ ] Consistent design system across all routes (no ad-hoc class soup)
 - [ ] Branding locked: Skujeg name, logo/wordmark, favicon, page titles
 - [ ] Store comparison + madplan screenshot-worthy

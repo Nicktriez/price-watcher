@@ -1,4 +1,4 @@
-# Task 040 — Branding (Skujeg)
+# Task 041 — Branding (Skujeg)
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 2)
@@ -14,7 +14,7 @@ The domain is `skujeg.dk` (bought 2026-08-14); beta subdomain `beta.skujeg.dk`. 
 ## What to build
 
 1. **Favicon + page titles** — every route's `<title>` and the favicon use Skujeg branding. Danish, short, correct.
-2. **Logo / wordmark** — a simple, clean Skujeg wordmark (text-based is fine; no external asset needed unless Nick wants one). Consistent with the winning design-system tokens (Task 039).
+2. **Logo / wordmark** — a simple, clean Skujeg wordmark (text-based is fine; no external asset needed unless Nick wants one). Consistent with the winning design-system tokens (Task 040).
 3. **UI copy tone** — sweep user-facing copy to a Danish, direct, honest voice (matching the blog). Fix any remaining English or stiff phrasing. No hype, no corporate filler.
 4. **The brand question** — the tagline/strapline should land the "Sku' jeg?" (Should I?) hook naturally where it fits (e.g. home / about), without overdoing it.
 
@@ -23,12 +23,12 @@ The domain is `skujeg.dk` (bought 2026-08-14); beta subdomain `beta.skujeg.dk`. 
 - **Name is locked as Skujeg** — do not revert to "Kurven" or anything else.
 - **Danish-first** (see Language policy in the plan): copy is Danish. This is NOT the full English-i18n task.
 - **Simple > elaborate** — a text wordmark + favicon is enough. Don't build a logo system.
-- **Consistent with Task 039** — use the winning tokens; branding should feel like the same product.
+- **Consistent with Task 040** — use the winning tokens; branding should feel like the same product.
 
 ## Acceptance criteria
 
 - [ ] All page titles + favicon use Skujeg branding
 - [ ] A simple Skujeg wordmark/logo exists, consistent with the design system
-- [ ] User-facing copy is Danish, direct, honest — matches the blog voice, no English leakage (see Danish-consistency Task 044 for the full sweep; this is branding copy)
+- [ ] User-facing copy is Danish, direct, honest — matches the blog voice, no English leakage (see Danish-consistency Task 045 for the full sweep; this is branding copy)
 - [ ] "Sku' jeg?" hook lands naturally where it fits
 - [ ] `vp check` + `vp test` pass
