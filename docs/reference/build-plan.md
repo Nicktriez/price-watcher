@@ -467,14 +467,25 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Tasks (run by Nick, not OpenCode):**
 
-1. **Cohort invite (~10–20):** 3–5 friends/family (non-technical) · 2–3 from Danish price-watch groups (technical) · 1 skeptic · 1–2 technical peers (kept out of the data layer). Log who's in + type.
-2. **Seed-data campaign:** ask each user for 3–5 receipts (the donor-to-the-moat ask). Track the running count toward ≥50.
-3. **Watch the M1 signal:** "return" = a signed-in user who performs an M1 action (build/update a list, get a ranking) in week 2 after doing one in week 1. Query existing data (lists per user per week) — add a `last_active` log only if the query can't measure it.
-4. **Edge-case harvest:** log every dedup/keep/replace decision on real uploads; capture any double-points/duplicate baselines (the real-world test unit tests can't simulate).
-5. **Feedback channel:** one pinned thread (Discord/Signal/email) — no issue tracker. Nick reads it weekly.
-6. **Timebox:** 3 weeks — week 1 recruit+onboard, week 2 first return measurement, week 3 confirm + decide.
+1. **Task 0 — Usability precondition (navigability bar, re-test):** one non-technical person completes build-a-list, upload-a-receipt, view-a-comparison **cold**, without being walked through. Watch, don't help; log every stall; fix only blockers (not polish); re-test until the three flows complete unaided. If a user gets stuck on "can't find the button," beta measures usability, not retention, and M1 is polluted. (Phase 7a Task 035 set this bar; re-confirm it right before invites.)
+2. **Task 1 — Define "return" precisely (measure before recruiting):** "return" = a signed-in user who performs an M1 action (build/update a list, get a store ranking) in **week 2** after doing one in **week 1** — _not_ "visited again." Observation window = calendar week 1 → week 2. Measure via a query on existing data (lists per user per week); add a minimal `last_active`/event log **only if** the query can't measure it (small task, flag it). Without this written down, the exit gate is unmeasurable.
+3. **Task 2 — Invite the cohort (~10–20):** draft a no-hype invite (what it is, closed beta, the 3 asks: upload 3–5 receipts, build one list, how to reach you). Recruit a spread: 3–5 friends/family (non-technical) · 2–3 from Danish price-watch groups (technical) · 1 skeptic (will try to break it) · 1–2 technical peers (kept out of the data layer). Send magic-link invites as you onboard; log who's in, when, and type.
+4. **Task 3 — Seed-data campaign:** ask each user for 3–5 receipts from their own weekly shop (the donor-to-the-moat ask). Make upload the obvious first action (receipt upload is the onboarding reward: spending view + price-vs-average). Track the running count toward ≥50. Watch for the receipt→spending-view moment — that's the retention hook firing.
+5. **Task 4 — Watch the M1 signal early:** after week 1, run the return query: which week-1-active users acted again in week 2? Rate = returning / week-1-active, vs. the **≥30%** bar. ≥30% → loop holds, continue to confirm in week 3. <30% → do **NOT** launch; diagnose which hook is weak (spending view / gamification / price-vs-average / the ranking), fix, re-test.
+6. **Task 5 — Edge-case harvest:** real users WILL upload crumpled, duplicate, adversarial receipts. Log every dedup/keep/replace decision; capture any double-points/duplicate baselines (real-world tests unit tests can't simulate). Feed anything that breaks trust/anti-gaming back as a bug/task.
+7. **Task 6 — Feedback channel:** one pinned thread (Discord/Signal/email) — no issue tracker, no process. Tell users it exists; Nick reads it weekly and triages: launch-blocker vs. nice-to-have vs. ignore.
+8. **Timebox:** 3 weeks — week 1 recruit+onboard, week 2 first return measurement, week 3 confirm + decide. The box keeps the beta decisive.
 
 **What to watch:** M1 return rate · receipt upload friction (where do users stall?) · dedup/gamification edge cases · whether users _volunteer_ use ("can I keep using this?" beats "it's fine").
+
+**Hosting precondition:** beta deploys to the separate Hetzner VPS **before any invite** — see the deploy checklist in Phase 7b (CX23 + `skujeg.dk`/`beta.skujeg.dk`, Node ≥24, Postgres, pm2, TLS). Nothing in Task 2 happens until users have a reachable HTTPS URL.
+
+**Beta risks / tradeoffs / open questions:**
+
+- **Cohort honesty:** friends/family may over-report or under-break. The skeptic + price-watch members hedge this.
+- **Cold-start risk:** if recruits don't upload receipts, the lake stays thin. Task 3 makes it an explicit ask + the onboarding reward.
+- **Timebox drift:** beta can stretch. The 3-week box keeps it decisive.
+- **"Return" definition** must be settled in Task 1 or the exit gate is unmeasurable.
 
 **Exit gate (launch-readiness — measured in Phase 8, not here):** see Phase 8.
 
