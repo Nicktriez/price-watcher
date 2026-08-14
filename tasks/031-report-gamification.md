@@ -21,9 +21,13 @@ Receipt gamification (Task 016) already rewards uploads. This extends the same i
    - Reuse the pattern from Task 016: award **once per report**, upgrade-only on tier change (a report that later flips to Community upgrades points, never re-awards)
    - Make the exact values config (like `BASE_POINTS`/`MAX_CLEAN_BONUS` in Task 016)
 
-2. **Leaderboard** — a simple page (e.g. `src/routes/leaderboard.tsx`) ranking users by total points (receipt + crowd-report points combined). Boring: a top-N list of name/points. No avatars, no tiers-of-leaderboard.
+2. **MIGRATION REQUIRED — award tracking columns on `crowd_report`.** The current `crowd_report` table (migration 0015) has NO `points_awarded` column and NO record of the tier at which points were last awarded. Without these, "upgrade-only delta, never re-award" is impossible to enforce (Task 016's receipt row carries `points_awarded` natively; `crowd_report` does not). Add a new migration with at least: `points_awarded` (numeric) and `last_awarded_tier` (`'single' | 'community' | null`) on `crowd_report`. A report submitted as Single earns its base once (or nothing); when it later flips to Community, award only the _delta_ between Community and what's already recorded — never re-award the base.
 
-3. **Anti-gaming parity with Task 016** — the same rules that protected receipt points must apply here:
+3. **Upgrade trigger — DEFINE ONE (do not guess):** a report flips Single→Community only when the 2nd/3rd agreeing reports arrive, which happens at a _different_ request than the original submit — so the upgrade evaluation never fires at the submitter's request time. Chosen approach (decided 2026-08-14): **re-evaluate the affected group whenever a new report is submitted** for that (store, product/name) key — the submit handler re-runs the group through `computeCrowdTier` and awards any delta for reports that just crossed the Community threshold. Cheap at crowd scale, keeps points honest in real time. (A periodic job is the alternative; do NOT leave this unspecified.)
+
+4. **Leaderboard** — a simple page (e.g. `src/routes/leaderboard.tsx`) ranking users by total points (receipt + crowd-report points combined). Boring: a top-N list of name/points. No avatars, no tiers-of-leaderboard.
+
+5. **Anti-gaming parity with Task 016** — the same rules that protected receipt points must apply here:
    - **Points once per report** — a user can't farm points by re-reporting the same (store, product, price)
    - **Upgrade-only on tier change** — delta between new and already-awarded points, never a full re-award
    - **Independent users count** — 3 reports by the _same_ user don't make Community (that's Task 030's rule); the award must not reward self-agreement
@@ -43,4 +47,6 @@ Receipt gamification (Task 016) already rewards uploads. This extends the same i
 - [ ] Self-agreement doesn't game the system (3 reports by one user ≠ Community, no bonus)
 - [ ] A simple leaderboard ranks users by combined (receipt + crowd) points
 - [ ] Award values are config-driven
+- [ ] `crowd_report` has `points_awarded` + `last_awarded_tier` (new migration); upgrade awards only the delta (Single base not re-awarded on flip to Community)
+- [ ] A report that flips to Community after the fact receives the delta points (re-tier-on-submit trigger, unit-tested)
 - [ ] `vp check` + `vp test` pass
