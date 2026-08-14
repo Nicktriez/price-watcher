@@ -447,7 +447,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
    - **Exit:** one winning visual direction with documented tokens.
 
 1. **Design system (Tailwind):** a consistent set of colors, typography, spacing, and component styles across all routes. Currently each page uses ad-hoc Tailwind classes; unify them. Pick a palette that suits the product (fresh/grocery-appropriate, but not childish) and stick to it. Use the winning variant's tokens from Task 0.
-2. **Branding:** lock the name (`Kurven`), a simple logo/wordmark, and the primary UI copy tone (Danish, direct, honest — matching the blog voice). Favicon + page titles.
+2. **Branding:** lock the name (**`Skujeg`** — "Sku' jeg?"/"Should I?", the travel-question differentiator as the brand, chosen 2026-08-14), a simple logo/wordmark, and the primary UI copy tone (Danish, direct, honest — matching the blog voice). Favicon + page titles.
 3. **The screenshots that matter:** polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) — these are the "screenshot-for-distribution" moments. A madplan screenshot that looks clean is the single most shareable asset (feeds the "madplan for 500 kr" blog-post content engine).
 4. **Mobile check:** receipts are uploaded from a phone camera — verify the upload + receipt flow is genuinely usable on mobile, not just desktop. (The beta likely surfaced some of this in feedback; this is where to fix it.)
 5. **Honest-UI consistency pass:** ensure the trust-tier / "user-reported" / "no discount" labeling (Tasks 014/017/022) reads cleanly and consistently in the polished design — the compliance framing must survive the visual redesign, not get lost in it.
