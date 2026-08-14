@@ -462,6 +462,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Exit gate (launch-ready visuals):**
 
+- [ ] Design direction chosen (Task 0): 3 mockups produced, Nick picked a winner by looking, winning tokens documented
 - [ ] Consistent design system across all routes (no ad-hoc class soup)
 - [ ] Branding locked: name, logo/wordmark, favicon, page titles
 - [ ] Store comparison + madplan are screenshot-worthy (clean, shareable)
