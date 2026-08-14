@@ -196,6 +196,19 @@ export interface ListItemTable {
   created_at: string;
 }
 
+export interface CrowdReportTable {
+  id: string;
+  user_id: string;
+  store_id: string;
+  product_id: string | null;
+  product_name: string | null;
+  price: string;
+  currency: string;
+  photo_path: string | null;
+  reported_at: string;
+  created_at: string;
+}
+
 export interface Database {
   chain: ChainTable;
   store: StoreTable;
@@ -212,4 +225,5 @@ export interface Database {
   list_template_item: ListTemplateItemTable;
   user_store_distance: UserStoreDistanceTable;
   fuel_price: FuelPriceTable;
+  crowd_report: CrowdReportTable;
 }

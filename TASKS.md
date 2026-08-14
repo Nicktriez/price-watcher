@@ -77,12 +77,12 @@ The differentiator — "is it worth the detour?" Store coordinates, OSRM routing
 
 Crowd data + trust tiers — the differentiator. User-reported shelf prices, the GasBuddy trust model, report gamification, and low-touch moderation.
 
-| #   | Task                                          | Status | Depends on            |
-| --- | --------------------------------------------- | ------ | --------------------- |
-| 029 | Report a price (store + product + price)      | ⬜     | 010, Phase 2 catalogs |
-| 030 | Trust tiers + staleness (GasBuddy model)      | ⬜     | 029                   |
-| 031 | Crowd-report gamification + leaderboard       | ⬜     | 029, 030, 016         |
-| 032 | Moderation (report, auto-expiry, ignore-list) | ⬜     | 029, 030              |
+| #   | Task                                          | Status | Depends on                                                                                                                                                                                                           |
+| --- | --------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 029 | Report a price (store + product + price)      | ✅     | OpenCode (browser E2E: store+product report, free-text fallback, optional photo saved + served, anonymous redirect, stored with user_id + timestamp, "brugerrapporteret/aldrig tilbud" labeling; 5 validation tests) | 010, Phase 2 catalogs |
+| 030 | Trust tiers + staleness (GasBuddy model)      | ⬜     | 029                                                                                                                                                                                                                  |
+| 031 | Crowd-report gamification + leaderboard       | ⬜     | 029, 030, 016                                                                                                                                                                                                        |
+| 032 | Moderation (report, auto-expiry, ignore-list) | ⬜     | 029, 030                                                                                                                                                                                                             |
 
 **Run order:** 029 → 030 → 031/032 (parallelizable after 030). 030 (trust tiers) is the pure-logic core — testable standalone before any UI.
 
