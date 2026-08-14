@@ -407,7 +407,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 - **Task 035 — Usability precondition (incl. sign-in):** the core flows — sign-in via magic-link, build a list, upload a receipt, view a store comparison — are navigable without help by a cold, non-technical user. Fix blockers and dead ends, plain Danish labels, no relying on the dev-navbar. **Sign-in is flow #0** (everything gates on it). The compare path starts FROM a list (`/compare/[id]`).
 - **Task 036 — Basic design + correct route linking:** a clean, consistent basic layout, the real launch nav replacing the dev-navbar (033/034), every public route reachable by a real link. **Basic + correct, NOT the full design system** (that's Phase 9, only if the beta succeeds).
-- **Task 037 — Landing page:** rebuild `index.tsx` into a landing page — hero that explains the product + lands the "Sku' jeg?" hook, clear entry points to the flows, a "what you get" section, sign-in affordance, offer browsing kept.
+- **Task 037 — Landing page:** `/` becomes a basic landing page for first-time visitors; **authenticated users reroute to `/offers`** (the offers list moves from `/` to `/offers`). Hero + "Sku' jeg?" hook, entry points, "what you get", sign-in affordance.
 
 **The invite question (DECIDED): NO invite system, do NOT open the subdomain.** The beta is enforced by the existing magic-link sign-in (Task 010) and closed by obscurity — Nick controls who gets links; nobody finds an unannounced `beta.skujeg.dk`. No new code. Add an invite-code gate ONLY if strangers actually appear (they won't at this stage) — don't pre-build it.
 

@@ -106,7 +106,7 @@ The last coding work before anyone is invited. **Task 042 + 043 must pass before
 | --- | -------------------------------------------------------- | ------ | -------------------------- |
 | 035 | Usability precondition: sign-in + 3 core flows navigable | ⬜     | — (GATES the beta invites) |
 | 036 | Basic design + correct route linking (real launch nav)   | ⬜     | 035                        |
-| 037 | Landing page (first-time user home)                      | ⬜     | 036                        |
+| 037 | Landing page (root; signed-in reroutes to /offers)       | ⬜     | 036                        |
 
 **Invite model (DECIDED): no invite system.** The magic-link sign-in enforces the closed beta; Nick controls who gets links; `beta.skujeg.dk` is closed by obscurity. No new code.
 
