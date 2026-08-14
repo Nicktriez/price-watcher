@@ -1,7 +1,13 @@
 "use server";
 
 import { db } from "~/db/client";
-import { ageLabel, computeCrowdTier, isStaleSingle, type TierReport } from "~/lib/trust-tier";
+import {
+  ageLabel,
+  computeCrowdTier,
+  computeFreeTextGroups,
+  isStaleSingle,
+  type TierReport,
+} from "~/lib/trust-tier";
 
 function iso(v: string | Date): string {
   return v instanceof Date ? v.toISOString() : v;
@@ -196,6 +202,41 @@ export async function getProductCrowdPrices(productId: string): Promise<CrowdPri
 
   groups.sort((a, b) => a.storeName.localeCompare(b.storeName, "da"));
   return groups;
+}
+
+/**
+ * Free-text crowd reports (product_id IS NULL) grouped by store + normalized
+ * name, tiered with the same rules as the product-linked path. The normalized
+ * name is the seam Task 032 uses to link groups to a product later.
+ */
+export async function getReportedItems() {
+  const rows = await db
+    .selectFrom("crowd_report")
+    .innerJoin("store", "store.id", "crowd_report.store_id")
+    .select((eb) => [
+      eb.ref("store.id").as("store_id"),
+      eb.ref("store.name").as("store_name"),
+      eb.ref("crowd_report.product_name").as("product_name"),
+      eb.ref("crowd_report.user_id").as("user_id"),
+      eb.ref("crowd_report.price").as("price"),
+      eb.ref("crowd_report.reported_at").as("reported_at"),
+    ])
+    .where("crowd_report.product_id", "is", null)
+    .where("crowd_report.product_name", "is not", null)
+    .execute();
+
+  return computeFreeTextGroups(
+    rows
+      .filter((r): r is typeof r & { product_name: string } => r.product_name != null)
+      .map((r) => ({
+        storeId: r.store_id,
+        storeName: r.store_name,
+        productName: r.product_name,
+        userId: r.user_id,
+        price: parseFloat(r.price),
+        reportedAt: r.reported_at,
+      })),
+  );
 }
 
 export async function getPriceHistory(productId: string, days = 30) {

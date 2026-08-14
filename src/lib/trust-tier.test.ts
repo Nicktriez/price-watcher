@@ -2,6 +2,7 @@ import { describe, expect, it } from "vite-plus/test";
 import {
   ageLabel,
   computeCrowdTier,
+  computeFreeTextGroups,
   isStaleSingle,
   normalizeProductName,
   pricesAgree,
@@ -94,5 +95,56 @@ describe("normalizeProductName", () => {
   it("groups free-text by trim + lowercase", () => {
     expect(normalizeProductName("  Økologiske Æbler ")).toBe("økologiske æbler");
     expect(normalizeProductName("økologiske æbler")).toBe("økologiske æbler");
+  });
+});
+
+describe("computeFreeTextGroups", () => {
+  const row = (userId: string, productName: string, price: number, store = "s1", hoursAgo = 1) => ({
+    storeId: store,
+    storeName: store === "s1" ? "REMA 1000" : "Netto",
+    productName,
+    userId,
+    price,
+    reportedAt: new Date(Date.now() - hoursAgo * 3600_000),
+  });
+
+  it("3 distinct users with the same normalized name flip to Community", () => {
+    const groups = computeFreeTextGroups([
+      row("a", "Økologiske Æbler", 19.95),
+      row("b", "økologiske æbler", 19.9),
+      row("c", "  økologiske æbler ", 20.5),
+    ]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].tier).toBe("community");
+    expect(groups[0].name).toBe("økologiske æbler");
+    expect(groups[0].userCount).toBe(3);
+    expect(groups[0].price).toBeCloseTo(19.95, 2);
+  });
+
+  it("the same user reporting 3x stays Single", () => {
+    const groups = computeFreeTextGroups([
+      row("a", "Æbler", 19.95),
+      row("a", "Æbler", 19.9),
+      row("a", "Æbler", 20.0),
+    ]);
+    expect(groups[0].tier).toBe("single");
+  });
+
+  it("different names or stores group separately", () => {
+    const groups = computeFreeTextGroups([
+      row("a", "Æbler", 19.95),
+      row("b", "Æbler", 19.9),
+      row("c", "Æbler", 20.1),
+      row("d", "Bananer", 9.95, "s1"),
+      row("e", "Æbler", 19.85, "s2"),
+    ]);
+    expect(groups).toHaveLength(3); // æbler@rema, bananer@rema, æbler@netto
+  });
+
+  it("marks a single group stale after 24h", () => {
+    const now = new Date();
+    const groups = computeFreeTextGroups([row("a", "Gamle æbler", 10, "s1", 50)], now);
+    expect(groups[0].tier).toBe("single");
+    expect(groups[0].stale).toBe(true);
   });
 });

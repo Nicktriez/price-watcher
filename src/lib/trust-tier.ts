@@ -100,3 +100,74 @@ export function ageLabel(at: string | Date, now: Date = new Date()): string {
   const days = Math.floor(hours / 24);
   return `${days} day${days === 1 ? "" : "s"} old`;
 }
+
+export interface FreeTextReportRow {
+  storeId: string;
+  storeName: string;
+  productName: string;
+  userId: string;
+  price: number;
+  reportedAt: string | Date;
+}
+
+export interface FreeTextPriceGroup {
+  storeId: string;
+  storeName: string;
+  name: string;
+  tier: "community" | "single";
+  price: number;
+  userCount: number;
+  reportedAt: string;
+  age: string;
+  stale: boolean;
+}
+
+/**
+ * Group free-text crowd reports (product_id IS NULL) by store + normalized
+ * product name so agreeing reports can reach Community without moderation
+ * (Task 030 decision a). Same tier rules as the product-linked path. The
+ * group's normalized `name` is the seam Task 032 uses to link to a product.
+ */
+export function computeFreeTextGroups(
+  rows: FreeTextReportRow[],
+  now: Date = new Date(),
+): FreeTextPriceGroup[] {
+  const byKey = new Map<
+    string,
+    { storeId: string; storeName: string; name: string; reports: TierReport[]; latest: Date }
+  >();
+  for (const r of rows) {
+    const key = `${r.storeId}|${normalizeProductName(r.productName)}`;
+    const entry = byKey.get(key) ?? {
+      storeId: r.storeId,
+      storeName: r.storeName,
+      name: normalizeProductName(r.productName),
+      reports: [],
+      latest: new Date(0),
+    };
+    entry.reports.push({ userId: r.userId, price: r.price, reportedAt: r.reportedAt });
+    const at = new Date(r.reportedAt);
+    if (at.getTime() > entry.latest.getTime()) entry.latest = at;
+    byKey.set(key, entry);
+  }
+
+  const groups: FreeTextPriceGroup[] = [];
+  for (const entry of byKey.values()) {
+    const tier = computeCrowdTier(entry.reports);
+    if (tier.tier == null || tier.representativePrice == null) continue;
+    groups.push({
+      storeId: entry.storeId,
+      storeName: entry.storeName,
+      name: entry.name,
+      tier: tier.tier,
+      price: tier.representativePrice,
+      userCount: tier.distinctUsers,
+      reportedAt: entry.latest.toISOString(),
+      age: ageLabel(entry.latest, now),
+      stale: tier.tier === "single" && isStaleSingle(entry.latest, now),
+    });
+  }
+
+  groups.sort((a, b) => b.reportedAt.localeCompare(a.reportedAt));
+  return groups;
+}
