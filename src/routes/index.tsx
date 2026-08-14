@@ -1,6 +1,15 @@
-// Landing page — the same for everyone, signed in or out (Task 037b).
-// No session check, no redirect; "Forside" is / for all users.
+import { createAsync } from "@solidjs/router";
+import { Show } from "solid-js";
+import { getCurrentUser } from "~/server/auth";
+
+// Landing page — the same page for everyone (Task 037b), except the primary
+// CTA: signed-out users see "Log ind og kom i gang", signed-in users see
+// "Opret indkøbsliste" (Task 037c). No redirect. The landing sits inside the
+// route Suspense, so the createAsync session read resolves both in SSR and on
+// the client.
 export default function Home() {
+  const user = createAsync(() => getCurrentUser());
+
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
       <section class="rounded border border-sky-200 bg-sky-50 p-8 text-center">
@@ -11,22 +20,30 @@ export default function Home() {
           tilbud, din egen indkøbsliste og rigtige priser fra andre brugere.
         </p>
         <div class="mt-6 flex flex-wrap justify-center gap-2">
-          <a href="/signin" class="rounded bg-sky-600 px-6 py-2 text-sm font-medium text-white">
-            Log ind og kom i gang
-          </a>
+          <Show
+            when={user()}
+            fallback={
+              <a href="/signin" class="rounded bg-sky-600 px-6 py-2 text-sm font-medium text-white">
+                Log ind og kom i gang
+              </a>
+            }
+          >
+            <a href="/lists" class="rounded bg-sky-600 px-6 py-2 text-sm font-medium text-white">
+              Opret indkøbsliste
+            </a>
+          </Show>
           <a href="/offers" class="rounded bg-white px-6 py-2 text-sm font-medium text-sky-700">
             Se ugens tilbud
-          </a>
-          <a href="/lists" class="rounded bg-white px-6 py-2 text-sm font-medium text-sky-700">
-            Opret indkøbsliste
           </a>
           <a href="/upload" class="rounded bg-white px-6 py-2 text-sm font-medium text-sky-700">
             Upload kvittering
           </a>
         </div>
-        <p class="mt-3 text-xs text-gray-500">
-          Log ind med din e-mail — så får du en kode til at komme i gang.
-        </p>
+        <Show when={!user()}>
+          <p class="mt-3 text-xs text-gray-500">
+            Log ind med din e-mail — så får du en kode til at komme i gang.
+          </p>
+        </Show>
       </section>
 
       <section class="mt-6 grid gap-3 sm:grid-cols-3">
