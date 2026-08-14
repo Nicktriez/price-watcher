@@ -373,9 +373,9 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 6 — Crowd Data + Trust Tiers (2–3 weeks) 🔄 CURRENT (2026-08-12)
+## Phase 6 — Crowd Data + Trust Tiers (2–3 weeks) ✅ COMPLETE (2026-08-14)
 
-**Status:** Tasks 029, 030, 030b, 031 all ✅. Crowd layer building well: report-a-price flow (029), GasBuddy trust tiers with staleness (030), free-text reports grouped into Community via normalized name (030b), crowd-report gamification + leaderboard (031). **Current: Task 032 (moderation)** — flag/status migration, distinct-flagger guard, email-allowlist admin gate. Then Phase 6 done.
+**Status:** Tasks 029, 030, 030b, 031, 032 all ✅. **Phase 6 COMPLETE.** Crowd layer done and defensible: report-a-price flow (029), GasBuddy trust tiers with staleness (030), free-text reports grouped into Community via normalized name (030b), crowd-report gamification + leaderboard (031), moderation with distinct-flagger hide, auto-expiry (hides-not-deletes) + email-gated admin queue (032). The Tjek-independent crowd moat is functional. **Next: Phase 7 (Closed Beta).**
 
 **Objective:** The differentiator — shelf reality the flyers can't cover.
 
@@ -399,7 +399,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 7 — Closed Beta (2–3 weeks, after Phase 6, before launch)
+## Phase 7 — Closed Beta (2–3 weeks, after Phase 6, before launch) 🔄 CURRENT (2026-08-14)
 
 **Objective:** Validate the retention loop with real users and **seed the crowd-data lake** before going public. A crowdsourced model dies on cold start — the site must have a body of user-reported/receipt prices _before_ launch, or the first public visitor finds an empty data lake. Beta is where that pool gets filled and where the M1 signal is tested ahead of the launch moment.
 
