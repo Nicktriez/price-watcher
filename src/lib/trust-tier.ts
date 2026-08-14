@@ -108,12 +108,14 @@ export interface FreeTextReportRow {
   userId: string;
   price: number;
   reportedAt: string | Date;
+  reportId: string;
 }
 
 export interface FreeTextPriceGroup {
   storeId: string;
   storeName: string;
   name: string;
+  reportId: string;
   tier: "community" | "single";
   price: number;
   userCount: number;
@@ -134,7 +136,14 @@ export function computeFreeTextGroups(
 ): FreeTextPriceGroup[] {
   const byKey = new Map<
     string,
-    { storeId: string; storeName: string; name: string; reports: TierReport[]; latest: Date }
+    {
+      storeId: string;
+      storeName: string;
+      name: string;
+      reports: TierReport[];
+      latest: Date;
+      latestId: string;
+    }
   >();
   for (const r of rows) {
     const key = `${r.storeId}|${normalizeProductName(r.productName)}`;
@@ -144,10 +153,14 @@ export function computeFreeTextGroups(
       name: normalizeProductName(r.productName),
       reports: [],
       latest: new Date(0),
+      latestId: r.reportId,
     };
     entry.reports.push({ userId: r.userId, price: r.price, reportedAt: r.reportedAt });
     const at = new Date(r.reportedAt);
-    if (at.getTime() > entry.latest.getTime()) entry.latest = at;
+    if (at.getTime() > entry.latest.getTime()) {
+      entry.latest = at;
+      entry.latestId = r.reportId;
+    }
     byKey.set(key, entry);
   }
 
@@ -159,6 +172,7 @@ export function computeFreeTextGroups(
       storeId: entry.storeId,
       storeName: entry.storeName,
       name: entry.name,
+      reportId: entry.latestId,
       tier: tier.tier,
       price: tier.representativePrice,
       userCount: tier.distinctUsers,

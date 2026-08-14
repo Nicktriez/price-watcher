@@ -8,6 +8,7 @@ import {
   isStaleSingle,
   type TierReport,
 } from "~/lib/trust-tier";
+import { applyAutoExpiry } from "./moderation.ts";
 
 function iso(v: string | Date): string {
   return v instanceof Date ? v.toISOString() : v;
@@ -136,6 +137,7 @@ export async function getProductById(productId: string) {
 export interface CrowdPriceGroup {
   storeId: string;
   storeName: string;
+  reportId: string;
   tier: "community" | "single";
   price: number;
   userCount: number;
@@ -152,11 +154,14 @@ export interface CrowdPriceGroup {
  */
 export async function getProductCrowdPrices(productId: string): Promise<CrowdPriceGroup[]> {
   if (!isUuid(productId)) return [];
+  await applyAutoExpiry();
 
   const rows = await db
     .selectFrom("crowd_report")
     .innerJoin("store", "store.id", "crowd_report.store_id")
+    .innerJoin("user", "user.id", "crowd_report.user_id")
     .select((eb) => [
+      eb.ref("crowd_report.id").as("report_id"),
       eb.ref("crowd_report.store_id").as("store_id"),
       eb.ref("store.name").as("store_name"),
       eb.ref("crowd_report.user_id").as("user_id"),
@@ -164,14 +169,20 @@ export async function getProductCrowdPrices(productId: string): Promise<CrowdPri
       eb.ref("crowd_report.reported_at").as("reported_at"),
     ])
     .where("crowd_report.product_id", "=", productId)
+    .where("crowd_report.status", "=", "active")
+    .where("user.muted", "=", false)
     .execute();
 
-  const byStore = new Map<string, { storeName: string; reports: TierReport[]; latest: Date }>();
+  const byStore = new Map<
+    string,
+    { storeName: string; reports: TierReport[]; latest: Date; latestId: string }
+  >();
   for (const row of rows) {
     const entry = byStore.get(row.store_id) ?? {
       storeName: row.store_name,
       reports: [],
       latest: new Date(0),
+      latestId: row.report_id,
     };
     entry.reports.push({
       userId: row.user_id,
@@ -179,7 +190,10 @@ export async function getProductCrowdPrices(productId: string): Promise<CrowdPri
       reportedAt: row.reported_at,
     });
     const at = new Date(row.reported_at);
-    if (at.getTime() > entry.latest.getTime()) entry.latest = at;
+    if (at.getTime() > entry.latest.getTime()) {
+      entry.latest = at;
+      entry.latestId = row.report_id;
+    }
     byStore.set(row.store_id, entry);
   }
 
@@ -191,6 +205,7 @@ export async function getProductCrowdPrices(productId: string): Promise<CrowdPri
     groups.push({
       storeId,
       storeName: entry.storeName,
+      reportId: entry.latestId,
       tier: tier.tier,
       price: tier.representativePrice,
       userCount: tier.distinctUsers,
@@ -210,10 +225,13 @@ export async function getProductCrowdPrices(productId: string): Promise<CrowdPri
  * name is the seam Task 032 uses to link groups to a product later.
  */
 export async function getReportedItems() {
+  await applyAutoExpiry();
   const rows = await db
     .selectFrom("crowd_report")
     .innerJoin("store", "store.id", "crowd_report.store_id")
+    .innerJoin("user", "user.id", "crowd_report.user_id")
     .select((eb) => [
+      eb.ref("crowd_report.id").as("report_id"),
       eb.ref("store.id").as("store_id"),
       eb.ref("store.name").as("store_name"),
       eb.ref("crowd_report.product_name").as("product_name"),
@@ -223,6 +241,8 @@ export async function getReportedItems() {
     ])
     .where("crowd_report.product_id", "is", null)
     .where("crowd_report.product_name", "is not", null)
+    .where("crowd_report.status", "=", "active")
+    .where("user.muted", "=", false)
     .execute();
 
   return computeFreeTextGroups(
@@ -235,6 +255,7 @@ export async function getReportedItems() {
         userId: r.user_id,
         price: parseFloat(r.price),
         reportedAt: r.reported_at,
+        reportId: r.report_id,
       })),
   );
 }

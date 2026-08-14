@@ -1,5 +1,6 @@
 import { createAsync } from "@solidjs/router";
 import { For, Show } from "solid-js";
+import { CrowdReportFlag } from "~/components/CrowdReportFlag";
 import { fmtPrice } from "~/lib/format";
 import { getReportedItems } from "~/server/queries";
 
@@ -70,6 +71,9 @@ export default function ReportedItems() {
                       stale
                     </span>
                   </Show>
+                  <div class="mt-1">
+                    <CrowdReportFlag reportId={g.reportId} />
+                  </div>
                 </div>
               </li>
             )}

@@ -97,6 +97,7 @@ export interface UserTable {
   fuel_type: "petrol" | "diesel" | "ev" | null;
   efficiency: number | null;
   ev_charging: "home" | "public" | null;
+  muted: boolean;
 }
 
 export interface UserStoreDistanceTable {
@@ -209,6 +210,15 @@ export interface CrowdReportTable {
   created_at: string;
   points_awarded: string;
   last_awarded_tier: "single" | "community" | null;
+  status: "active" | "hidden";
+}
+
+export interface CrowdReportFlagTable {
+  id: string;
+  crowd_report_id: string;
+  flagger_user_id: string;
+  reason: string;
+  created_at: string;
 }
 
 export interface Database {
@@ -228,4 +238,5 @@ export interface Database {
   user_store_distance: UserStoreDistanceTable;
   fuel_price: FuelPriceTable;
   crowd_report: CrowdReportTable;
+  crowd_report_flag: CrowdReportFlagTable;
 }

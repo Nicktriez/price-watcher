@@ -13,6 +13,8 @@ interface GroupRow {
   price: string;
   reported_at: string;
   points_awarded: string;
+  status: string;
+  muted: boolean;
 }
 
 /**
@@ -29,21 +31,27 @@ export async function awardCrowdGroup(
 ): Promise<Record<string, number>> {
   const rows = (await db
     .selectFrom("crowd_report")
+    .innerJoin("user", "user.id", "crowd_report.user_id")
     .select([
-      "id",
-      "user_id",
-      "product_id",
-      "product_name",
-      "price",
-      "reported_at",
-      "points_awarded",
+      "crowd_report.id",
+      "crowd_report.user_id",
+      "crowd_report.product_id",
+      "crowd_report.product_name",
+      "crowd_report.price",
+      "crowd_report.reported_at",
+      "crowd_report.points_awarded",
+      "crowd_report.status",
+      "user.muted",
     ])
-    .where("store_id", "=", storeId)
+    .where("crowd_report.store_id", "=", storeId)
     .execute()) as unknown as GroupRow[];
 
+  // Only active, non-muted reports shape the tier and earn points.
+  const visible = rows.filter((r) => r.status === "active" && !r.muted);
+
   const group = productId
-    ? rows.filter((r) => r.product_id === productId)
-    : rows.filter(
+    ? visible.filter((r) => r.product_id === productId)
+    : visible.filter(
         (r) =>
           r.product_id == null &&
           r.product_name != null &&
@@ -64,6 +72,7 @@ export async function awardCrowdGroup(
   const deltas: Record<string, number> = {};
   const perUser = new Map<string, number>();
   for (const row of group) {
+    if (row.muted) continue; // muted reporters earn nothing
     const delta = crowdAwardDelta(tierLabel, parseFloat(row.points_awarded));
     if (delta <= 0) continue;
     deltas[row.id] = delta;

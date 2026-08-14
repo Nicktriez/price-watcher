@@ -73,6 +73,7 @@ export async function requestLoginCode(emailInput: string): Promise<{ ok: true }
         receipt_count: 0,
         current_streak: 0,
         last_receipt_date: null,
+        muted: false,
       })
       .returning("id")
       .executeTakeFirstOrThrow();

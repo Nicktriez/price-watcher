@@ -402,6 +402,7 @@ export async function computeBasketCostsForItems(
     .selectFrom("crowd_report")
     .innerJoin("store", "store.id", "crowd_report.store_id")
     .innerJoin("chain", "chain.id", "store.chain_id")
+    .innerJoin("user", "user.id", "crowd_report.user_id")
     .select((eb) => [
       eb.ref("store.chain_id").as("chain_id"),
       eb.ref("chain.name").as("chain_name"),
@@ -412,6 +413,8 @@ export async function computeBasketCostsForItems(
     ])
     .where("crowd_report.product_id", "in", productIds)
     .where("crowd_report.product_id", "is not", null)
+    .where("crowd_report.status", "=", "active")
+    .where("user.muted", "=", false)
     .execute();
 
   // Community crowd prices are aggregated per chain (the compare's shopping

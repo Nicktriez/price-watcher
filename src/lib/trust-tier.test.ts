@@ -106,6 +106,7 @@ describe("computeFreeTextGroups", () => {
     userId,
     price,
     reportedAt: new Date(Date.now() - hoursAgo * 3600_000),
+    reportId: `${store}-${productName}-${userId}`,
   });
 
   it("3 distinct users with the same normalized name flip to Community", () => {

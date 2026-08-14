@@ -137,6 +137,7 @@ export async function submitCrowdReport(formData: FormData): Promise<CrowdReport
         created_at: now,
         points_awarded: "0",
         last_awarded_tier: null,
+        status: "active",
       })
       .execute();
   }
