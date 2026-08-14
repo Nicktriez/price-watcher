@@ -20,7 +20,7 @@ Make `/` (the root) a **basic landing page** for first-time visitors, and **rero
    ```
 3. **Move the current offers list from `/` to a new `/offers` route** — create `src/routes/offers.tsx` containing the existing offer-listing code (chain filter, pagination, grid from the current `index.tsx`). The offers list is the signed-in user's main surface; it must live somewhere reachable.
 4. **Landing page content** (for the not-signed-in case): hero that explains the product in one sentence + lands the "Sku' jeg?" hook; clear entry points (build a list, upload a receipt, browse offers → `/offers`); a short "what you get" section; a sign-in affordance (magic-link, Task 010). Plain Danish.
-5. **Fix the "home" links** — the `href="/"` "Home" links in `Nav.tsx` and the `[...404].tsx`, `products/[id].tsx`, `stores/[id].tsx`, `about.tsx` back-links now point at the landing page. **For signed-in users these should point at `/offers`** (the real "home"), not the landing page they'll be redirected away from. Decide + apply: nav "Home" → `/offers` when signed in (or keep landing as Home and let the redirect handle it — pick one, make it consistent, and note it).
+5. **Fix the "home" links** — the `href="/"` "Home" links in `Nav.tsx` and the `[...404].tsx`, `products/[id].tsx`, `stores/[id].tsx`, `about.tsx` back-links now point at the landing page. **DECIDED (Nick, 2026-08-14): for signed-in users, "Home" must be `/offers` — NOT the landing page.** A signed-in user's home is the current offers page. Apply: nav "Home" and the back-links point to `/offers` for signed-in users (the client-side auth check in step 2 — or a conditional link — handles the signed-in/out distinction). Never send a signed-in user to the landing page they'd be redirected away from.
 
 ## Important
 
@@ -36,6 +36,6 @@ Make `/` (the root) a **basic landing page** for first-time visitors, and **rero
 - [ ] `/` renders a landing page for **not-signed-in** users (hero, entry points, "what you get", sign-in affordance)
 - [ ] A **signed-in** user hitting `/` is rerouted to `/offers` (client-side `getCurrentUser()` check)
 - [ ] The current offers list is accessible at `/offers` (moved, not deleted — filter + pagination intact)
-- [ ] "Home"/back links are consistent for signed-in users (point at `/offers`, not the landing page they'd be redirected from)
+- [ ] For signed-in users, nav "Home" + back-links point at `/offers` (never the landing page they'd be redirected from)
 - [ ] Plain Danish, no English leakage
 - [ ] `vp check` + `vp test` pass
