@@ -405,18 +405,80 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Scope discipline:** this is a **closed pilot with ~10–20 invited users**, not a "public beta" operation. No signup infrastructure, no waitlist, no landing page — the magic-link sign-in (Phase 3) already handles invitations; Nick just sends people links. Boring on purpose.
 
-**Tasks:**
+**This is an operations plan (recruit, seed, measure), not a coding plan.** Nick runs it; the agent assists with drafting invites, tracking, and analysis. No repo changes unless a beta bug/blocker needs one.
 
-0. **Usability precondition (do BEFORE inviting anyone):** the core flows must be _navigable without help_ — a non-technical user can build a list, upload a receipt, and view a store comparison without being walked through it. This is a **navigability bar, not a beauty bar** — the goal is that a beta user's M1 action (build a basket, get a ranking) isn't blocked by "can't find the button." If the UI is so rough that a non-technical invitee gets stuck, you're measuring usability, not retention — and the M1 signal (≥30% return) gets polluted. Test it: have one person who's never seen the site do the three flows cold, and fix anything that stops them.
+**Proposed approach:** recruit a small, friendly, mixed cohort → make the three core flows navigable-without-help → ask each to upload 3–5 receipts + build a list → watch return-rate and the data lake → decide launch vs. fix.
 
-1. **Invite ~10–20 friendly users** — start with the communities the launch will target, but the friendly subset: a few friends/family, one or two people from the Danish price-watch groups, maybe one skeptic who'll actually try to break it. Mix of technical and non-technical.
-2. **Seed-data campaign:** explicitly ask each beta user to upload **3–5 receipts** of their own. The baseline-price pool needs real data from real stores before launch, and this is the cheapest way to get it (users are the donor to the moat they'll later benefit from).
-3. **Have them build and use a list** — the M1 action (build a basket, get a store ranking) needs Phase 4 (basket math) to exist first, so Beta sits _after_ Phase 4's core. Watch: do they build a list and come back the next week?
-4. **Measure the M1 signal early:** ≥30% return next week is the launch-readiness bar. Beta is where you find out if the retention loop (spending view → gamification → price-vs-average) actually retains — _before_ spending the launch moment on it.
-5. **Edge-case harvest:** real users uploading crumpled/duplicate/adversarial receipts is where the dedup + anti-gaming logic (Tasks 013/016) gets its real-world stress test — exactly what unit tests can't simulate. Log every dedup/keep/replace decision during beta; it's free QA on the anti-abuse design.
-6. **Feedback channel:** a single pinned thread (Discord/Signal/email) for bug reports + "what's missing" — no issue tracker, no process. Nick reads it weekly.
+### Precondition — Hosting (DECIDED 2026-08-14): cheap Hetzner VPS + `skujeg.dk`
 
-**Exit gate (launch-readiness):**
+Beta deploys to a separate Hetzner VPS (NOT the agent VPS, NOT the laptop). Concrete spec:
+
+- **Domain:** **`skujeg.dk` — BOUGHT (2026-08-14)**. Brand = "Sku' jeg?" (Should I?) — the travel-question differentiator as the name. Beta subdomain: **`beta.skujeg.dk`** → A record → Hetzner IP. HTTPS required for magic-link sign-in.
+- **VPS plan:** **Hetzner CX22** — 2 vCPU, 4 GB RAM, 40 GB NVMe, **€3.79/mo** (verified 2026). Enough for a 10–20 user beta with one Postgres + one app. Do NOT overspec.
+- **Location:** Falkenstein (FSN1) or Nuremberg (NBG1) — Germany, EU data residency. **OS:** Ubuntu 24.04 LTS.
+- **Node >=24** (project `engines`; agent VPS is Node 22 — fresh box, install Node 24+).
+- **SSH access (DECIDED):** Ultron uses the existing `ultron-vps-nicktriez` **root** key (full trust on a disposable beta box — acceptable).
+- **Deploy setup is a real precondition:** clone `price-watcher`, `pnpm install`, self-managed Postgres (EU residency), env, `vp build`, pm2/systemd, TLS. **Nothing in Task 2 (invite) happens until users have a reachable HTTPS URL.**
+- **Nick's action list (yours only):** buy `skujeg.dk` ✅ → order CX22 (get IP) → add Ultron's SSH key to root → create `beta.skujeg.dk` A record → tell Ultron the IP. Ultron does all provisioning + deploy.
+
+### Tasks
+
+**Task 0 — Usability precondition (the navigability bar, do BEFORE inviting anyone).** The core flows must be navigable without help — a non-technical user can build a list, upload a receipt, and view a store comparison without being walked through it. This is a **navigability bar, not a beauty bar** — if a user gets stuck on "can't find the button," beta measures usability, not retention, and M1 (≥30% return) is polluted.
+
+- Pick one person who has never seen the site (friend/family, non-technical). Watch them do the three flows cold. Do NOT help except where a real user couldn't get help.
+- Log every stall point; fix anything that _stops_ the flow (blockers only, not polish). Re-test until the three flows complete unaided.
+- **Done when:** the cold test completes all three flows without a blocker.
+
+**Task 1 — Define "return" precisely (measure before you recruit).** So the exit gate's "≥30% return" is measurable, not vibes.
+
+- **Define return:** a signed-in user who performs an M1 action (build/update a list, get a store ranking) in week 2, after doing one in week 1. Not "visited the site again."
+- **Observation window:** calendar week 1 (beta opens) → does the same user act again in week 2.
+- **Logging:** simple query on existing data (lists created/updated per user per week) — no new infra. If a query isn't enough, add a minimal `last_active`/event log (small task, flag it).
+- **Timebox:** 3 weeks — week 1 recruit+onboard, week 2 first return measurement, week 3 confirm + decide.
+- **Done when:** "return" and the measurement method are written down and the query works against real data.
+
+**Task 2 — Invite the cohort (~10–20).** A friendly, mixed cohort that will actually use it and be honest.
+
+- Draft the invite (agent can help): what it is, that it's a closed beta, the 3 asks (upload 3–5 receipts, build one list), how to reach you, that their data helps everyone. No hype.
+- Recruit to a spread: 3–5 friends/family (non-technical, real shoppers) · 2–3 from Danish price-watch/consumer groups (technical, price-sensitive) · 1 skeptic (will try to break it) · 1–2 technical peers (will notice architecture; keep them out of the data layer).
+- Send magic-link invites as you onboard each person. Log who's in, when, and their type (friend/group/skeptic/tech).
+- **Done when:** ~10–20 people have working sign-in links and know the 3 asks.
+
+**Task 3 — Seed-data campaign.** Get ≥50 real receipts into the baseline pool.
+
+- Ask each user for **3–5 receipts** from their own weekly shop (the donor-to-the-moat ask).
+- Make upload the obvious first action (it's the onboarding reward: spending view + price-vs-average).
+- Track the running count. Watch for the receipt→spending-view moment — that's the retention hook firing.
+- **Done when:** ≥50 receipts uploaded (exit-gate number), spanning real stores.
+
+**Task 4 — Watch the M1 signal early.** Catch the retention signal before spending the launch moment.
+
+- After week 1, run the return query (Task 1): which week-1 active users acted again in week 2?
+- Compute rate = returning / week-1-active. Compare to the **≥30%** bar.
+- If ≥30%: loop holds, continue beta → confirm in week 3. If <30%: do NOT launch — diagnose which hook is weak (spending view / gamification / price-vs-average / ranking), fix, re-test.
+- **Done when:** a clean M1 number is measured and either clears the bar or drives a diagnosis.
+
+**Task 5 — Edge-case harvest.** Free real-world QA on dedup + anti-gaming (Tasks 013/016) that unit tests can't simulate.
+
+- Real users WILL upload crumpled, duplicate, and adversarial receipts. Log every dedup/keep/replace decision during beta. If double-points or duplicate baselines appear, capture it.
+- Feed anything that breaks the trust/anti-gaming design back as a bug/task.
+- **Done when:** no double-points or duplicate-baseline bugs observed; any that appeared are fixed or logged with a workaround.
+
+**Task 6 — Feedback channel.** A single low-friction place for bugs + "what's missing."
+
+- One pinned thread (Discord/Signal/email) — no issue tracker, no process. Tell users it exists and to drop anything in it.
+- Nick reads it weekly; triages launch-blocker vs. nice-to-have vs. ignore.
+- **Done when:** the channel exists, users know about it, and Nick has a weekly read habit.
+
+### Risks / tradeoffs / open questions
+
+- **Hosting** — resolved above (Hetzner CX22 + `skujeg.dk`, locked 2026-08-14). The **biggest concrete gating item is the deploy**: no invites until `beta.skujeg.dk` serves over HTTPS.
+- **"Return" definition** must be settled in Task 1 or the exit gate is unmeasurable.
+- **Cohort honesty:** friends/family may over-report or under-break; the skeptic + group members hedge this.
+- **Cold-start risk:** if recruits don't upload receipts, the lake stays thin. Task 3 makes it an explicit ask + the onboarding reward.
+- **Timebox drift:** beta can stretch; the 3-week box keeps it decisive.
+
+### Exit gate (launch-readiness)
 
 - [ ] **M1 signal: ≥30% of beta users return the next week** (build a basket, come back)
 - [ ] **≥50 real receipts seeded** into the baseline pool (the cold-start hedge)
