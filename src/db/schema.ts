@@ -207,6 +207,8 @@ export interface CrowdReportTable {
   photo_path: string | null;
   reported_at: string;
   created_at: string;
+  points_awarded: string;
+  last_awarded_tier: "single" | "community" | null;
 }
 
 export interface Database {

@@ -239,6 +239,26 @@ export async function getReportedItems() {
   );
 }
 
+export interface LeaderboardEntry {
+  name: string;
+  points: number;
+}
+
+/** Top users by combined points (receipt + crowd-report), both feed user.points. */
+export async function getLeaderboard(limit = 20): Promise<LeaderboardEntry[]> {
+  const rows = await db
+    .selectFrom("user")
+    .select(["email", "points"])
+    .where("points", ">", 0)
+    .orderBy("points", "desc")
+    .limit(limit)
+    .execute();
+  return rows.map((r) => ({
+    name: r.email.split("@")[0] ?? r.email,
+    points: parseFloat(String(r.points)),
+  }));
+}
+
 export async function getPriceHistory(productId: string, days = 30) {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const rows = await db

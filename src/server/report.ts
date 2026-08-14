@@ -5,7 +5,9 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { db } from "~/db/client";
 import { validateCrowdReport } from "~/lib/crowd-report";
+import { normalizeProductName } from "~/lib/trust-tier";
 import { getCurrentUser } from "./auth.ts";
+import { awardCrowdGroup } from "./crowd-awards.ts";
 
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const PHOTO_DIR = join(process.cwd(), "public", "uploads", "crowd");
@@ -38,7 +40,7 @@ export async function searchStores(queryInput: string): Promise<StoreSearchResul
 }
 
 export type CrowdReportResult =
-  | { ok: true; reportId: string; message: string }
+  | { ok: true; reportId: string; earned: number; message: string }
   | {
       ok: false;
       reason: "sign-in-required" | "invalid-store" | "invalid" | "invalid-photo";
@@ -87,26 +89,70 @@ export async function submitCrowdReport(formData: FormData): Promise<CrowdReport
 
   const id = randomUUID();
   const now = new Date().toISOString();
-  await db
-    .insertInto("crowd_report")
-    .values({
-      id,
-      user_id: user.id,
-      store_id: report.storeId,
-      product_id: report.productId,
-      product_name: report.productName,
-      price: String(report.price),
-      currency: "DKK",
-      photo_path: photoPath,
-      reported_at: now,
-      created_at: now,
-    })
-    .execute();
+
+  // Anti-gaming (Task 031 parity): one report per (user, store, product|name).
+  // A repeat report updates the existing row (e.g. price correction) instead
+  // of farming a second row — the tier logic counts distinct users anyway.
+  let existingQuery = db
+    .selectFrom("crowd_report")
+    .select(["id", "product_name"])
+    .where("user_id", "=", user.id)
+    .where("store_id", "=", report.storeId);
+  existingQuery = report.productId
+    ? existingQuery.where("product_id", "=", report.productId)
+    : existingQuery.where("product_id", "is", null);
+  const candidates = await existingQuery.execute();
+  const existing =
+    report.productId != null
+      ? candidates[0]
+      : (candidates.find(
+          (c) =>
+            c.product_name != null &&
+            report.productName != null &&
+            normalizeProductName(c.product_name) === normalizeProductName(report.productName),
+        ) ?? null);
+
+  let reportId: string;
+  if (existing) {
+    reportId = existing.id;
+    await db
+      .updateTable("crowd_report")
+      .set({ price: String(report.price), reported_at: now, photo_path: photoPath })
+      .where("id", "=", existing.id)
+      .execute();
+  } else {
+    reportId = id;
+    await db
+      .insertInto("crowd_report")
+      .values({
+        id,
+        user_id: user.id,
+        store_id: report.storeId,
+        product_id: report.productId,
+        product_name: report.productName,
+        price: String(report.price),
+        currency: "DKK",
+        photo_path: photoPath,
+        reported_at: now,
+        created_at: now,
+        points_awarded: "0",
+        last_awarded_tier: null,
+      })
+      .execute();
+  }
+
+  // Re-tier the affected group now (a 2nd/3rd agreeing report may have just
+  // flipped it to Community) and award the upgrade-only delta.
+  const deltas = await awardCrowdGroup(report.storeId, report.productId, report.productName);
+  const earned = deltas[reportId] ?? 0;
 
   return {
     ok: true,
-    reportId: id,
+    reportId,
+    earned,
     message:
-      "Tak! Din pris er registreret som brugerrapporteret — den vises ikke som et tilbud eller en rabat.",
+      earned > 0
+        ? `Tak! Din pris hjalp gruppen til Community — du fik ${earned} point.`
+        : "Tak! Din pris er registreret som brugerrapporteret — den vises ikke som et tilbud eller en rabat.",
   };
 }
