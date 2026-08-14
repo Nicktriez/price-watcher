@@ -27,7 +27,21 @@ export default function ListDetail() {
   const [q, setQ] = createSignal("");
   const [qty, setQty] = createSignal("");
   const [unit, setUnit] = createSignal("");
-  const suggestions = createAsync(async () => (q().trim() ? searchProducts(q()) : []));
+  // Search results live in a plain signal (debounced fetch), NOT a resource:
+  // a resource read that goes pending re-suspends the route's Suspense
+  // boundary, which detaches the DOM and blurs the input on every keystroke.
+  const [results, setResults] = createSignal<{ id: string; name: string; brand: string | null }[]>(
+    [],
+  );
+  let searchTimer: ReturnType<typeof setTimeout> | undefined;
+  const handleSearchInput = (value: string) => {
+    setQ(value);
+    clearTimeout(searchTimer);
+    const query = value.trim();
+    searchTimer = setTimeout(async () => {
+      setResults(query ? await searchProducts(query) : []);
+    }, 150);
+  };
 
   const addProduct = async (productId: string) => {
     await addListItem(params.id!, {
@@ -154,7 +168,7 @@ export default function ListDetail() {
                   <input
                     type="text"
                     value={q()}
-                    onInput={(e) => setQ(e.currentTarget.value)}
+                    onInput={(e) => handleSearchInput(e.currentTarget.value)}
                     placeholder="Search products…"
                     class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
@@ -173,9 +187,9 @@ export default function ListDetail() {
                     class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                 </div>
-                <Show when={suggestions()?.length}>
+                <Show when={results().length}>
                   <ul class="space-y-1">
-                    <For each={suggestions()}>
+                    <For each={results()}>
                       {(p) => (
                         <li>
                           <button

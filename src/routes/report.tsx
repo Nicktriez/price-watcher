@@ -7,11 +7,23 @@ import { searchStores, submitCrowdReport, type CrowdReportResult } from "~/serve
 export default function Report() {
   const user = createAsync(() => getCurrentUser());
 
+  // Search results live in plain signals (debounced fetch), NOT resources —
+  // a pending resource read re-suspends the route's Suspense boundary and
+  // blurs the input on each keystroke.
   const [storeQuery, setStoreQuery] = createSignal("");
   const [selectedStore, setSelectedStore] = createSignal<{ id: string; name: string } | null>(null);
-  const stores = createAsync(() =>
-    storeQuery().trim() ? searchStores(storeQuery()) : Promise.resolve([]),
-  );
+  const [stores, setStores] = createSignal<
+    { id: string; name: string; address: string | null; city: string | null; zip: string | null }[]
+  >([]);
+  let storeTimer: ReturnType<typeof setTimeout> | undefined;
+  const handleStoreInput = (value: string) => {
+    setStoreQuery(value);
+    clearTimeout(storeTimer);
+    const query = value.trim();
+    storeTimer = setTimeout(async () => {
+      setStores(query ? await searchStores(query) : []);
+    }, 150);
+  };
 
   const [productQuery, setProductQuery] = createSignal("");
   const [selectedProduct, setSelectedProduct] = createSignal<{ id: string; name: string } | null>(
@@ -19,9 +31,18 @@ export default function Report() {
   );
   const [useFreeText, setUseFreeText] = createSignal(false);
   const [freeText, setFreeText] = createSignal("");
-  const products = createAsync(() =>
-    productQuery().trim() ? searchProducts(productQuery()) : Promise.resolve([]),
-  );
+  const [products, setProducts] = createSignal<
+    { id: string; name: string; brand: string | null }[]
+  >([]);
+  let productTimer: ReturnType<typeof setTimeout> | undefined;
+  const handleProductInput = (value: string) => {
+    setProductQuery(value);
+    clearTimeout(productTimer);
+    const query = value.trim();
+    productTimer = setTimeout(async () => {
+      setProducts(query ? await searchProducts(query) : []);
+    }, 150);
+  };
 
   const [price, setPrice] = createSignal("");
   const [photo, setPhoto] = createSignal<File | null>(null);
@@ -79,13 +100,13 @@ export default function Report() {
                       id="store-search"
                       value={storeQuery()}
                       onInput={(e) => {
-                        setStoreQuery(e.currentTarget.value);
+                        handleStoreInput(e.currentTarget.value);
                         setSelectedStore(null);
                       }}
                       placeholder="Search by store name or city…"
                       class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
                     />
-                    <Show when={stores() && stores()!.length > 0}>
+                    <Show when={stores().length}>
                       <ul class="mt-1 rounded border border-gray-200">
                         <For each={stores()}>
                           {(s) => (
@@ -168,13 +189,13 @@ export default function Report() {
                         id="product-search"
                         value={productQuery()}
                         onInput={(e) => {
-                          setProductQuery(e.currentTarget.value);
+                          handleProductInput(e.currentTarget.value);
                           setSelectedProduct(null);
                         }}
                         placeholder="Search by product name…"
                         class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
                       />
-                      <Show when={products() && products()!.length > 0}>
+                      <Show when={products().length}>
                         <ul class="mt-1 rounded border border-gray-200">
                           <For each={products()}>
                             {(p) => (
@@ -195,7 +216,7 @@ export default function Report() {
                           </For>
                         </ul>
                       </Show>
-                      <Show when={productQuery().trim().length > 1 && products()?.length === 0}>
+                      <Show when={productQuery().trim().length > 1 && products().length === 0}>
                         <button
                           type="button"
                           onClick={() => setUseFreeText(true)}
