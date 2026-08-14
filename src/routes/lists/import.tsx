@@ -65,7 +65,7 @@ export default function RecipeImport() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const listId = await createList(recipeName().trim() || "Recipe", "recipe");
+      const listId = await createList(recipeName().trim() || "Opskrift", "recipe");
       for (const row of rows()) {
         await addListItem(listId, {
           productId: row.productId ?? undefined,
@@ -96,13 +96,13 @@ export default function RecipeImport() {
         <main class="mx-auto max-w-3xl p-4 text-gray-900">
           <p class="mb-2 text-sm">
             <a href="/lists" class="text-sky-700 hover:underline">
-              ← All lists
+              ← Alle lister
             </a>
           </p>
-          <h1 class="mb-4 text-2xl font-semibold">Import a recipe</h1>
+          <h1 class="mb-4 text-2xl font-semibold">Importer en opskrift</h1>
           <p class="mb-4 text-sm text-gray-600">
-            Paste a recipe below — one ingredient per line. We'll split it and let you match each
-            ingredient to a product before saving it as a list.
+            Indsæt en opskrift nedenfor — én ingrediens pr. linje. Vi læser den og lader dig koble
+            hver ingrediens til et produkt, før du gemmer den som en liste.
           </p>
 
           <div class="mb-4 space-y-2">
@@ -110,7 +110,7 @@ export default function RecipeImport() {
               type="text"
               value={recipeName()}
               onInput={(e) => setRecipeName(e.currentTarget.value)}
-              placeholder="Recipe name (e.g. Spaghetti bolognese)"
+              placeholder="Opskriftens navn (fx Spaghetti bolognese)"
               class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
             />
             <textarea
@@ -127,12 +127,12 @@ export default function RecipeImport() {
               onClick={handleParse}
               class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white"
             >
-              Parse ingredients
+              Læs ingredienserne
             </button>
           </div>
 
           <Show when={rows().length > 0}>
-            <h2 class="mb-2 text-lg font-semibold">Ingredients</h2>
+            <h2 class="mb-2 text-lg font-semibold">Ingredienser</h2>
             <ul class="space-y-3">
               <For each={rows()}>
                 {(row) => (
@@ -142,7 +142,7 @@ export default function RecipeImport() {
                         type="text"
                         value={row.search}
                         onInput={(e) => onSearch(row.key, e.currentTarget.value)}
-                        placeholder="Search a product…"
+                        placeholder="Søg efter et produkt…"
                         class="flex-1 rounded border border-gray-300 px-3 py-1 text-sm"
                       />
                       <input
@@ -153,14 +153,14 @@ export default function RecipeImport() {
                             amount: e.currentTarget.value ? Number(e.currentTarget.value) : null,
                           })
                         }
-                        placeholder="Qty"
+                        placeholder="Antal"
                         class="w-20 rounded border border-gray-300 px-3 py-1 text-sm"
                       />
                       <input
                         type="text"
                         value={row.unit ?? ""}
                         onInput={(e) => patchRow(row.key, { unit: e.currentTarget.value || null })}
-                        placeholder="Unit"
+                        placeholder="Enhed"
                         class="w-20 rounded border border-gray-300 px-3 py-1 text-sm"
                       />
                     </div>
@@ -183,18 +183,18 @@ export default function RecipeImport() {
                     </Show>
                     <Show when={row.productId}>
                       <p class="text-xs text-gray-600">
-                        Linked to product: <span class="font-medium">{row.productName}</span>{" "}
+                        Koblet til produkt: <span class="font-medium">{row.productName}</span>{" "}
                         <button
                           type="button"
                           onClick={() => clearProduct(row.key)}
                           class="text-red-600 hover:underline"
                         >
-                          (use as free text instead)
+                          (brug som fritekst i stedet)
                         </button>
                       </p>
                     </Show>
                     <Show when={!row.productId}>
-                      <p class="text-xs text-gray-500">Will be saved as free text: "{row.name}"</p>
+                      <p class="text-xs text-gray-500">Gemmes som fritekst: "{row.name}"</p>
                     </Show>
                   </li>
                 )}
@@ -206,7 +206,7 @@ export default function RecipeImport() {
               disabled={saving()}
               class="mt-4 rounded bg-sky-600 px-4 py-1.5 text-sm text-white disabled:opacity-50"
             >
-              {saving() ? "Saving…" : "Save as list"}
+              {saving() ? "Gemmer…" : "Gem som liste"}
             </button>
           </Show>
         </main>
