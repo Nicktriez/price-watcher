@@ -98,9 +98,19 @@ Small dev-convenience tasks that unblock testing. Run these before/parallel to t
 
 **Note:** Tasks 033/034 are TEMPORARY — remove the dev links before launch (Phase 8).
 
-## Phase 7b (Design Polish — next up, after Phase 7 closed beta)
+## Phase 7 (Closed Beta — coding prerequisite)
 
-Design direction + branding. **Sequence matters:** 035 produces the winning visual direction → 036 unifies the codebase around it → 037 branding → then 038/039/040/041. Phase 7 (closed beta) itself is operations (recruiting/measurement — Nick's job, not OpenCode); the Hetzner deploy is Ultron's infra work.
+Phase 7 is mostly operations (recruiting/measurement — Nick's job), but it has **coding prerequisites** that must land BEFORE any invite. Task 042 is the gate; Task 001's `last_active` log is added only if the existing query can't measure "return."
+
+| #   | Task                                                        | Status | Depends on                 |
+| --- | ----------------------------------------------------------- | ------ | -------------------------- |
+| 042 | Usability precondition: 3 core flows navigable without help | ⬜     | — (GATES the beta invites) |
+
+**Task 042 is the difference between measuring retention and measuring usability.** Nothing is invited until a cold non-technical user can build a list, upload a receipt, and see a store comparison unaided. The Hetzner deploy (Ultron's infra) runs in parallel; invites wait for BOTH deploy-live AND 042 passing.
+
+## Phase 7b (Design Polish — after the beta, before launch)
+
+Design direction + branding. **Sequence matters:** 035 produces the winning visual direction → 036 unifies the codebase around it → 037 branding → then 038/039/040/041. These run AFTER the beta (per the plan: polish a product you know people return to). Note: Phase 7's _coding_ prerequisite (Task 042) is tracked in its own section above.
 
 | #   | Task                                          | Status | Depends on        |
 | --- | --------------------------------------------- | ------ | ----------------- |
