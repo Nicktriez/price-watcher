@@ -438,7 +438,15 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Tasks:**
 
-1. **Design system (Tailwind):** a consistent set of colors, typography, spacing, and component styles across all routes. Currently each page uses ad-hoc Tailwind classes; unify them. Pick a palette that suits the product (fresh/grocery-appropriate, but not childish) and stick to it.
+0. **Design variants (choose the direction — BEFORE the design-system task, since it _produces_ the tokens to unify around):**
+   - **Method:** 3 throwaway HTML mockups, NOT git branches. Three agents each produce **one standalone, self-contained HTML file** of the key screens (store comparison + madplan — the 7b#3 "screenshots that matter"), each taking a **distinct design stance** (e.g. calm/editorial/fresh; dense/utilitarian/tool-like; warm/playful/everyday). No repo mutation, no branches, no build cycle.
+   - **Why not branches:** Phase 7b#1's whole job is _unifying_ ad-hoc classes into one system; 3 agents restyling the real routes in branches creates 3 competing ad-hoc systems + merge-conflict noise, and commits throwaway work. Design is also a _visual_ decision — it must be judged by looking, not by reading diffs.
+   - **Content:** realistic Danish copy (real product names, real prices) in each mockup; interactive enough to click/hover/toggle.
+   - **Selection:** Nick picks the winner **by looking** (open each HTML file / screenshots), not by code review.
+   - **Winner → design system:** the chosen mockup must specify its actual tokens (palette, type scale, spacing) so Task 1's implementation is mechanical, not re-decided. Two losers never touch the repo.
+   - **Exit:** one winning visual direction with documented tokens.
+
+1. **Design system (Tailwind):** a consistent set of colors, typography, spacing, and component styles across all routes. Currently each page uses ad-hoc Tailwind classes; unify them. Pick a palette that suits the product (fresh/grocery-appropriate, but not childish) and stick to it. Use the winning variant's tokens from Task 0.
 2. **Branding:** lock the name (`Kurven`), a simple logo/wordmark, and the primary UI copy tone (Danish, direct, honest — matching the blog voice). Favicon + page titles.
 3. **The screenshots that matter:** polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) — these are the "screenshot-for-distribution" moments. A madplan screenshot that looks clean is the single most shareable asset (feeds the "madplan for 500 kr" blog-post content engine).
 4. **Mobile check:** receipts are uploaded from a phone camera — verify the upload + receipt flow is genuinely usable on mobile, not just desktop. (The beta likely surfaced some of this in feedback; this is where to fix it.)
