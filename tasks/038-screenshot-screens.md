@@ -1,7 +1,7 @@
 # Task 038 — Screenshot-Worthy Store Comparison + Madplan
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7b (Task 3)
+**Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 3)
 
 ## Objective
 

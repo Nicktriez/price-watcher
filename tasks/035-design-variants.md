@@ -1,7 +1,7 @@
 # Task 035 — Design Variants: 3 Throwaway HTML Mockups
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7b (Task 0)
+**Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 0)
 
 ## Objective
 

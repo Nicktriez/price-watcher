@@ -1,7 +1,7 @@
 # Task 039 — Mobile Check: Receipt Upload Flow
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7b (Task 4)
+**Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 4)
 
 ## Objective
 

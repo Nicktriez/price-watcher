@@ -13,7 +13,7 @@
 
 Full detail: `research/verdicts/etilbudsavis.md` (engineering) + the ownership check (see research review, 2026-08-11).
 
-**On "selling the site to another country" (Nick's clarification):** that ambition means selling/leasing the **codebase + name** (buyer may rename), **never the data**. **Hard constraint: the Tjek-dependent stack (Phases 1–9) is internal-only and can never be included in a sale/lease** — it reads our competitor's feed, and we won't hand that dependency to a buyer. The sellable/leasable artifact is **our own Tjek-independent ingestion API — the output of Phase 10** — which has no Tjek dependency and adapts to the buyer's country's chains. **Therefore export is gated on Phase 10, which is gated on traction.** The code is country-neutral (Chain/Store/Offer are data, not code), so once Phase 10 exists, the stack exports cleanly with no Tjek involvement. Don't build white-label/multi-country tooling before then (see YAGNI).
+**On "selling the site to another country" (Nick's clarification):** that ambition means selling/leasing the **codebase + name** (buyer may rename), **never the data**. **Hard constraint: the Tjek-dependent stack (Phases 1–11) is internal-only and can never be included in a sale/lease** — it reads our competitor's feed, and we won't hand that dependency to a buyer. The sellable/leasable artifact is **our own Tjek-independent ingestion API — the output of Phase 12** — which has no Tjek dependency and adapts to the buyer's country's chains. **Therefore export is gated on Phase 12, which is gated on traction.** The code is country-neutral (Chain/Store/Offer are data, not code), so once Phase 12 exists, the stack exports cleanly with no Tjek involvement. Don't build white-label/multi-country tooling before then (see YAGNI).
 
 **Tech Stack:** SolidStart (Solid meta-framework) + TailwindCSS, Vite+ as toolchain (via `vp migrate`), Node.js + TypeScript, Kysely (typed SQL builder), PostgreSQL, node-cron/BullMQ for ingestion, Tjek.com read API (all chains, JSON, no auth) with signed PDF per catalog as ground-truth fallback, OSRM (HTTP API), Tesseract (Danish) for receipt OCR, Entire.io (agent-session records + git mirror), affiliate networks (Partner-ads / Tradetracker). **Hosting: separate Hetzner VPS** (Nick's decision, 2026-08) — self-managed Postgres + app + cron on one box, EU data residency, NOT the agent VPS.
 
@@ -119,11 +119,11 @@ Goals are **engagement-weighted**, not signup-count vanity. A price watcher with
 | Milestone                | Trigger (Phase)             | Goal                                                                                           | Why it means success                                                                                                                                                   |
 | ------------------------ | --------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **M1 — MVP validated**   | after Phase 4 (basket math) | 100 real users each built ≥1 basket and got a store ranking; **≥30% return the next week**     | Proves people actually want "cheapest store for my basket" — not just that the page loads                                                                              |
-| **M2 — Launch traction** | after Phase 8 (launch)      | 1,000 weekly-active users who built a basket; **≥200 receipts uploaded/week**                  | Proves the crowd+receipt data loop actually runs — the foundation                                                                                                      |
-| **M3 — Traction gate**   | Phase 10 gate               | 5,000 weekly-active users **AND** ≥500 receipts/week **AND** organic growth without paid spend | This IS the "real users / a threat" threshold Phase 10's gate refers to — visible enough to Tjek to be a cutoff risk, big enough that losing the feed must not kill us |
+| **M2 — Launch traction** | after Phase 10 (launch)     | 1,000 weekly-active users who built a basket; **≥200 receipts uploaded/week**                  | Proves the crowd+receipt data loop actually runs — the foundation                                                                                                      |
+| **M3 — Traction gate**   | Phase 12 gate               | 5,000 weekly-active users **AND** ≥500 receipts/week **AND** organic growth without paid spend | This IS the "real users / a threat" threshold Phase 12's gate refers to — visible enough to Tjek to be a cutoff risk, big enough that losing the feed must not kill us |
 | **M4 — Viability**       | ongoing                     | affiliate revenue ≥ server + LLM costs                                                         | Business self-sustains without Nick's freelance income                                                                                                                 |
 
-**Reading these:** M3 is the load-bearing one — it's the operational definition of "traction" that unlocks Phase 10 and the export product. Until M3, Phase 10 stays on the shelf (YAGNI). Use M1/M2 to decide whether to keep building; use M3 to decide whether to harden; use M4 to decide whether it's a business.
+**Reading these:** M3 is the load-bearing one — it's the operational definition of "traction" that unlocks Phase 12 and the export product. Until M3, Phase 12 stays on the shelf (YAGNI). Use M1/M2 to decide whether to keep building; use M3 to decide whether to harden; use M4 to decide whether it's a business.
 
 ---
 
@@ -170,7 +170,7 @@ Full chain/format context: `research/notes/chains.md`.
    - ⏳ **Open cleanup:** (a) rename package from `example-with-tailwindcss` → `price-watcher`; (b) confirm Node `>=24` constraint matches dev machine.
 2. Models (Kysely schema + migrations): `Chain`, `Store` (address, lat/lon), `Product` (name, brand, EAN when known), `Offer` (product_id, store_id, price, unit_price, valid_from, valid_to, source, trust_tier, raw_url), `List`, `ListItem`, later `User`. **Add an internal/publishable flag (or split tables) to enforce the Data & legal boundary — feed rows are internal, crowd/receipt rows are publishable.**
 3. **Tjek ingestion worker** (REMA first, dealer `11deC`): `GET /v2/catalogs?dealer_id=…` → `GET /v2/offers/search?catalog_id=…` → upsert `Offer` records. Idempotent (re-running the same week doesn't duplicate). Use `run_from`/`run_till` from each catalog as the truth, not a fixed weekday.
-4. **Start weekly capture now:** node-cron/BullMQ job runs the collector every ~6h (cheap, ≪1 req/s) to build `PricePoint` history from day one — the when-to-buy verdict (Phase 9) and Omnibus compliance need history _before_ the feature ships. Never backfill a graph you forgot to collect.
+4. **Start weekly capture now:** node-cron/BullMQ job runs the collector every ~6h (cheap, ≪1 req/s) to build `PricePoint` history from day one — the when-to-buy verdict (Phase 11) and Omnibus compliance need history _before_ the feature ships. Never backfill a graph you forgot to collect.
 5. Basic UI: offers index (filter by chain), product page, store page.
 6. Seed with REMA's data for the current week.
 
@@ -399,144 +399,123 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ---
 
-## Phase 7 — Closed Beta (2–3 weeks, after Phase 6, before launch) 🔄 CURRENT (2026-08-14)
+## Phase 7a — Usability + Basic Design (the last coding hurdle, before beta) 🔄 CURRENT (2026-08-14)
 
-**Objective:** Validate the retention loop with real users and **seed the crowd-data lake** before going public. A crowdsourced model dies on cold start — the site must have a body of user-reported/receipt prices _before_ launch, or the first public visitor finds an empty data lake. Beta is where that pool gets filled and where the M1 signal is tested ahead of the launch moment.
+**Objective:** Make the site **usable and presentable for a non-technical person** — the last coding work before anyone is invited. Everything past this point in the beta is operations, not coding.
 
-**Scope discipline:** this is a **closed pilot with ~10–20 invited users**, not a "public beta" operation. No signup infrastructure, no waitlist, no landing page — the magic-link sign-in (Phase 3) already handles invitations; Nick just sends people links. Boring on purpose.
+**Coding tasks (the gate):**
 
-**This is an operations plan (recruit, seed, measure), not a coding plan.** Nick runs it; the agent assists with drafting invites, tracking, and analysis. No repo changes unless a beta bug/blocker needs one.
+- **Task 042 — Usability precondition:** the three core flows (build a list, upload a receipt, view a store comparison) are navigable without help by a cold, non-technical user. Fix blockers and dead ends, plain Danish labels, no relying on the dev-navbar.
+- **Task 043 — Basic design + correct route linking:** a clean, consistent basic layout (navbar, home, page structure), every public route reachable by a real link, the "Sku' jeg?" hook landing on the home page. **Basic + correct, NOT the full design system** (that's Phase 9, only if the beta succeeds).
 
-**Proposed approach:** recruit a small, friendly, mixed cohort → make the three core flows navigable-without-help → ask each to upload 3–5 receipts + build a list → watch return-rate and the data lake → decide launch vs. fix.
+**The invite question (DECIDED): NO invite system, do NOT open the subdomain.** The beta is enforced by the existing magic-link sign-in (Task 010) and closed by obscurity — Nick controls who gets links; nobody finds an unannounced `beta.skujeg.dk`. No new code. Add an invite-code gate ONLY if strangers actually appear (they won't at this stage) — don't pre-build it.
 
-### Precondition — Hosting (DECIDED 2026-08-14): cheap Hetzner VPS + `skujeg.dk`
+**Exit gate (7a done = ready to host):**
 
-Beta deploys to a separate Hetzner VPS (NOT the agent VPS, NOT the laptop). Concrete spec:
-
-- **Domain:** **`skujeg.dk` — BOUGHT (2026-08-14)**. Brand = "Sku' jeg?" (Should I?) — the travel-question differentiator as the name. Beta subdomain: **`beta.skujeg.dk`** → A record → Hetzner IP. HTTPS required for magic-link sign-in.
-- **VPS plan:** **Hetzner CX22** — 2 vCPU, 4 GB RAM, 40 GB NVMe, **€3.79/mo** (verified 2026). Enough for a 10–20 user beta with one Postgres + one app. Do NOT overspec.
-- **Location:** Falkenstein (FSN1) or Nuremberg (NBG1) — Germany, EU data residency. **OS:** Ubuntu 24.04 LTS.
-- **Node >=24** (project `engines`; agent VPS is Node 22 — fresh box, install Node 24+).
-- **SSH access (DECIDED):** Ultron uses the existing `ultron-vps-nicktriez` **root** key (full trust on a disposable beta box — acceptable).
-- **Deploy setup is a real precondition:** clone `price-watcher`, `pnpm install`, self-managed Postgres (EU residency), env, `vp build`, pm2/systemd, TLS. **Nothing in Task 2 (invite) happens until users have a reachable HTTPS URL.**
-- **Nick's action list (yours only):** buy `skujeg.dk` ✅ → order CX22 (get IP) → add Ultron's SSH key to root → create `beta.skujeg.dk` A record → tell Ultron the IP. Ultron does all provisioning + deploy.
-
-### Tasks
-
-**Task 0 — Usability precondition (the navigability bar, do BEFORE inviting anyone).** The core flows must be navigable without help — a non-technical user can build a list, upload a receipt, and view a store comparison without being walked through it. This is a **navigability bar, not a beauty bar** — if a user gets stuck on "can't find the button," beta measures usability, not retention, and M1 (≥30% return) is polluted.
-
-- Pick one person who has never seen the site (friend/family, non-technical). Watch them do the three flows cold. Do NOT help except where a real user couldn't get help.
-- Log every stall point; fix anything that _stops_ the flow (blockers only, not polish). Re-test until the three flows complete unaided.
-- **Done when:** the cold test completes all three flows without a blocker.
-
-**Task 1 — Define "return" precisely (measure before you recruit).** So the exit gate's "≥30% return" is measurable, not vibes.
-
-- **Define return:** a signed-in user who performs an M1 action (build/update a list, get a store ranking) in week 2, after doing one in week 1. Not "visited the site again."
-- **Observation window:** calendar week 1 (beta opens) → does the same user act again in week 2.
-- **Logging:** simple query on existing data (lists created/updated per user per week) — no new infra. If a query isn't enough, add a minimal `last_active`/event log (small task, flag it).
-- **Timebox:** 3 weeks — week 1 recruit+onboard, week 2 first return measurement, week 3 confirm + decide.
-- **Done when:** "return" and the measurement method are written down and the query works against real data.
-
-**Task 2 — Invite the cohort (~10–20).** A friendly, mixed cohort that will actually use it and be honest.
-
-- Draft the invite (agent can help): what it is, that it's a closed beta, the 3 asks (upload 3–5 receipts, build one list), how to reach you, that their data helps everyone. No hype.
-- Recruit to a spread: 3–5 friends/family (non-technical, real shoppers) · 2–3 from Danish price-watch/consumer groups (technical, price-sensitive) · 1 skeptic (will try to break it) · 1–2 technical peers (will notice architecture; keep them out of the data layer).
-- Send magic-link invites as you onboard each person. Log who's in, when, and their type (friend/group/skeptic/tech).
-- **Done when:** ~10–20 people have working sign-in links and know the 3 asks.
-
-**Task 3 — Seed-data campaign.** Get ≥50 real receipts into the baseline pool.
-
-- Ask each user for **3–5 receipts** from their own weekly shop (the donor-to-the-moat ask).
-- Make upload the obvious first action (it's the onboarding reward: spending view + price-vs-average).
-- Track the running count. Watch for the receipt→spending-view moment — that's the retention hook firing.
-- **Done when:** ≥50 receipts uploaded (exit-gate number), spanning real stores.
-
-**Task 4 — Watch the M1 signal early.** Catch the retention signal before spending the launch moment.
-
-- After week 1, run the return query (Task 1): which week-1 active users acted again in week 2?
-- Compute rate = returning / week-1-active. Compare to the **≥30%** bar.
-- If ≥30%: loop holds, continue beta → confirm in week 3. If <30%: do NOT launch — diagnose which hook is weak (spending view / gamification / price-vs-average / ranking), fix, re-test.
-- **Done when:** a clean M1 number is measured and either clears the bar or drives a diagnosis.
-
-**Task 5 — Edge-case harvest.** Free real-world QA on dedup + anti-gaming (Tasks 013/016) that unit tests can't simulate.
-
-- Real users WILL upload crumpled, duplicate, and adversarial receipts. Log every dedup/keep/replace decision during beta. If double-points or duplicate baselines appear, capture it.
-- Feed anything that breaks the trust/anti-gaming design back as a bug/task.
-- **Done when:** no double-points or duplicate-baseline bugs observed; any that appeared are fixed or logged with a workaround.
-
-**Task 6 — Feedback channel.** A single low-friction place for bugs + "what's missing."
-
-- One pinned thread (Discord/Signal/email) — no issue tracker, no process. Tell users it exists and to drop anything in it.
-- Nick reads it weekly; triages launch-blocker vs. nice-to-have vs. ignore.
-- **Done when:** the channel exists, users know about it, and Nick has a weekly read habit.
-
-### Risks / tradeoffs / open questions
-
-- **Hosting** — resolved above (Hetzner CX22 + `skujeg.dk`, locked 2026-08-14). The **biggest concrete gating item is the deploy**: no invites until `beta.skujeg.dk` serves over HTTPS.
-- **"Return" definition** must be settled in Task 1 or the exit gate is unmeasurable.
-- **Cohort honesty:** friends/family may over-report or under-break; the skeptic + group members hedge this.
-- **Cold-start risk:** if recruits don't upload receipts, the lake stays thin. Task 3 makes it an explicit ask + the onboarding reward.
-- **Timebox drift:** beta can stretch; the 3-week box keeps it decisive.
-
-### Exit gate (launch-readiness)
-
-- [ ] **M1 signal: ≥30% of beta users return the next week** (build a basket, come back)
-- [ ] **≥50 real receipts seeded** into the baseline pool (the cold-start hedge)
-- [ ] Beta users can build a list and get a store ranking without help
-- [ ] Dedup/gamification held up under real uploads — no double-points or duplicate baselines observed
-- [ ] No launch-blocking bugs; the few that surfaced are either fixed or have a known workaround
-
-**If the M1 signal fails:** do NOT launch. The retention loop is the whole bet — if <30% return, something in the loop is wrong. Diagnose (is it the spending view? the gamification? the ranking itself?) and fix before spending the launch moment on a product people don't return to. Beta failing is data, not failure — better to learn it here than on Reddit.
-
-**When Beta is done:** Phase 7 hands off to Phase 7b (Design Polish) with a seeded data lake, a validated retention loop, and a body of real receipts powering the crowd-data moat. Only then Phase 8 (Launch).
+- [ ] Task 042 done — cold non-technical user completes the 3 core flows unaided
+- [ ] Task 043 done — basic layout + correct route linking, no dead links, Danish
+- [ ] `vp check` + `vp test` pass
 
 ---
 
-## Phase 7b — Design Polish (1 week, after Beta, before Launch)
+## Phase 7b — Hosting + Legal (before beta runs)
 
-**Objective:** Make the site _look_ like a product worth sharing, now that it's proven people return to it. The beta validated the retention loop; this pass makes the presentation match. **Deliberately AFTER beta, not before** — if the M1 signal had failed, you'd have polished a product people don't return to. Polish is only worth it once you know the loop works.
+**Objective:** Get the site reachable over HTTPS and legally ready before real users join. Two parallel tracks: **deploy** (Ultron's infra) and **legal** (privacy policy).
 
-**Scope:** visual tightening + branding — NOT new features, NOT restructuring. The features are done; this makes them presentable.
+**Deploy (Ultron's infra work — DECIDED 2026-08-14):** separate Hetzner VPS, NOT the agent VPS, NOT the laptop.
 
-**Tasks:**
+- **Domain:** `skujeg.dk` — BOUGHT (2026-08-14). Brand = "Sku' jeg?" (Should I?). Beta subdomain `beta.skujeg.dk` → A record → Hetzner IP. HTTPS required for magic-link.
+- **VPS:** Hetzner CX22 — 2 vCPU / 4 GB / 40 GB NVMe, €3.79/mo (verified 2026). Falkenstein/Nuremberg (EU residency), Ubuntu 24.04. Do NOT overspec.
+- **Node >=24** (project `engines`; agent VPS is Node 22 — fresh box).
+- **SSH:** Ultron uses the existing `ultron-vps-nicktriez` root key (full trust on a disposable box — acceptable).
+- **Setup:** clone `price-watcher`, `pnpm install`, self-managed Postgres (EU residency), env, `vp build`, pm2/systemd, TLS.
+- **Nick's action list:** order CX22 (get IP) → add Ultron's SSH key to root → create `beta.skujeg.dk` A record → tell Ultron the IP.
 
-0. **Design variants (choose the direction — BEFORE the design-system task, since it _produces_ the tokens to unify around):**
-   - **Method:** 3 throwaway HTML mockups, NOT git branches. Three agents each produce **one standalone, self-contained HTML file** of the key screens (store comparison + madplan — the 7b#3 "screenshots that matter"), each taking a **distinct design stance** (e.g. calm/editorial/fresh; dense/utilitarian/tool-like; warm/playful/everyday). No repo mutation, no branches, no build cycle.
-   - **Why not branches:** Phase 7b#1's whole job is _unifying_ ad-hoc classes into one system; 3 agents restyling the real routes in branches creates 3 competing ad-hoc systems + merge-conflict noise, and commits throwaway work. Design is also a _visual_ decision — it must be judged by looking, not by reading diffs.
-   - **Content:** realistic Danish copy (real product names, real prices) in each mockup; interactive enough to click/hover/toggle.
-   - **Selection:** Nick picks the winner **by looking** (open each HTML file / screenshots), not by code review.
-   - **Winner → design system:** the chosen mockup must specify its actual tokens (palette, type scale, spacing) so Task 1's implementation is mechanical, not re-decided. Two losers never touch the repo.
-   - **Exit:** one winning visual direction with documented tokens.
+**Legal (DECIDED — one real item before invites):** a **privacy policy in Danish** is required before real users, because the site collects email (sign-in), receipt images (personal data, deleted after parse per Task 013), and home address (OSRM distance, Task 025). Plus accurate cookie handling.
 
-1. **Design system (Tailwind):** a consistent set of colors, typography, spacing, and component styles across all routes. Currently each page uses ad-hoc Tailwind classes; unify them. Pick a palette that suits the product (fresh/grocery-appropriate, but not childish) and stick to it. Use the winning variant's tokens from Task 0.
-2. **Branding:** lock the name (**`Skujeg`** — "Sku' jeg?"/"Should I?", the travel-question differentiator as the brand, chosen 2026-08-14), a simple logo/wordmark, and the primary UI copy tone (Danish, direct, honest — matching the blog voice). Favicon + page titles.
-3. **The screenshots that matter:** polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) — these are the "screenshot-for-distribution" moments. A madplan screenshot that looks clean is the single most shareable asset (feeds the "madplan for 500 kr" blog-post content engine).
-4. **Mobile check:** receipts are uploaded from a phone camera — verify the upload + receipt flow is genuinely usable on mobile, not just desktop. (The beta likely surfaced some of this in feedback; this is where to fix it.)
-5. **Honest-UI consistency pass:** ensure the trust-tier / "user-reported" / "no discount" labeling (Tasks 014/017/022) reads cleanly and consistently in the polished design — the compliance framing must survive the visual redesign, not get lost in it.
-6. **Danish-consistency pass (audit, not i18n):** every user-facing string in the UI must be Danish. Today there's English leakage (e.g. `/reported-items` H1 "Reported items", tier badges "Community"/"User-reported") while most of the site is Danish — mixed-language UI reads as broken to a Danish user. Grep for hardcoded strings, translate the stragglers, and confirm the trust/compliance labels stay Omnibus-clean in Danish. Also check links (nav, footer, CTAs) resolve and are correctly labelled in Danish.
+- **Task 044 — Privacy policy + GDPR page:** `/privacy` route in Danish, accurate to what the code does, Nick approves the text (legal exposure). No full GDPR machinery — a policy page + accurate cookie handling.
+- **Not needed yet:** no company/entity for a closed solo beta (that's monetization); Omnibus labeling is already in the code (Tasks 040/041).
 
-## Language policy (DECIDED — do not build full English i18n yet)
+**Exit gate (7b done = ready to invite):**
 
-- **Launch language is Danish.** The site is Danish-first; the branding voice (Phase 7b #2) is "Danish, direct, honest."
-- **English is OUT of scope for launch.** A full English locale/toggle (i18n framework, `/en/` routing, translation keys, dual voices) is not built now — it's the export ambition in disguise, and export is gated on Phase 10/traction. Potential audience: non-Danish speakers living in Denmark (expats). Real but secondary; not worth a multi-week i18n lift pre-launch.
-- **Keep the eventual switch painless, not pre-built:** during the Danish-consistency pass, avoid deeply-buried hardcoded strings where extraction would be painful later. No i18n framework — just don't make a future locale pass harder than it has to be.
-- **Revisit when:** there's real expat demand OR Phase 10 (export) starts. Not before.
+- [ ] `beta.skujeg.dk` serves the site over HTTPS
+- [ ] Task 044 done — Danish privacy policy live, Nick approved, footer-linked
+- [ ] Deploy stable (app + Postgres + process manager running)
+
+---
+
+## Phase 7c — Beta Runs (3 weeks)
+
+**Objective:** Validate the retention loop (M1: ≥30% return) and seed the crowd-data lake (≥50 real receipts) with ~10–20 invited users. **Operations, not coding** — Nick runs it; the agent assists with invites, tracking, analysis.
+
+**Scope discipline:** closed pilot, ~10–20 invited users, boring on purpose. No landing page, no waitlist, no signup infra — magic-link handles it; Nick sends links.
+
+**Proposed approach:** recruit a small mixed cohort → seed 3–5 receipts each → build + use a list → watch return-rate and the data lake → decide launch vs. fix.
+
+**Tasks (run by Nick, not OpenCode):**
+
+1. **Cohort invite (~10–20):** 3–5 friends/family (non-technical) · 2–3 from Danish price-watch groups (technical) · 1 skeptic · 1–2 technical peers (kept out of the data layer). Log who's in + type.
+2. **Seed-data campaign:** ask each user for 3–5 receipts (the donor-to-the-moat ask). Track the running count toward ≥50.
+3. **Watch the M1 signal:** "return" = a signed-in user who performs an M1 action (build/update a list, get a ranking) in week 2 after doing one in week 1. Query existing data (lists per user per week) — add a `last_active` log only if the query can't measure it.
+4. **Edge-case harvest:** log every dedup/keep/replace decision on real uploads; capture any double-points/duplicate baselines (the real-world test unit tests can't simulate).
+5. **Feedback channel:** one pinned thread (Discord/Signal/email) — no issue tracker. Nick reads it weekly.
+6. **Timebox:** 3 weeks — week 1 recruit+onboard, week 2 first return measurement, week 3 confirm + decide.
+
+**What to watch:** M1 return rate · receipt upload friction (where do users stall?) · dedup/gamification edge cases · whether users _volunteer_ use ("can I keep using this?" beats "it's fine").
+
+**Exit gate (launch-readiness — measured in Phase 8, not here):** see Phase 8.
+
+---
+
+## Phase 8 — Evaluate the Beta (success or failure)
+
+**Objective:** Decide, with evidence, whether the retention loop holds and the data lake is seeded — before spending the launch moment. **This is a measurement/evaluation step, not coding.**
+
+**The M1 exit gate (the decision framework):**
+
+- [ ] **M1 ≥30% of beta users return next week** (build a basket / get a ranking) — the single launch-readiness number
+- [ ] **≥50 real receipts seeded** into the baseline pool (the cold-start hedge)
+- [ ] Beta users can build a list + get a store ranking without help (7a held)
+- [ ] Dedup/gamification held up under real uploads — no double-points or duplicate baselines
+- [ ] No launch-blocking bugs; surfaced ones fixed or have a workaround
+
+**Two qualitative signals worth writing down:** do users **spontaneously share** it, and do they **ask to keep using it** after the beta? Leading indicators numbers can't capture.
+
+**Decision:**
+
+- **If M1 ≥30% → SUCCESS.** Proceed to Phase 9 (complete the design) then the rest of the plan (Phase 10 launch, 11 agent, 12 export).
+- **If M1 <30% → FAILURE. Do NOT launch.** Diagnose which hook is weak (spending view / gamification / price-vs-average / ranking) and fix before spending the launch moment on a product people don't return to. Beta failing is data, not failure — better to learn it here than on Reddit.
+
+---
+
+## Phase 9 — Complete the Design (IF the beta was a success) + continue
+
+**Objective:** Only after the beta proves people return to it, make the site _look_ like a product worth sharing. Polish a product you know works, not one you hope will. **Gated on Phase 8 success** — if M1 failed, you do NOT polish; you fix the loop first.
+
+**Design tasks (035–041):** design variants (035, Nick picks winner by looking) → design system (036) → branding Skujeg (037) → screenshot-worthy comparison + madplan (038) → mobile receipt upload (039) → honest-UI consistency (040) → Danish-consistency (041).
+
+**Language policy (DECIDED — do not build full English i18n yet):**
+
+- **Launch language is Danish.** Danish-first; branding voice "Danish, direct, honest."
+- **English OUT of scope for launch** — a full locale/toggle is the export ambition in disguise, gated on Phase 12/traction. Potential audience (expats in Denmark): real but secondary; not worth a multi-week i18n lift pre-launch.
+- **Keep the eventual switch painless, not pre-built** — avoid deeply-buried hardcoded strings, but no i18n framework.
+- **Revisit when:** real expat demand OR Phase 12 (export) starts.
 
 **Exit gate (launch-ready visuals):**
 
-- [ ] Design direction chosen (Task 0): 3 mockups produced, Nick picked a winner by looking, winning tokens documented
+- [ ] Design direction chosen (Task 035): winner picked by looking, tokens documented
 - [ ] Consistent design system across all routes (no ad-hoc class soup)
-- [ ] Branding locked: name, logo/wordmark, favicon, page titles
-- [ ] Store comparison + madplan are screenshot-worthy (clean, shareable)
+- [ ] Branding locked: Skujeg name, logo/wordmark, favicon, page titles
+- [ ] Store comparison + madplan screenshot-worthy
 - [ ] Mobile upload + receipt flow works
-- [ ] Trust-tier / user-reported labeling is consistent and still Omnibus-clean after the redesign
-- [ ] Danish-consistency pass done: no English leakage in user-facing UI; links resolve + are labelled in Danish (language policy documented)
+- [ ] Trust-tier / user-reported labeling consistent + Omnibus-clean after redesign
+- [ ] Danish-consistency pass done: no English leakage, links resolve in Danish
 
-**When done:** hands off to Phase 8 (Monetization + Launch) with a site that both works _and_ looks like a product.
+**When done:** hands off to Phase 10 (Monetization + Launch) with a site that both works and looks like a product.
 
 ---
 
-## Phase 8 — Monetization + Launch (ongoing)
+## Phase 10 — Monetization + Launch (ongoing, after Phase 9)
 
 **Objective:** Make money without a sales team.
 
@@ -556,7 +535,7 @@ Beta deploys to a separate Hetzner VPS (NOT the agent VPS, NOT the laptop). Conc
 
 ---
 
-## Phase 9 — Agent Layer (differentiator, after launch)
+## Phase 11 — Agent Layer (differentiator, after launch)
 
 **Objective:** The thing incumbents don't have — proactive alerts.
 
@@ -577,7 +556,7 @@ Beta deploys to a separate Hetzner VPS (NOT the agent VPS, NOT the laptop). Conc
 
 ---
 
-## Phase 10 — Tjek-Independent Ingestion (CONDITIONAL — only on traction)
+## Phase 12 — Tjek-Independent Ingestion (CONDITIONAL — only on traction)
 
 **Gate:** NOT build-now. Only start this when the Tjek feed is load-bearing **and** the project hits **M3 (Traction gate): ≥5,000 weekly-active users, ≥500 receipts/week, organic growth without paid spend** (see Success Metrics above). Until M3, the crowd/receipt layer (Phase 3) is the hedge. YAGNI — do not build redundancy to protect a success that hasn't happened yet.
 
@@ -587,7 +566,7 @@ Beta deploys to a separate Hetzner VPS (NOT the agent VPS, NOT the laptop). Conc
 
 **What it is NOT:** a "build our own Tjek-like API." That's a B2B sales problem — getting retailers to publish to _us_ instead of Tjek requires contracts and trust, not code. You cannot code your way into retailers feeding your platform. Don't mistake this phase for that.
 
-**Also NOT a feed destination / "drop-in API retailers connect to alongside Tjek."** That's a separate long-term ambition — becoming a distribution channel retailers publish to — and it is NOT this phase. It's gated on having an audience first (retailers dual-publish for traffic, and we have none until we're a threat) and is unlocked by the Phase 8 affiliate/partnership feed deals, not by new infrastructure. Phase 10 is purely about us reading the chains' own surfaces so we stop depending on Tjek's single feed. The marketplace/platform ambition is downstream of real traction; don't build either side of it before there's an audience.
+**Also NOT a feed destination / "drop-in API retailers connect to alongside Tjek."** That's a separate long-term ambition — becoming a distribution channel retailers publish to — and it is NOT this phase. It's gated on having an audience first (retailers dual-publish for traffic, and we have none until we're a threat) and is unlocked by the Phase 10 affiliate/partnership feed deals, not by new infrastructure. Phase 12 is purely about us reading the chains' own surfaces so we stop depending on Tjek's single feed. The marketplace/platform ambition is downstream of real traction; don't build either side of it before there's an audience.
 
 **Tasks (harder than they look — most chains' own surfaces are ALSO Tjek white-label viewers):**
 
@@ -629,5 +608,5 @@ Beta deploys to a separate Hetzner VPS (NOT the agent VPS, NOT the laptop). Conc
 | Tjek feed disappears / gates auth                 | Low-frequency capture keeps us under radars; per-chain own surfaces documented as fallback in `research/notes/`; crowd + receipts are independent data                                           |
 | Retailer / Tjek ToS (AI training, redistribution) | Data & legal boundary enforced in the model (feed = internal, crowd = publishable); no AI/ML training on feed; no GTM built on reselling feed; seek Integration agreement before expanding reuse |
 | eTilbudsavis incumbent                            | Differentiate on baskets + travel cost + crowd shelf data — not on flyer browsing; eTilbudsavis has no own catalogs (thin viewer over same feed)                                                 |
-| Scope creep                                       | The NOT-doing list is enforced; ship phases in order, launch after Phase 8                                                                                                                       |
+| Scope creep                                       | The NOT-doing list is enforced; ship phases in order, launch after Phase 10                                                                                                                      |
 | Solo momentum                                     | Launch a usable MVP (Phases 1–4) before building crowd/travel — real users before polish                                                                                                         |

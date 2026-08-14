@@ -1,7 +1,7 @@
 # Task 036 — Design System (Tailwind tokens from winning variant)
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7b (Task 1)
+**Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 1)
 
 ## Objective
 

@@ -1,7 +1,7 @@
 # Task 041 — Danish-Consistency Pass
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7b (Task 6) + Language policy
+**Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 6) + Language policy
 
 ## Objective
 

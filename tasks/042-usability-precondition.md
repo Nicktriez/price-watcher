@@ -1,7 +1,7 @@
 # Task 042 — Usability Precondition: Three Core Flows Navigable Without Help
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7 (Task 0) — **the gate BEFORE inviting anyone to the closed beta**
+**Plan source:** `docs/reference/build-plan.md` → Phase 7a (Task 042) — **the gate BEFORE inviting anyone to the closed beta**
 
 ## Objective
 
@@ -35,7 +35,7 @@ Treat this as a **guided cold-test then fix**:
 
 ## Important
 
-- **Blockers only, not polish** — fix what _stops_ a flow. Visual polish is Phase 7b (Task 036), NOT this task. Don't restyle; make it findable and finishable.
+- **Blockers only, not polish** — fix what _stops_ a flow. Visual polish is Phase 9 (Task 036), NOT this task. Don't restyle; make it findable and finishable.
 - **Do NOT rely on the dev-navbar** — a beta user doesn't have your context. The flows must be reachable from wherever a cold user lands (home / empty states / clear CTAs), not only from a nav link.
 - **Measure it honestly** — the acceptance is a cold non-technical user completing all three flows unaided. If you can't test with a real person, at least walk it as a stranger and remove every dead end you find.
 - **This gates the beta** — nothing is invited until this passes. This is the difference between measuring retention and measuring usability.

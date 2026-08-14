@@ -96,21 +96,36 @@ Small dev-convenience tasks that unblock testing. Run these before/parallel to t
 | 033 | Temporary navbar dev links (Lists, Settings, Sign in/out) | ✅     | OpenCode (browser E2E: anon shows Lists/Settings/Sign in; signed-in shows Sign out, clicking redirects to / and flips to Sign in; compare page renders — no hydration regression; SSR/client hydrated state matches) | —   |
 | 034 | Add Madplan + Spending to navbar (dev links)              | ✅     | OpenCode (browser E2E: nav shows all six feature links; active highlight on /madplan and /spending while signed in; sign in/out unchanged)                                                                           | 033 |
 
-**Note:** Tasks 033/034 are TEMPORARY — remove the dev links before launch (Phase 8).
+**Note:** Tasks 033/034 are TEMPORARY — remove the dev links before launch (Phase 10).
 
-## Phase 7 (Closed Beta — coding prerequisite)
+## Phase 7a — Usability + Basic Design (the last coding hurdle, before beta)
 
-Phase 7 is mostly operations (recruiting/measurement — Nick's job), but it has **coding prerequisites** that must land BEFORE any invite. Task 042 is the gate; Task 001's `last_active` log is added only if the existing query can't measure "return."
+The last coding work before anyone is invited. **Task 042 + 043 must pass before any invite** — this is the difference between measuring retention and measuring usability.
 
 | #   | Task                                                        | Status | Depends on                 |
 | --- | ----------------------------------------------------------- | ------ | -------------------------- |
 | 042 | Usability precondition: 3 core flows navigable without help | ⬜     | — (GATES the beta invites) |
+| 043 | Basic design + correct route linking                        | ⬜     | 042                        |
 
-**Task 042 is the difference between measuring retention and measuring usability.** Nothing is invited until a cold non-technical user can build a list, upload a receipt, and see a store comparison unaided. The Hetzner deploy (Ultron's infra) runs in parallel; invites wait for BOTH deploy-live AND 042 passing.
+**Invite model (DECIDED): no invite system.** The magic-link sign-in enforces the closed beta; Nick controls who gets links; `beta.skujeg.dk` is closed by obscurity. No new code.
 
-## Phase 7b (Design Polish — after the beta, before launch)
+## Phase 7b — Hosting + Legal (before beta runs)
 
-Design direction + branding. **Sequence matters:** 035 produces the winning visual direction → 036 unifies the codebase around it → 037 branding → then 038/039/040/041. These run AFTER the beta (per the plan: polish a product you know people return to). Note: Phase 7's _coding_ prerequisite (Task 042) is tracked in its own section above.
+Two parallel tracks: **deploy** (Ultron's infra — Hetzner CX22 + `beta.skujeg.dk`) and **legal** (privacy policy). Invites wait for BOTH deploy-live AND the privacy policy live.
+
+| #   | Task                                               | Status | Depends on |
+| --- | -------------------------------------------------- | ------ | ---------- |
+| 044 | Privacy policy + GDPR page (Danish, Nick-approved) | ⬜     | —          |
+
+Deploy (Ultron, not a task file): Hetzner CX22 €3.79/mo, Node ≥24, Postgres, pm2, TLS → `beta.skujeg.dk`.
+
+## Phase 7c — Beta Runs (3 weeks) + Phase 8 — Evaluate
+
+**Operations, not coding** (Nick runs it; agent assists). 7c = invite cohort, seed ≥50 receipts, watch M1, edge-case harvest, feedback thread. 8 = the M1 decision gate: **≥30% return + ≥50 receipts** → success → Phase 9; <30% → do NOT launch, diagnose the retention loop. Tracked here for visibility, no OpenCode tasks.
+
+## Phase 9 — Complete the Design (IF the beta succeeded)
+
+Gated on Phase 8 success. Polish a product you know people return to. **Sequence:** 035 → 036 → then 037/038/039/040 (parallel) → 041 last.
 
 | #   | Task                                          | Status | Depends on        |
 | --- | --------------------------------------------- | ------ | ----------------- |
@@ -124,4 +139,4 @@ Design direction + branding. **Sequence matters:** 035 produces the winning visu
 
 **Run order:** 035 → 036 → then 037/038/039/040 (parallelizable after 036) → 041 last (needs the honest-UI pass done).
 
-Closed beta (Phase 7), design polish (Phase 7b), monetization + launch (Phase 8), agent layer (Phase 9), Tjek-independent ingestion (Phase 10, conditional).
+Then: monetization + launch (Phase 10), agent layer (Phase 11), Tjek-independent ingestion (Phase 12, conditional).

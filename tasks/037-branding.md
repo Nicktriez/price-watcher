@@ -1,7 +1,7 @@
 # Task 037 — Branding (Skujeg)
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7b (Task 2)
+**Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 2)
 
 ## Objective
 
