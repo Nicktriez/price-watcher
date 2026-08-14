@@ -102,11 +102,11 @@ Small dev-convenience tasks that unblock testing. Run these before/parallel to t
 
 The last coding work before anyone is invited. **Task 042 + 043 must pass before any invite** — this is the difference between measuring retention and measuring usability.
 
-| #   | Task                                                     | Status | Depends on                 |
-| --- | -------------------------------------------------------- | ------ | -------------------------- |
-| 035 | Usability precondition: sign-in + 3 core flows navigable | ⬜     | — (GATES the beta invites) |
-| 036 | Basic design + correct route linking (real launch nav)   | ⬜     | 035                        |
-| 037 | Landing page (root; signed-in reroutes to /offers)       | ⬜     | 036                        |
+| #   | Task                                                     | Status | Depends on                                                                                                                                                                                                                    |
+| --- | -------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 035 | Usability precondition: sign-in + 3 core flows navigable | ✅     | OpenCode (cold-user browser walk: sign-in → build list → upload reachable from home/nav/lists → compare from list; all entry points + CTAs in plain Danish; upload was unreachable — added nav link + home CTAs + lists link) | — (GATES the beta invites) |
+| 036 | Basic design + correct route linking (real launch nav)   | ⬜     | 035                                                                                                                                                                                                                           |
+| 037 | Landing page (root; signed-in reroutes to /offers)       | ⬜     | 036                                                                                                                                                                                                                           |
 
 **Invite model (DECIDED): no invite system.** The magic-link sign-in enforces the closed beta; Nick controls who gets links; `beta.skujeg.dk` is closed by obscurity. No new code.
 

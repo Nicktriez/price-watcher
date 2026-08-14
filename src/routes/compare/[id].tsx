@@ -78,12 +78,12 @@ export default function StoreComparison() {
                 <>
                   <p class="mb-2 text-sm">
                     <a href={`/lists/${d().list.id}`} class="text-sky-700 hover:underline">
-                      ← Back to list
+                      ← Tilbage til listen
                     </a>
                   </p>
-                  <h1 class="mb-1 text-2xl font-semibold">Where to shop: {d().list.name}</h1>
+                  <h1 class="mb-1 text-2xl font-semibold">Hvor skal jeg handle: {d().list.name}</h1>
                   <p class="mb-6 text-sm text-gray-600">
-                    Basket prices + round-trip fuel for this week.
+                    Priser på varerne + brændstof tur-retur i denne uge.
                   </p>
 
                   <Show

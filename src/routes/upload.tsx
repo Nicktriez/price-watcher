@@ -30,15 +30,20 @@ export default function Upload() {
         }
       >
         <main class="mx-auto max-w-md p-4 text-gray-900">
-          <h1 class="mb-4 text-2xl font-semibold">Upload a receipt</h1>
+          <p class="mb-3 text-sm">
+            <a href="/lists" class="text-sky-700 hover:underline">
+              ← Tilbage til lister
+            </a>
+          </p>
+          <h1 class="mb-4 text-2xl font-semibold">Upload en kvittering</h1>
           <p class="mb-4 text-sm text-gray-600">
-            Photo your grocery receipt and we'll extract the items, keep the prices, and delete the
-            image.
+            Fotografer din dagligvarekvittering, så læser vi varerne og priserne op. Vi beholder
+            priserne og sletter billedet.
           </p>
           <form onSubmit={handleUpload} class="space-y-3">
             <div>
               <label for="file" class="mb-1 block text-sm text-gray-600">
-                Receipt image (JPEG or PNG)
+                Kvittering (JPEG eller PNG)
               </label>
               <input
                 type="file"
@@ -59,24 +64,25 @@ export default function Upload() {
                 <>
                   <p class="font-medium text-green-700">{result()!.message}</p>
                   <ul class="mt-2 space-y-1 text-gray-600">
-                    {result()!.store && <li>Store: {result()!.store}</li>}
+                    {result()!.store && <li>Butik: {result()!.store}</li>}
                     {result()!.total != null && <li>Total: {result()!.total} kr</li>}
                     <li>
-                      Items: {result()!.cleanCount} recovered, {result()!.garbledCount} unreadable
+                      Varer: {result()!.cleanCount} genkendt, {result()!.garbledCount} ulæselige
                     </li>
                     {result()!.pointsEarned != null && (
                       <li class="font-medium text-amber-700">
-                        You earned {result()!.pointsEarned} points
-                        {result()!.streak ? ` · ${result()!.streak}-day streak` : ""}
+                        Du fik {result()!.pointsEarned} point
+                        {result()!.streak ? ` · ${result()!.streak} dages stime` : ""}
                       </li>
                     )}
                   </ul>
                   {result()!.dedup !== "new" && (
                     <p class="mt-2 text-gray-500">
-                      {result()!.dedup === "duplicate" && "This receipt was already uploaded."}
+                      {result()!.dedup === "duplicate" && "Denne kvittering er allerede uploadet."}
                       {result()!.dedup === "replace" &&
-                        "A cleaner version replaced your earlier scan."}
-                      {result()!.dedup === "keep" && "We kept your earlier, cleaner scan."}
+                        "En nyere, tydeligere version erstattede din tidligere scanning."}
+                      {result()!.dedup === "keep" &&
+                        "Vi beholdt din tidligere, tydeligere scanning."}
                     </p>
                   )}
                   <p class="mt-3">
@@ -84,16 +90,17 @@ export default function Upload() {
                       href={result()!.receiptId ? `/receipts/${result()!.receiptId}` : "/spending"}
                       class="font-medium text-sky-700 hover:underline"
                     >
-                      See your price comparison →
+                      Se din prissammenligning →
                     </A>
                   </p>
                 </>
               ) : (
                 <p class="font-medium text-red-700">
-                  {result()!.reason === "sign-in-required" && "You need to sign in first."}
-                  {result()!.reason === "invalid-image" && "Please upload a JPEG or PNG image."}
+                  {result()!.reason === "sign-in-required" && "Du skal være logget ind først."}
+                  {result()!.reason === "invalid-image" &&
+                    "Upload venligst et JPEG- eller PNG-billede."}
                   {result()!.reason === "ocr-failed" &&
-                    "We couldn't read that receipt. Please try a clearer photo."}
+                    "Vi kunne ikke læse den kvittering. Prøv et tydeligere billede."}
                 </p>
               )}
             </div>

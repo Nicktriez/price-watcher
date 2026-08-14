@@ -75,14 +75,14 @@ export default function ListDetail() {
   };
 
   const handleRename = async () => {
-    const name = window.prompt("Rename list", list()?.name);
+    const name = window.prompt("Omdøb liste", list()?.name);
     if (!name || !name.trim()) return;
     await renameList(params.id!, name);
     refresh();
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Delete this list and all its items?")) return;
+    if (!window.confirm("Slet denne liste og alle dens varer?")) return;
     await deleteList(params.id!);
     navigate("/lists");
   };
@@ -136,11 +136,11 @@ export default function ListDetail() {
             <main class="mx-auto max-w-3xl p-4 text-gray-900">
               <p class="mb-2 text-sm">
                 <a href="/lists" class="text-sky-700 hover:underline">
-                  ← All lists
+                  ← Alle lister
                 </a>
                 <span class="mx-2 text-gray-300">|</span>
                 <a href={`/compare/${l().id}`} class="font-medium text-sky-700 hover:underline">
-                  Where to shop →
+                  Sammenlign priser →
                 </a>
               </p>
               <div class="mb-4 flex items-baseline gap-3">
@@ -151,39 +151,39 @@ export default function ListDetail() {
                   onClick={handleRename}
                   class="text-xs text-sky-700 hover:underline"
                 >
-                  Rename
+                  Omdøb
                 </button>
                 <button
                   type="button"
                   onClick={handleDelete}
                   class="text-xs text-red-600 hover:underline"
                 >
-                  Delete
+                  Slet
                 </button>
               </div>
 
               <section class="mb-6 rounded border border-gray-200 p-3">
-                <h2 class="mb-2 text-sm font-semibold">Add a product</h2>
+                <h2 class="mb-2 text-sm font-semibold">Tilføj et produkt</h2>
                 <div class="mb-2 flex items-center gap-2">
                   <input
                     type="text"
                     value={q()}
                     onInput={(e) => handleSearchInput(e.currentTarget.value)}
-                    placeholder="Search products…"
+                    placeholder="Søg efter produkter…"
                     class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                   <input
                     type="number"
                     value={qty()}
                     onInput={(e) => setQty(e.currentTarget.value)}
-                    placeholder="Qty"
+                    placeholder="Antal"
                     class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                   <input
                     type="text"
                     value={unit()}
                     onInput={(e) => setUnit(e.currentTarget.value)}
-                    placeholder="Unit"
+                    placeholder="Enhed"
                     class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                 </div>
@@ -208,36 +208,36 @@ export default function ListDetail() {
               </section>
 
               <section class="mb-6 rounded border border-gray-200 p-3">
-                <h2 class="mb-2 text-sm font-semibold">Or add free text</h2>
+                <h2 class="mb-2 text-sm font-semibold">Eller tilføj fritekst</h2>
                 <form onSubmit={addFreeText} class="flex items-center gap-2">
                   <input
                     type="text"
                     name="name"
-                    placeholder="e.g. Spaghetti 500g"
+                    placeholder="fx Spaghetti 500 g"
                     required
                     class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                   <input
                     type="number"
                     name="quantity"
-                    placeholder="Qty"
+                    placeholder="Antal"
                     class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                   <input
                     type="text"
                     name="unit"
-                    placeholder="Unit"
+                    placeholder="Enhed"
                     class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
                   />
                   <button type="submit" class="rounded bg-sky-600 px-3 py-1.5 text-sm text-white">
-                    Add
+                    Tilføj
                   </button>
                 </form>
               </section>
 
               <Show
                 when={l().items.length}
-                fallback={<p class="text-gray-500">This list is empty. Add items above.</p>}
+                fallback={<p class="text-gray-500">Listen er tom. Tilføj varer ovenfor.</p>}
               >
                 <ul class="space-y-2">
                   <For each={l().items}>
@@ -249,7 +249,7 @@ export default function ListDetail() {
                               type="button"
                               onClick={() => move(i(), -1)}
                               class="text-xs text-gray-400 hover:text-gray-700"
-                              aria-label="Move up"
+                              aria-label="Flyt op"
                             >
                               ▲
                             </button>
@@ -257,7 +257,7 @@ export default function ListDetail() {
                               type="button"
                               onClick={() => move(i(), 1)}
                               class="text-xs text-gray-400 hover:text-gray-700"
-                              aria-label="Move down"
+                              aria-label="Flyt ned"
                             >
                               ▼
                             </button>
@@ -276,7 +276,7 @@ export default function ListDetail() {
                               onClick={() => handleEditQty(item.id, item.quantity)}
                               class="text-xs text-sky-700 hover:underline"
                             >
-                              Qty
+                              Antal
                             </button>
                           )}
                           <button
@@ -284,7 +284,7 @@ export default function ListDetail() {
                             onClick={() => handleRemove(item.id)}
                             class="text-xs text-red-600 hover:underline"
                           >
-                            Remove
+                            Fjern
                           </button>
                         </div>
                       </li>

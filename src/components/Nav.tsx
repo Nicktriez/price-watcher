@@ -26,22 +26,25 @@ export default function Nav() {
     <nav class="bg-sky-800">
       <ul class="container flex items-center p-3 text-gray-200">
         <li class={`border-b-2 ${active("/")} mx-1.5 sm:mx-6`}>
-          <a href="/">Home</a>
+          <a href="/">Forside</a>
         </li>
         <li class={`border-b-2 ${active("/about")} mx-1.5 sm:mx-6`}>
-          <a href="/about">About</a>
+          <a href="/about">Om</a>
         </li>
         <li class={`border-b-2 ${active("/lists")} mx-1.5 sm:mx-6`}>
-          <a href="/lists">Lists</a>
+          <a href="/lists">Lister</a>
+        </li>
+        <li class={`border-b-2 ${active("/upload")} mx-1.5 sm:mx-6`}>
+          <a href="/upload">Upload kvittering</a>
         </li>
         <li class={`border-b-2 ${active("/settings")} mx-1.5 sm:mx-6`}>
-          <a href="/settings">Settings</a>
+          <a href="/settings">Indstillinger</a>
         </li>
         <li class={`border-b-2 ${active("/madplan")} mx-1.5 sm:mx-6`}>
           <a href="/madplan">Madplan</a>
         </li>
         <li class={`border-b-2 ${active("/spending")} mx-1.5 sm:mx-6`}>
-          <a href="/spending">Spending</a>
+          <a href="/spending">Forbrug</a>
         </li>
         <li class="ml-auto mx-1.5 sm:mx-6">
           <Suspense fallback={null}>
@@ -50,12 +53,12 @@ export default function Nav() {
                 when={user()}
                 fallback={
                   <a href="/signin" class="hover:underline">
-                    Sign in
+                    Log ind
                   </a>
                 }
               >
                 <a href="#" onClick={handleSignOut} class="hover:underline">
-                  Sign out
+                  Log ud
                 </a>
               </Show>
             </Show>

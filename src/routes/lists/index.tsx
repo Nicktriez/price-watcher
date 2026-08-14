@@ -40,18 +40,18 @@ export default function ListsIndex() {
         }
       >
         <main class="mx-auto max-w-3xl p-4 text-gray-900">
-          <h1 class="mb-4 text-2xl font-semibold">Your lists</h1>
+          <h1 class="mb-4 text-2xl font-semibold">Dine lister</h1>
           <p class="mb-4">
             <A href="/lists/import" class="text-sky-700 hover:underline">
-              Import a recipe →
+              Importer en opskrift →
             </A>
           </p>
 
           <section class="mb-6">
-            <h2 class="mb-2 text-lg font-semibold">Start from a template</h2>
+            <h2 class="mb-2 text-lg font-semibold">Start fra en skabelon</h2>
             <Show
               when={templates()?.length}
-              fallback={<p class="text-gray-500">No templates yet.</p>}
+              fallback={<p class="text-gray-500">Ingen skabeloner endnu.</p>}
             >
               <ul class="grid gap-3 sm:grid-cols-2">
                 <For each={templates()}>
@@ -59,14 +59,14 @@ export default function ListsIndex() {
                     <li class="rounded border border-gray-200 p-3">
                       <p class="font-medium text-gray-800">{t.name}</p>
                       <p class="mb-2 text-xs text-gray-500">
-                        {t.itemCount} items · {t.firstItems.join(", ")}
+                        {t.itemCount} varer · {t.firstItems.join(", ")}
                       </p>
                       <button
                         type="button"
                         onClick={() => handleUseTemplate(t.id)}
                         class="rounded bg-sky-600 px-3 py-1 text-sm text-white"
                       >
-                        Use template
+                        Brug skabelon
                       </button>
                     </li>
                   )}
@@ -76,29 +76,29 @@ export default function ListsIndex() {
           </section>
 
           <section class="mb-6">
-            <h2 class="mb-2 text-lg font-semibold">Or start a blank list</h2>
+            <h2 class="mb-2 text-lg font-semibold">Eller start en tom liste</h2>
             <form onSubmit={handleCreate} class="flex items-center gap-2">
               <input
                 type="text"
                 name="name"
-                placeholder="List name (e.g. Weekly shopping)"
+                placeholder="Listens navn (fx Ugeindkøb)"
                 required
                 class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
               />
               <select name="kind" class="rounded border border-gray-300 px-3 py-1.5 text-sm">
-                <option value="custom">Custom</option>
-                <option value="recipe">Recipe</option>
-                <option value="cleaning">Cleaning</option>
+                <option value="custom">Egen</option>
+                <option value="recipe">Opskrift</option>
+                <option value="cleaning">Rengøring</option>
               </select>
               <button type="submit" class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white">
-                Create list
+                Opret liste
               </button>
             </form>
           </section>
 
           <Show when={lists()?.length} fallback={null}>
             <section>
-              <h2 class="mb-2 text-lg font-semibold">Your lists</h2>
+              <h2 class="mb-2 text-lg font-semibold">Dine lister</h2>
               <ul class="space-y-2">
                 <For each={lists()}>
                   {(l) => (
@@ -107,7 +107,7 @@ export default function ListsIndex() {
                         {l.name}
                       </A>
                       <span class="text-xs text-gray-500">
-                        {l.kind} · {l.itemCount} items
+                        {l.kind} · {l.itemCount} varer
                       </span>
                     </li>
                   )}
@@ -115,6 +115,12 @@ export default function ListsIndex() {
               </ul>
             </section>
           </Show>
+
+          <p class="mt-6 text-sm">
+            <A href="/upload" class="text-sky-700 hover:underline">
+              Upload en kvittering →
+            </A>
+          </p>
         </main>
       </Show>
     </Show>

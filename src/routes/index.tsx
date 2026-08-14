@@ -1,6 +1,7 @@
 import { A, createAsync, useSearchParams } from "@solidjs/router";
 import { For, Show } from "solid-js";
 import { fmtPrice } from "~/lib/format";
+import { getCurrentUser } from "~/server/auth";
 import { getChains, getCurrentOffersPage } from "~/server/queries";
 
 const PAGE_SIZE = 100;
@@ -8,6 +9,7 @@ const PAGE_SIZE = 100;
 export default function Home() {
   const [params] = useSearchParams();
   const chains = createAsync(() => getChains());
+  const user = createAsync(() => getCurrentUser());
 
   const chain = () => (typeof params.chain === "string" ? params.chain : null);
   const page = () => {
@@ -23,14 +25,45 @@ export default function Home() {
 
   return (
     <main class="mx-auto max-w-4xl p-4 text-gray-900">
-      <h1 class="mb-4 text-2xl font-semibold">Current offers</h1>
+      <section class="mb-6 rounded border border-sky-200 bg-sky-50 p-4">
+        <h1 class="text-xl font-semibold">
+          {user() ? "Kom godt i gang" : "Byg din indkøbsliste og find de billigste priser"}
+        </h1>
+        <p class="mb-3 mt-1 text-sm text-gray-600">
+          {user()
+            ? "Opret en indkøbsliste, upload en kvittering, eller se hvor du sparer mest."
+            : "Log ind for at oprette din egen indkøbsliste, uploade kvitteringer og sammenligne priser i butikkerne."}
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <Show
+            when={user()}
+            fallback={
+              <a href="/signin" class="rounded bg-sky-600 px-4 py-2 text-sm font-medium text-white">
+                Log ind
+              </a>
+            }
+          >
+            <a href="/lists" class="rounded bg-sky-600 px-4 py-2 text-sm font-medium text-white">
+              Opret indkøbsliste
+            </a>
+            <a href="/upload" class="rounded bg-white px-4 py-2 text-sm font-medium text-sky-700">
+              Upload kvittering
+            </a>
+            <a href="/spending" class="rounded bg-white px-4 py-2 text-sm font-medium text-sky-700">
+              Se dit forbrug
+            </a>
+          </Show>
+        </div>
+      </section>
+
+      <h2 class="mb-4 text-2xl font-semibold">Aktuelle tilbud</h2>
 
       <form method="get" class="mb-6 flex items-center gap-2">
         <label for="chain" class="text-sm text-gray-600">
-          Chain
+          Kæde
         </label>
         <select name="chain" id="chain" class="rounded border border-gray-300 px-3 py-1.5 text-sm">
-          <option value="">All chains</option>
+          <option value="">Alle kæder</option>
           <For each={chains()}>
             {(c) => (
               <option value={c.id} selected={params.chain === c.id}>
@@ -40,13 +73,13 @@ export default function Home() {
           </For>
         </select>
         <button type="submit" class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white">
-          Filter
+          Filtrér
         </button>
       </form>
 
-      <Show when={offers()?.length} fallback={<p class="text-gray-500">No current offers.</p>}>
+      <Show when={offers()?.length} fallback={<p class="text-gray-500">Ingen aktuelle tilbud.</p>}>
         <p class="mb-3 text-sm text-gray-600">
-          Showing {offers()!.length} of {total()} offers (page {page()} of {totalPages()})
+          Viser {offers()!.length} af {total()} tilbud (side {page()} af {totalPages()})
         </p>
         <ul class="grid gap-4 sm:grid-cols-2">
           <For each={offers()}>
@@ -69,7 +102,7 @@ export default function Home() {
                   >
                     {o.product_name}
                   </A>
-                  <p class="text-sm text-gray-600">{o.chain_name ?? "Unknown chain"}</p>
+                  <p class="text-sm text-gray-600">{o.chain_name ?? "Ukendt kæde"}</p>
                   <p class="font-semibold">
                     {fmtPrice(o.price)} {o.currency}
                   </p>
@@ -85,7 +118,7 @@ export default function Home() {
                 href={`/?page=${page() - 1}&chain=${chain() ?? ""}`}
                 class="text-sky-700 hover:underline"
               >
-                ← Previous
+                ← Forrige
               </A>
             </Show>
             <Show when={page() < totalPages()}>
@@ -93,7 +126,7 @@ export default function Home() {
                 href={`/?page=${page() + 1}&chain=${chain() ?? ""}`}
                 class="text-sky-700 hover:underline"
               >
-                Next →
+                Næste →
               </A>
             </Show>
           </nav>

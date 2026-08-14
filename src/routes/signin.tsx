@@ -30,19 +30,19 @@ export default function SignIn() {
     if (result.ok) {
       navigate("/");
     } else {
-      window.alert("Invalid or expired code. Please try again.");
+      window.alert("Ugyldig eller udløbet kode. Prøv igen.");
     }
   };
 
   return (
     <main class="mx-auto max-w-md p-4 text-gray-900">
-      <h1 class="mb-4 text-2xl font-semibold">Sign in</h1>
+      <h1 class="mb-4 text-2xl font-semibold">Log ind</h1>
 
       <Show
         when={user()}
-        fallback={<p class="mb-4 text-sm text-gray-600">You are not signed in.</p>}
+        fallback={<p class="mb-4 text-sm text-gray-600">Du er ikke logget ind.</p>}
       >
-        {(u) => <p class="mb-4 text-sm text-gray-600">Signed in as {u().email}</p>}
+        {(u) => <p class="mb-4 text-sm text-gray-600">Logget ind som {u().email}</p>}
       </Show>
 
       <Show
@@ -51,7 +51,7 @@ export default function SignIn() {
           <form onSubmit={handleRequest} class="space-y-3">
             <div>
               <label for="email" class="mb-1 block text-sm text-gray-600">
-                Email
+                E-mail
               </label>
               <input
                 type="email"
@@ -62,18 +62,18 @@ export default function SignIn() {
               />
             </div>
             <button type="submit" class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white">
-              Send login code
+              Send login-kode
             </button>
           </form>
         }
       >
         <p class="mb-3 text-sm text-gray-600">
-          Enter the 6-digit code sent to {email()} (dev: it is logged to the server console).
+          Indtast den 6-cifrede kode sendt til {email()} (i udvikling logges den i serverkonsollen).
         </p>
         <form onSubmit={handleVerify} class="space-y-3">
           <div>
             <label for="code" class="mb-1 block text-sm text-gray-600">
-              Code
+              Kode
             </label>
             <input
               type="text"
@@ -86,7 +86,7 @@ export default function SignIn() {
             />
           </div>
           <button type="submit" class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white">
-            Sign in
+            Log ind
           </button>
         </form>
       </Show>
