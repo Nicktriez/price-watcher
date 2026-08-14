@@ -85,7 +85,7 @@ export default function Offers() {
                 href={`/offers?page=${page() - 1}&chain=${chain() ?? ""}`}
                 class="text-sky-700 hover:underline"
               >
-                ← Forrige
+                ← Tidligere
               </A>
             </Show>
             <Show when={page() < totalPages()}>
