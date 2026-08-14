@@ -1,11 +1,11 @@
-# Task 038 — Screenshot-Worthy Store Comparison + Madplan
+# Task 041 — Screenshot-Worthy Store Comparison + Madplan
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 3)
 
 ## Objective
 
-Polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) to be **screenshot-worthy** — clean, shareable, and aligned with the winning design system (Task 036). These are the "screenshot-for-distribution" moments and the single most shareable asset (feeds the "madplan for 500 kr" blog content engine).
+Polish the **store comparison** (Phase 4 Task 022) and the **madplan** (Phase 4 Task 023) to be **screenshot-worthy** — clean, shareable, and aligned with the winning design system (Task 039). These are the "screenshot-for-distribution" moments and the single most shareable asset (feeds the "madplan for 500 kr" blog content engine).
 
 ## Context
 
@@ -15,7 +15,7 @@ These two screens are what Nick will screenshot and share (build-in-public blog 
 
 1. **Store comparison page** — clean ranked table (cheapest-first), readable verdict + savings line, offer-vs-baseline split visually clear, trust badges correct, no visual clutter. Screenshot at a sensible width should look deliberate.
 2. **Madplan page** — the weekly plan (meals, basket, store, total, budget cap respected) presented cleanly. This is the flagship shareable; it should read as a product screenshot at a glance.
-3. Both aligned to the **design-system tokens** (Task 036) — not a separate style.
+3. Both aligned to the **design-system tokens** (Task 039) — not a separate style.
 
 ## Important
 

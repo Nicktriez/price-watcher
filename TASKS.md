@@ -104,8 +104,8 @@ The last coding work before anyone is invited. **Task 042 + 043 must pass before
 
 | #   | Task                                                        | Status | Depends on                 |
 | --- | ----------------------------------------------------------- | ------ | -------------------------- |
-| 042 | Usability precondition: 3 core flows navigable without help | ⬜     | — (GATES the beta invites) |
-| 043 | Basic design + correct route linking                        | ⬜     | 042                        |
+| 035 | Usability precondition: 3 core flows navigable without help | ⬜     | — (GATES the beta invites) |
+| 036 | Basic design + correct route linking                        | ⬜     | 035                        |
 
 **Invite model (DECIDED): no invite system.** The magic-link sign-in enforces the closed beta; Nick controls who gets links; `beta.skujeg.dk` is closed by obscurity. No new code.
 
@@ -115,7 +115,7 @@ Two parallel tracks: **deploy** (Ultron's infra — Hetzner CX22 + `beta.skujeg.
 
 | #   | Task                                               | Status | Depends on |
 | --- | -------------------------------------------------- | ------ | ---------- |
-| 044 | Privacy policy + GDPR page (Danish, Nick-approved) | ⬜     | —          |
+| 037 | Privacy policy + GDPR page (Danish, Nick-approved) | ⬜     | —          |
 
 Deploy (Ultron, not a task file): Hetzner CX22 €3.79/mo, Node ≥24, Postgres, pm2, TLS → `beta.skujeg.dk`.
 
@@ -125,18 +125,18 @@ Deploy (Ultron, not a task file): Hetzner CX22 €3.79/mo, Node ≥24, Postgres,
 
 ## Phase 9 — Complete the Design (IF the beta succeeded)
 
-Gated on Phase 8 success. Polish a product you know people return to. **Sequence:** 035 → 036 → then 037/038/039/040 (parallel) → 041 last.
+Gated on Phase 8 success. Polish a product you know people return to. **Sequence:** 038 → 039 → then 040/041/042/043 (parallel) → 044 last.
 
 | #   | Task                                          | Status | Depends on        |
 | --- | --------------------------------------------- | ------ | ----------------- |
-| 035 | Design variants (3 throwaway HTML mockups)    | ⬜     | Nick picks winner |
-| 036 | Design system (Tailwind tokens from winner)   | ⬜     | 035               |
-| 037 | Branding (Skujeg wordmark, titles, copy tone) | ⬜     | 036               |
-| 038 | Screenshot-worthy store comparison + madplan  | ⬜     | 036               |
-| 039 | Mobile check: receipt upload flow             | ⬜     | 036               |
-| 040 | Honest-UI consistency pass                    | ⬜     | 036               |
-| 041 | Danish-consistency pass                       | ⬜     | 036, 040          |
+| 038 | Design variants (3 throwaway HTML mockups)    | ⬜     | Nick picks winner |
+| 039 | Design system (Tailwind tokens from winner)   | ⬜     | 038               |
+| 040 | Branding (Skujeg wordmark, titles, copy tone) | ⬜     | 039               |
+| 041 | Screenshot-worthy store comparison + madplan  | ⬜     | 039               |
+| 042 | Mobile check: receipt upload flow             | ⬜     | 039               |
+| 043 | Honest-UI consistency pass                    | ⬜     | 039               |
+| 044 | Danish-consistency pass                       | ⬜     | 039, 043          |
 
-**Run order:** 035 → 036 → then 037/038/039/040 (parallelizable after 036) → 041 last (needs the honest-UI pass done).
+**Run order:** 038 → 039 → then 040/041/042/043 (parallelizable after 039) → 044 last (needs the honest-UI pass done).
 
 Then: monetization + launch (Phase 10), agent layer (Phase 11), Tjek-independent ingestion (Phase 12, conditional).

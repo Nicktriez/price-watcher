@@ -1,4 +1,4 @@
-# Task 035 — Design Variants: 3 Throwaway HTML Mockups
+# Task 038 — Design Variants: 3 Throwaway HTML Mockups
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 0)
@@ -9,7 +9,7 @@ Produce **3 throwaway HTML mockups** of the two "screenshots that matter" — th
 
 ## Context
 
-The design phase is deliberately sequenced: **choose the direction first (this task), then unify the codebase around it (Task 036).** The winning mockup's tokens feed the design system. Three agents each produce one mockup; Nick picks the winner by looking, not by reading diffs.
+The design phase is deliberately sequenced: **choose the direction first (this task), then unify the codebase around it (Task 039).** The winning mockup's tokens feed the design system. Three agents each produce one mockup; Nick picks the winner by looking, not by reading diffs.
 
 ## What to build
 
@@ -34,7 +34,7 @@ Each mockup covers BOTH screens (store comparison + madplan) so Nick compares li
 - **Throwaway by design** — these live in `design-variants/`, never touch `src/`, never a git branch, never merge-conflicted. Two losers are discarded.
 - **Distinct stances, not different pixels** — each mockup should be a genuinely different design axis (density / aesthetic / emphasis), not three shades of the same layout.
 - **Nick picks by looking** — deliver them as files/screenshots Nick can open side by side. Do not decide the winner yourself.
-- **Winner specifies tokens** — the winning mockup must document its actual tokens (palette, type scale, spacing) so Task 036's implementation is mechanical.
+- **Winner specifies tokens** — the winning mockup must document its actual tokens (palette, type scale, spacing) so Task 039's implementation is mechanical.
 
 ## Acceptance criteria
 
@@ -42,5 +42,5 @@ Each mockup covers BOTH screens (store comparison + madplan) so Nick compares li
 - [ ] Each covers BOTH the store comparison and madplan screens
 - [ ] Realistic Danish content (products, prices, stores); interactive (click/hover/toggle)
 - [ ] Trust-tier "user-reported"/"Community" labels appear in the comparison
-- [ ] Nick picks a winner by looking; winning tokens documented for Task 036
+- [ ] Nick picks a winner by looking; winning tokens documented for Task 039
 - [ ] `vp check` passes (no repo code changed)

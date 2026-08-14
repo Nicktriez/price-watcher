@@ -1,4 +1,4 @@
-# Task 044 — Privacy Policy + GDPR Page (Phase 7b legal gate)
+# Task 037 — Privacy Policy + GDPR Page (Phase 7b legal gate)
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 7b (legal before releasing)

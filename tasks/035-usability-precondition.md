@@ -1,7 +1,7 @@
-# Task 042 — Usability Precondition: Three Core Flows Navigable Without Help
+# Task 035 — Usability Precondition: Three Core Flows Navigable Without Help
 
 **Repo:** `~/price-watcher`
-**Plan source:** `docs/reference/build-plan.md` → Phase 7a (Task 042) — **the gate BEFORE inviting anyone to the closed beta**
+**Plan source:** `docs/reference/build-plan.md` → Phase 7a (Task 035) — **the gate BEFORE inviting anyone to the closed beta**
 
 ## Objective
 
@@ -31,11 +31,11 @@ Treat this as a **guided cold-test then fix**:
    - Empty state on `/lists` — does a first-timer see "Opret din første liste" (create your first list), or a blank page?
    - After uploading a receipt, is the path to the spending view / "what now" obvious?
    - Does `/compare` have a clear "pick a list to compare" empty state rather than a dead route?
-4. **Danish, plain labels** for every affordance (no English leakage — this pairs with Task 041 but must not wait for it).
+4. **Danish, plain labels** for every affordance (no English leakage — this pairs with Task 044 but must not wait for it).
 
 ## Important
 
-- **Blockers only, not polish** — fix what _stops_ a flow. Visual polish is Phase 9 (Task 036), NOT this task. Don't restyle; make it findable and finishable.
+- **Blockers only, not polish** — fix what _stops_ a flow. Visual polish is Phase 9 (Task 039), NOT this task. Don't restyle; make it findable and finishable.
 - **Do NOT rely on the dev-navbar** — a beta user doesn't have your context. The flows must be reachable from wherever a cold user lands (home / empty states / clear CTAs), not only from a nav link.
 - **Measure it honestly** — the acceptance is a cold non-technical user completing all three flows unaided. If you can't test with a real person, at least walk it as a stranger and remove every dead end you find.
 - **This gates the beta** — nothing is invited until this passes. This is the difference between measuring retention and measuring usability.

@@ -1,4 +1,4 @@
-# Task 040 — Honest-UI Consistency Pass
+# Task 043 — Honest-UI Consistency Pass
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 5)
@@ -9,7 +9,7 @@ Ensure the **trust-tier / "user-reported" / "no discount" labeling** (Tasks 014/
 
 ## Context
 
-The Omnibus-aware labeling (green ✓ Official / yellow Community / grey "user-reported", never "discount") was built across several tasks. After the design-system restyle (Task 036) and branding (Task 037), this pass verifies the labels are still correct, consistent, and visually distinct everywhere they appear — product pages, receipt lines (price-vs-average), store comparison, reported items, crowd prices.
+The Omnibus-aware labeling (green ✓ Official / yellow Community / grey "user-reported", never "discount") was built across several tasks. After the design-system restyle (Task 039) and branding (Task 040), this pass verifies the labels are still correct, consistent, and visually distinct everywhere they appear — product pages, receipt lines (price-vs-average), store comparison, reported items, crowd prices.
 
 ## What to build
 
@@ -21,12 +21,12 @@ The Omnibus-aware labeling (green ✓ Official / yellow Community / grey "user-r
 
 - **Compliance is non-negotiable** — community/single is always "user-reported," never a "discount." This is a legal framing (Omnibus), not a style choice.
 - **Consistency across surfaces** — the same tier must look + read the same on product page, receipt, comparison, reported items.
-- **Not a restyle** — this verifies and fixes labeling; visual work is Task 036.
+- **Not a restyle** — this verifies and fixes labeling; visual work is Task 039.
 
 ## Acceptance criteria
 
 - [ ] Trust labels correct + consistent across product page, receipt lines, store comparison, reported items, crowd prices
 - [ ] Three tiers always distinguishable (color + wording)
 - [ ] Community/single never called a "discount"; offers still clearly "official"
-- [ ] Labels survive the Task 036 restyle (none lost, dimmed, or mislabeled)
+- [ ] Labels survive the Task 039 restyle (none lost, dimmed, or mislabeled)
 - [ ] `vp check` + `vp test` pass

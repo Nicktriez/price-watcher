@@ -1,4 +1,4 @@
-# Task 041 — Danish-Consistency Pass
+# Task 044 — Danish-Consistency Pass
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 6) + Language policy
@@ -22,7 +22,7 @@ This is an **audit, not i18n**. Full English localization is explicitly OUT of s
 
 - **Audit, not i18n** — this is translate + consistent, not an i18n framework or `/en/` routing.
 - **Danish-first** — per the language policy. English is deferred to real expat demand or Phase 10 (export).
-- **Compliance labels stay correct in Danish** — "user-reported" = "brugerrapporteret"; never "discount" for crowd/receipt prices (matches Task 040).
+- **Compliance labels stay correct in Danish** — "user-reported" = "brugerrapporteret"; never "discount" for crowd/receipt prices (matches Task 043).
 - **Links resolve** — a broken or mislabelled link is a UX bug; fix it.
 
 ## Acceptance criteria

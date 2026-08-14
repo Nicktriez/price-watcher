@@ -1,4 +1,4 @@
-# Task 039 — Mobile Check: Receipt Upload Flow
+# Task 042 — Mobile Check: Receipt Upload Flow
 
 **Repo:** `~/price-watcher`
 **Plan source:** `docs/reference/build-plan.md` → Phase 9 (Task 4)
@@ -15,7 +15,7 @@ The beta's onboarding reward is the receipt → spending-view → price-vs-avera
 
 1. **Test the flow on mobile** (dev tools mobile viewport, or a real phone): upload a receipt photo → OCR → see the parsed receipt → spending view updates → price-vs-average shows.
 2. **Fix mobile-blocking issues**: camera/photo-picker usability (accept `capture="environment"` if not present), responsive layout of the upload + parsed-receipt screens, touch targets, image size handling (large photos on a phone must still upload — compression/preview if needed).
-3. **Verify the design-system restyle (Task 036) didn't regress mobile** — the upload + receipt screens must be usable in the new design.
+3. **Verify the design-system restyle (Task 039) didn't regress mobile** — the upload + receipt screens must be usable in the new design.
 
 ## Important
 
