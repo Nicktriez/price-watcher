@@ -142,4 +142,12 @@ Gated on Phase 8 success. Polish a product you know people return to. **Sequence
 
 **Run order:** 039 → 040 → then 041/042/043/044 (parallelizable after 040) → 045 last (needs the honest-UI pass done).
 
+## Post-beta / launch improvements (after Phase 8 evaluation)
+
+UX polish that runs AFTER the beta proves the loop. Not beta blockers.
+
+| #   | Task                                                      | Status | Depends on                                                                                             |
+| --- | --------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------ |
+| 046 | Smart auth redirect — return to intended page after login | ⬜     | post-beta (after Phase 8) — shared helper, `next` query param, validated same-origin, no open redirect |
+
 Then: monetization + launch (Phase 10), agent layer (Phase 11), Tjek-independent ingestion (Phase 12, conditional).
