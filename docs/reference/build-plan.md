@@ -375,7 +375,7 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 ## Phase 6 — Crowd Data + Trust Tiers (2–3 weeks) 🔄 CURRENT (2026-08-12)
 
-**Status:** Tasks defined (029–032, in `tasks/`). Next: Task 029 (report a price), then 030 (trust tiers) → 031/032.
+**Status:** Tasks 029, 030, 030b, 031 all ✅. Crowd layer building well: report-a-price flow (029), GasBuddy trust tiers with staleness (030), free-text reports grouped into Community via normalized name (030b), crowd-report gamification + leaderboard (031). **Current: Task 032 (moderation)** — flag/status migration, distinct-flagger guard, email-allowlist admin gate. Then Phase 6 done.
 
 **Objective:** The differentiator — shelf reality the flyers can't cover.
 
