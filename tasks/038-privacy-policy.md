@@ -19,7 +19,9 @@ The site collects real personal data: **email** (magic-link sign-in), **receipt 
    - How long it's kept: receipt images deleted after parse (Task 013); other data as described
    - That data is never sold; receipt images are not exposed
    - Contact for data requests (Nick's email: `jensen0710@gmail.com`)
-2. **Cookie/consent handling** — only if the site actually sets non-essential cookies/tracking. If it uses none beyond what's strictly necessary (session cookie for sign-in), state that. Do NOT add a cookie banner for a single necessary session cookie — that's over-engineering. Verify what cookies exist and handle accordingly.
+2. **Cookie handling — NO banner for the beta.** The site sets exactly one cookie: `pw-session` (the SolidStart auth-session cookie from `useSession` in `src/server/auth.ts`), which is **strictly necessary** for sign-in. Under the Danish Cookie Order (cookiebekendtgørelsen, implementing ePrivacy), strictly-necessary cookies are **exempt from consent** — so no cookie banner is required while that's the only cookie. **Do NOT add a banner now** (that's over-engineering and a false signal).
+   - **The privacy policy must state this explicitly, in Danish:** "Vi sætter kun en nødvendig sessions-cookie for at holde dig logget ind; vi bruger ingen sporings- eller analyse-cookies." Make it a genuine trust point, not an omission.
+   - **Revisit when:** a cookie banner becomes REQUIRED the moment any non-essential cookie is added — e.g. analytics (Phase 10 measure), ad/tracking pixels, or affiliate-adjacent tracking. At that point add a banner + consent. Not before. Note this trigger in the policy/plan so it's a conscious decision, not an accident.
 3. **Wire the address-collection privacy note** — the settings/home-address flow (Task 025) already has a privacy note; confirm it's consistent with the policy.
 
 ## Important
@@ -33,7 +35,7 @@ The site collects real personal data: **email** (magic-link sign-in), **receipt 
 
 - [ ] `/privacy` route exists with a Danish privacy policy covering email, receipt images, address; how long kept; never sold; contact
 - [ ] Policy accurately reflects code behavior (receipt deletion, address distance-only use)
-- [ ] Cookie handling matches reality (no banner for a single necessary session cookie; consent added only if non-essential cookies exist)
+- [ ] Cookie handling matches reality: no banner (only the strictly-necessary `pw-session` cookie); policy explicitly states no tracking/analytics cookies, in Danish; banner-trigger (adding non-essential cookies) noted
 - [ ] Link to the policy in the footer
 - [ ] Home-address privacy note (Task 025) consistent with the policy
 - [ ] **Nick approved the policy text** (human gate)
