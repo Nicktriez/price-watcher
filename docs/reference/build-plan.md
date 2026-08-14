@@ -521,10 +521,31 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Objective:** Make money without a sales team.
 
+**The model — affiliate-first (DECIDED, correct for a consumer price site):**
+
+- **Join Partner-ads and/or Tradetracker** (Danish affiliate networks, ~1,200+ programs).
+- **Outbound affiliate links** on product/store pages → online groceries (nemlig.com, BilkaToGo) and recipe content.
+- You earn a cut when a user clicks "køb hos nemlig" and buys.
+- **What we do NOT do (and why):**
+  - **Charge consumers** — dead on arrival. Price comparison has been free for 15 years (eTilbudsavis, Matpris, Pricerunner). Nobody pays.
+  - **Sell the data** — the crowd/receipt data is the moat, but selling it breaks the trust premise (users contribute to compare prices, not to be mined) and needs a buyer/sales process a solo dev doesn't have.
+
+**The honest economics (set expectations now):**
+
+- **Grocery affiliate is thin** — typically 1–5% of basket value; Danish online groceries pay low single digits.
+- **It's volume, not per-sale checks** — thousands of outbound clicks where enough convert to add up.
+- **The conversion engine is the madplan + store comparison, not the offer pages.** "Madplan for 500 kr" → "cheapest at Netto" → "order online at nemlig" = the affiliate conversion. So Tasks 042/043 (screenshot-worthy comparison + madplan) are monetization tasks in disguise, not just polish.
+- **Realistic near-term:** affiliate covers server + LLM costs (that's M4 — Viability), not a salary. That's success for this phase.
+
+**The real prize — export (Phase 12), not the affiliate checks:**
+
+- Affiliate revenue is the **proof-of-traction** that makes the codebase sellable/leasable to another country. The money isn't in Danish affiliate pennies — it's in "here's a working, country-neutral price-watcher with a crowd-data moat; buy/lease it for your market." Gated on the beta proving traction.
+- **The honest risk:** online-grocery affiliate is **thin in Denmark** — nemlig.com + BilkaToGo are the main online players, and Coop/Rema/Lidl are mostly in-store (not affiliate-linkable). So the affiliate surface is narrower than ideal. Not a reason to abandon affiliate — but the **long-term value is the crowd-data moat + exportable product, not the affiliate stream itself.** Affiliate is the bridge that covers costs and demonstrates traction; the moat + export is the actual asset.
+
 **Tasks:**
 
 1. Join Partner-ads and/or Tradetracker (Danish affiliate networks).
-2. Outbound affiliate links on product/store pages → online groceries (nemlig.com, BilkaToGo) and recipe content.
+2. Outbound affiliate links on product/store pages → online groceries (nemlig.com, BilkaToGo) and recipe content. Prioritize the madplan + store-comparison surfaces (the conversion engine).
 3. Compliance pass: EU Omnibus 30-day rule — label your own price comparisons correctly; never call a crowd price a "discount"; publish a privacy policy (GDPR).
 4. Launch: blog post on nicktriez.com, x.com thread, submit to Danish tech/price-watch communities (Reddit r/Denmark, Facebook groups that ask for exactly this).
 5. Measure: which lists get used, which stores win, affiliate conversion.
@@ -532,6 +553,8 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 **Verification:**
 
 - [ ] Affiliate links live and tracked
+- [ ] Affiliate conversion measurable on madplan + comparison surfaces (not just offer pages)
+- [ ] M4 signal: affiliate revenue ≥ server + LLM costs (viability, not salary)
 - [ ] Compliance labels correct (no "discount" claims on crowd data)
 - [ ] Launch post published in the x.com window (Monday ~17:00 CET)
 
