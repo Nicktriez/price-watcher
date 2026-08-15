@@ -77,13 +77,13 @@ export default function ListsIndex() {
 
           <section class="mb-6">
             <h2 class="mb-2 text-lg font-semibold">Eller start en tom liste</h2>
-            <form onSubmit={handleCreate} class="flex items-center gap-2">
+            <form onSubmit={handleCreate} class="flex flex-col gap-2 sm:flex-row sm:items-center">
               <input
                 type="text"
                 name="name"
                 placeholder="Listens navn (fx Ugeindkøb)"
                 required
-                class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                class="rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-1"
               />
               <select name="kind" class="rounded border border-gray-300 px-3 py-1.5 text-sm">
                 <option value="custom">Egen</option>

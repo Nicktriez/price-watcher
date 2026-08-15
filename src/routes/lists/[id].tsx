@@ -164,28 +164,30 @@ export default function ListDetail() {
 
               <section class="mb-6 rounded border border-gray-200 p-3">
                 <h2 class="mb-2 text-sm font-semibold">Tilføj et produkt</h2>
-                <div class="mb-2 flex items-center gap-2">
+                <div class="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center">
                   <input
                     type="text"
                     value={q()}
                     onInput={(e) => handleSearchInput(e.currentTarget.value)}
                     placeholder="Søg efter produkter…"
-                    class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                    class="rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-1"
                   />
-                  <input
-                    type="number"
-                    value={qty()}
-                    onInput={(e) => setQty(e.currentTarget.value)}
-                    placeholder="Antal"
-                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
-                  />
-                  <input
-                    type="text"
-                    value={unit()}
-                    onInput={(e) => setUnit(e.currentTarget.value)}
-                    placeholder="Enhed"
-                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
-                  />
+                  <div class="flex gap-2">
+                    <input
+                      type="number"
+                      value={qty()}
+                      onInput={(e) => setQty(e.currentTarget.value)}
+                      placeholder="Antal"
+                      class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
+                    />
+                    <input
+                      type="text"
+                      value={unit()}
+                      onInput={(e) => setUnit(e.currentTarget.value)}
+                      placeholder="Enhed"
+                      class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
+                    />
+                  </div>
                 </div>
                 <Show when={results().length}>
                   <ul class="space-y-1">
@@ -209,27 +211,35 @@ export default function ListDetail() {
 
               <section class="mb-6 rounded border border-gray-200 p-3">
                 <h2 class="mb-2 text-sm font-semibold">Eller tilføj fritekst</h2>
-                <form onSubmit={addFreeText} class="flex items-center gap-2">
+                <form
+                  onSubmit={addFreeText}
+                  class="flex flex-col gap-2 sm:flex-row sm:items-center"
+                >
                   <input
                     type="text"
                     name="name"
                     placeholder="fx Spaghetti 500 g"
                     required
-                    class="flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm"
+                    class="rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-1"
                   />
-                  <input
-                    type="number"
-                    name="quantity"
-                    placeholder="Antal"
-                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
-                  />
-                  <input
-                    type="text"
-                    name="unit"
-                    placeholder="Enhed"
-                    class="w-20 rounded border border-gray-300 px-3 py-1.5 text-sm"
-                  />
-                  <button type="submit" class="rounded bg-sky-600 px-3 py-1.5 text-sm text-white">
+                  <div class="flex gap-2">
+                    <input
+                      type="number"
+                      name="quantity"
+                      placeholder="Antal"
+                      class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
+                    />
+                    <input
+                      type="text"
+                      name="unit"
+                      placeholder="Enhed"
+                      class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    class="rounded bg-sky-600 px-3 py-1.5 text-sm text-white sm:px-4"
+                  >
                     Tilføj
                   </button>
                 </form>
