@@ -336,14 +336,15 @@ export async function useTemplate(templateId: string): Promise<string> {
 export async function getBasketCosts(listId: string, userId: string) {
   if (!(await ownedList(userId, listId))) throw new Error("not-found");
 
+  // Include free-text items (product_id NULL) — they flow through as
+  // "no-price" and are counted honestly on the compare page (Task 038g).
   const rows = await db
     .selectFrom("list_item")
     .select(["product_id", "quantity", "unit"])
     .where("list_id", "=", listId)
-    .where("product_id", "is not", null)
     .execute();
   const items = rows.map((r) => ({
-    productId: r.product_id as string,
+    productId: r.product_id,
     quantity: r.quantity,
     unit: r.unit,
   }));
@@ -353,9 +354,17 @@ export async function getBasketCosts(listId: string, userId: string) {
 }
 
 export async function computeBasketCostsForItems(
-  items: { productId: string; quantity: number | null; unit: string | null }[],
+  items: { productId: string | null; quantity: number | null; unit: string | null }[],
 ) {
-  const productIds = [...new Set(items.map((i) => i.productId))];
+  const productIds = [
+    ...new Set(items.map((i) => i.productId).filter((p): p is string => p != null)),
+  ];
+
+  // A list with only free-text items has no product ids — skip the queries
+  // (empty `IN ()` is invalid SQL) and price everything as no-price.
+  if (productIds.length === 0) {
+    return computeBasketCosts({ items, offers: {}, storeNames: {}, baselines: {} });
+  }
 
   const offerRows = await db
     .selectFrom("offer")

@@ -72,7 +72,11 @@ export default function StoreComparison() {
                 ? Math.max(...ranked.map((p) => p.basketTotal))
                 : 0;
               const anyFuel = ranked.some((s) => s.hasFuelFigure);
-              const noPriceEverywhere = d().verdict.unpricedItems;
+              const freeTextItems = d().list.items.filter((i) => i.productId == null);
+              const freeTextCount = freeTextItems.length;
+              const allFreeText =
+                d().list.items.length > 0 && freeTextCount === d().list.items.length;
+              const noPriceEverywhere = d().verdict.unpricedItems + freeTextCount;
 
               return (
                 <>
@@ -101,10 +105,30 @@ export default function StoreComparison() {
                     <Show
                       when={basketWinner}
                       fallback={
-                        <p class="text-gray-500">
-                          Ingen butikker har priser på disse varer endnu. Priserne kommer fra
-                          aktuelle tilbud og uploadede kvitteringer.
-                        </p>
+                        allFreeText ? (
+                          <div class="text-gray-500">
+                            <p>
+                              Disse varer er tilføjet som fritekst og har endnu ingen pris, så de
+                              kan ikke sammenlignes.
+                            </p>
+                            <p class="mt-2">
+                              Gå til{" "}
+                              <a
+                                href={`/lists/${d().list.id}`}
+                                class="text-sky-700 hover:underline"
+                              >
+                                listen
+                              </a>{" "}
+                              og tilføj varerne som rigtige produkter (eller start fra en skabelon)
+                              for at se en prissammenligning.
+                            </p>
+                          </div>
+                        ) : (
+                          <p class="text-gray-500">
+                            Ingen butikker har priser på disse varer endnu. Priserne kommer fra
+                            aktuelle tilbud og uploadede kvitteringer.
+                          </p>
+                        )
                       }
                     >
                       <div class="mb-4 rounded border border-sky-200 bg-sky-50 p-4">
@@ -240,7 +264,11 @@ export default function StoreComparison() {
                       <Show when={noPriceEverywhere > 0}>
                         <p class="mb-2 text-sm text-gray-500">
                           {noPriceEverywhere} var{noPriceEverywhere === 1 ? "" : "er"} i din kurv
-                          kunne ikke prissættes (hverken tilbud eller kvitteringspris).
+                          kunne ikke prissættes (hverken tilbud eller kvitteringspris)
+                          {freeTextCount > 0
+                            ? ` — ${freeTextCount} tilføjet som fritekst uden produkt-link`
+                            : ""}
+                          .
                         </p>
                       </Show>
                       <Show when={!anyFuel && ranked.some((s) => !s.hasFuelFigure)}>

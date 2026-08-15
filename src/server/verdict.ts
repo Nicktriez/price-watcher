@@ -123,6 +123,7 @@ export async function getStoreVerdicts(listId: string, userId: string): Promise<
   const byProduct = new Map<string, boolean[]>();
   for (const b of baskets) {
     for (const l of b.lines) {
+      if (l.productId == null) continue; // free-text items counted separately on the page
       const arr = byProduct.get(l.productId) ?? [];
       arr.push(l.price != null);
       byProduct.set(l.productId, arr);

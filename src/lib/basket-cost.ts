@@ -1,5 +1,5 @@
 export interface BasketItem {
-  productId: string;
+  productId: string | null;
   quantity: number | null;
   unit: string | null;
 }
@@ -14,7 +14,7 @@ export interface OfferSource {
 }
 
 export interface BasketLineResult {
-  productId: string;
+  productId: string | null;
   quantity: number | null;
   unit: string | null;
   source: "offer" | "crowd" | "baseline" | "no-price";
@@ -100,11 +100,11 @@ export function priceItem(
       return { ...item, source: "offer", price: round2(converted * best.unitPrice!) };
     }
   }
-  const crowd = crowdPrices[item.productId];
+  const crowd = item.productId == null ? undefined : crowdPrices[item.productId];
   if (crowd != null) {
     return { ...item, source: "crowd", price: round2(crowd) };
   }
-  const baseline = baselines[item.productId];
+  const baseline = item.productId == null ? undefined : baselines[item.productId];
   if (baseline != null) {
     return { ...item, source: "baseline", price: round2(baseline) };
   }
