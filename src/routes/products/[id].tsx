@@ -44,10 +44,10 @@ function TrustBadge({ tier }: { tier: "official" | "community" | "single" }) {
     >
       <span aria-hidden="true">{tier === "official" ? "✓" : "●"}</span>
       {tier === "official"
-        ? "Official offer"
+        ? "Officielt tilbud"
         : tier === "community"
           ? "Community"
-          : "User-reported"}
+          : "Brugerrapporteret"}
     </span>
   );
 }
@@ -66,7 +66,7 @@ export default function ProductPage() {
         </A>
       </p>
 
-      <Show when={product()} fallback={<p>Product not found.</p>}>
+      <Show when={product()} fallback={<p>Produktet blev ikke fundet.</p>}>
         {(p) => (
           <>
             <h1 class="mb-1 text-2xl font-semibold">{p().name}</h1>
@@ -74,10 +74,10 @@ export default function ProductPage() {
               <p class="text-sm text-gray-600">{p().brand}</p>
             </Show>
 
-            <h2 class="mb-2 mt-6 text-lg font-semibold">Current offers</h2>
+            <h2 class="mb-2 mt-6 text-lg font-semibold">Aktuelle tilbud</h2>
             <Show
               when={p().offers.length}
-              fallback={<p class="text-gray-500">No current offers for this product.</p>}
+              fallback={<p class="text-gray-500">Ingen aktuelle tilbud på dette produkt.</p>}
             >
               <ul class="space-y-3">
                 <For each={p().offers}>
@@ -103,7 +103,7 @@ export default function ProductPage() {
                             {fmtPrice(o.pre_price!)} {o.currency}
                           </p>
                         </Show>
-                        <p class="text-sm text-gray-600">{o.chain_name ?? "Unknown chain"}</p>
+                        <p class="text-sm text-gray-600">{o.chain_name ?? "Ukendt kæde"}</p>
                         <p class="text-xs text-gray-500">
                           Valid {fmtDate(o.valid_from)} – {fmtDate(o.valid_to)}
                         </p>
@@ -114,13 +114,13 @@ export default function ProductPage() {
               </ul>
             </Show>
 
-            <h2 class="mb-2 mt-6 text-lg font-semibold">User-reported prices</h2>
+            <h2 class="mb-2 mt-6 text-lg font-semibold">Brugerrapporterede priser</h2>
             <p class="mb-2 text-xs text-gray-500">
-              Prices from grocery receipts uploaded by users — not official offers.
+              Priser fra kvitteringer uploadet af brugere — ikke officielle tilbud.
             </p>
             <Show
               when={p().baselines.length}
-              fallback={<p class="text-gray-500">No user-reported prices yet.</p>}
+              fallback={<p class="text-gray-500">Ingen brugerrapporterede priser endnu.</p>}
             >
               <ul class="space-y-2 rounded border border-amber-200 bg-amber-50 p-3">
                 <For each={p().baselines}>
@@ -128,7 +128,7 @@ export default function ProductPage() {
                     <li class="flex items-baseline justify-between gap-3 text-sm">
                       <div>
                         <TrustBadge tier={b.trustTier} />
-                        <span class="ml-2 text-gray-700">{b.storeName ?? "Unknown store"}</span>
+                        <span class="ml-2 text-gray-700">{b.storeName ?? "Ukendt butik"}</span>
                       </div>
                       <div class="text-right">
                         <span class="font-semibold">{fmtPrice(b.price)} kr</span>
@@ -142,10 +142,11 @@ export default function ProductPage() {
               </ul>
             </Show>
 
-            <h2 class="mb-2 mt-6 text-lg font-semibold">Crowd shelf prices</h2>
+            <h2 class="mb-2 mt-6 text-lg font-semibold">Priser fra fællesskabet</h2>
             <p class="mb-2 text-xs text-gray-500">
-              Prices people saw on the shelf today. 3+ independent reports within tolerance become a
-              Community price; a single report stays "user-reported" and goes stale after 24h.
+              Priser folk så på hylden i dag. 3+ uafhængige rapporter inden for tolerancen bliver en
+              Community-pris; en enkelt rapport forbliver "brugerrapporteret" og bliver forældet
+              efter 24 timer.
             </p>
             <Show
               when={crowd() && crowd()!.length}
@@ -190,7 +191,7 @@ export default function ProductPage() {
               </ul>
             </Show>
 
-            <h2 class="mb-2 mt-6 text-lg font-semibold">Price history (30 days)</h2>
+            <h2 class="mb-2 mt-6 text-lg font-semibold">Prishistorik (30 dage)</h2>
             <Show
               when={history()?.length}
               fallback={<p class="text-gray-500">No price history yet.</p>}

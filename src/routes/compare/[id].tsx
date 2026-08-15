@@ -62,7 +62,7 @@ export default function StoreComparison() {
         }
       >
         <main class="mx-auto max-w-3xl p-4 text-gray-900">
-          <Show when={data()} fallback={<p>List not found.</p>}>
+          <Show when={data()} fallback={<p>Listen blev ikke fundet.</p>}>
             {(d) => {
               const ranked = d().verdict.ranked;
               const netWinner = d().verdict.netWinner;
@@ -90,9 +90,9 @@ export default function StoreComparison() {
                     when={d().list.items.length}
                     fallback={
                       <p class="text-gray-500">
-                        This list is empty.{" "}
+                        Listen er tom.{" "}
                         <a href="/lists" class="text-sky-700 hover:underline">
-                          Add items or use a template
+                          Tilføj varer eller brug en skabelon
                         </a>
                         .
                       </p>
@@ -102,8 +102,8 @@ export default function StoreComparison() {
                       when={basketWinner}
                       fallback={
                         <p class="text-gray-500">
-                          No stores have prices for these items yet. Prices come from current offers
-                          and uploaded receipts.
+                          Ingen butikker har priser på disse varer endnu. Priserne kommer fra
+                          aktuelle tilbud og uploadede kvitteringer.
                         </p>
                       }
                     >
@@ -112,10 +112,10 @@ export default function StoreComparison() {
                           when={verdictText}
                           fallback={
                             <p class="text-lg font-semibold text-gray-900">
-                              Your basket is cheapest at {basketWinner.storeName} —{" "}
+                              Din kurv er billigst hos {basketWinner.storeName} —{" "}
                               {fmtPrice(String(basketWinner.basketTotal))} kr
                               {mostExpensive > basketWinner.basketTotal
-                                ? `, ${fmtPrice(String(mostExpensive - basketWinner.basketTotal))} kr less than the most expensive option`
+                                ? `, ${fmtPrice(String(mostExpensive - basketWinner.basketTotal))} kr mindre end det dyreste alternativ`
                                 : ""}
                               .
                             </p>
@@ -137,12 +137,14 @@ export default function StoreComparison() {
                       <table class="mb-4 w-full text-sm">
                         <thead>
                           <tr class="border-b border-gray-300 text-left text-xs uppercase text-gray-500">
-                            <th class="py-2 pr-2">Store</th>
-                            <th class="py-2 pr-2 text-right">Basket</th>
-                            <th class="py-2 pr-2 text-right">Fuel (round trip)</th>
-                            <th class="py-2 pr-2 text-right">Total w/ fuel</th>
-                            <th class="py-2 pr-2 text-right">vs. most expensive</th>
-                            <th class="py-2 text-right">Official / community / user-reported</th>
+                            <th class="py-2 pr-2">Butik</th>
+                            <th class="py-2 pr-2 text-right">Kurv</th>
+                            <th class="py-2 pr-2 text-right">Brændstof (tur-retur)</th>
+                            <th class="py-2 pr-2 text-right">I alt inkl. brændstof</th>
+                            <th class="py-2 pr-2 text-right">ift. dyreste</th>
+                            <th class="py-2 text-right">
+                              Officielt / Community / Brugerrapporteret
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -160,17 +162,17 @@ export default function StoreComparison() {
                                     <span class="font-medium">{store.storeName}</span>
                                     {isNetWinner && (
                                       <span class="ml-2 rounded bg-sky-600 px-1.5 py-0.5 text-xs text-white">
-                                        net winner
+                                        netto-vinder
                                       </span>
                                     )}
                                     {!isNetWinner && store.storeId === basketWinner.storeId && (
                                       <span class="ml-2 rounded bg-gray-200 px-1.5 py-0.5 text-xs text-gray-700">
-                                        cheapest basket
+                                        billigst i varer
                                       </span>
                                     )}
                                     {baselineHeavy && (
                                       <span class="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">
-                                        partly from user-reported prices
+                                        delvist fra brugerrapporterede priser
                                       </span>
                                     )}
                                   </td>
@@ -237,34 +239,36 @@ export default function StoreComparison() {
 
                       <Show when={noPriceEverywhere > 0}>
                         <p class="mb-2 text-sm text-gray-500">
-                          {noPriceEverywhere} item{noPriceEverywhere === 1 ? "" : "s"} in your
-                          basket couldn't be priced anywhere (no current offer, no receipt
-                          baseline).
+                          {noPriceEverywhere} var{noPriceEverywhere === 1 ? "" : "er"} i din kurv
+                          kunne ikke prissættes (hverken tilbud eller kvitteringspris).
                         </p>
                       </Show>
                       <Show when={!anyFuel && ranked.some((s) => !s.hasFuelFigure)}>
                         <p class="mb-2 text-sm text-gray-500">
                           <a href="/settings" class="text-sky-700 hover:underline">
-                            Set your home address
+                            Angiv din hjemmeadresse
                           </a>{" "}
-                          and car profile to see fuel-adjusted totals.
+                          og bilprofil for at se brændstofjusterede totaler.
                         </p>
                       </Show>
                       <Show when={anyFuel && ranked.some((s) => !s.hasFuelFigure)}>
                         <p class="mb-2 text-sm text-gray-500">
-                          Stores without a fuel figure (no known address/distance or fuel price) are
-                          shown after stores with full data — their total is basket-only.
+                          Butikker uden brændstofsfigur (ingen kendt adresse/afstand eller
+                          brændstofpris) vises efter butikker med fulde data — deres total er kun
+                          kurven.
                         </p>
                       </Show>
                       <p class="text-xs text-gray-500">
-                        Blue = current offers (official). Amber = user-reported prices — community
-                        crowd prices (3+ people agree) and receipt baselines — never a discount.
-                        Fuel cost uses the national average price and your car profile; driving
-                        distances are round-trip to the nearest store.
+                        Blå = aktuelle tilbud (officielle). Gul = brugerrapporterede priser —
+                        Community-priser (3+ personer er enige) og kvitteringspriser — aldrig en
+                        rabat. Brændstof bruger landsgennemsnittet og din bilprofil; køreafstandene
+                        er tur-retur til den nærmeste butik.
                       </p>
 
                       <section class="mt-4 rounded border border-gray-200 p-3">
-                        <h2 class="mb-2 text-sm font-semibold">Fuel prices (national average)</h2>
+                        <h2 class="mb-2 text-sm font-semibold">
+                          Brændstofpriser (landsgennemsnit)
+                        </h2>
                         <ul class="space-y-2 text-sm">
                           <Show
                             when={

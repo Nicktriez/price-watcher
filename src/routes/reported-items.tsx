@@ -12,7 +12,7 @@ function TierBadge({ tier }: { tier: "community" | "single" }) {
       }`}
     >
       <span aria-hidden="true">●</span>
-      {tier === "community" ? "Community" : "User-reported"}
+      {tier === "community" ? "Community" : "Brugerrapporteret"}
     </span>
   );
 }
@@ -22,22 +22,22 @@ export default function ReportedItems() {
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
-      <h1 class="mb-1 text-2xl font-semibold">Reported items</h1>
+      <h1 class="mb-1 text-2xl font-semibold">Rapporterede varer</h1>
       <p class="mb-6 text-sm text-gray-600">
-        Shelf prices people reported that aren't tied to a catalog product yet. 3+ independent
-        reports within tolerance become a Community price; a single report stays "user-reported" and
-        goes stale after 24h.
+        Hyldepriser folk har rapporteret, som endnu ikke er knyttet til et katalogprodukt. 3+
+        uafhængige rapporter inden for tolerancen bliver en Community-pris; en enkelt rapport
+        forbliver "brugerrapporteret" og bliver forældet efter 24 timer.
       </p>
 
       <Show
         when={items() && items()!.length}
         fallback={
           <p class="text-gray-500">
-            No free-text reports yet.{" "}
+            Ingen fritekstrapporter endnu.{" "}
             <a href="/report" class="text-sky-700 hover:underline">
-              Report a price
+              Rapportér en pris
             </a>{" "}
-            if you saw one on the shelf.
+            hvis du så en på hylden.
           </p>
         }
       >
@@ -82,8 +82,8 @@ export default function ReportedItems() {
       </Show>
 
       <p class="mt-6 text-xs text-gray-500">
-        Free-text reports group by name (trim + lowercase) until moderation links them to a product.
-        These prices are user-reported and never a discount.
+        Fritekstrapporter grupperes efter navn (trim + små bogstaver), indtil moderering knytter dem
+        til et produkt. Disse priser er brugerrapporterede og aldrig en rabat.
       </p>
     </main>
   );
