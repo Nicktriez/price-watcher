@@ -1,16 +1,24 @@
 import { createAsync, useLocation, useNavigate } from "@solidjs/router";
-import { createSignal, Show, Suspense } from "solid-js";
+import { createEffect, createSignal, For, onCleanup, Show, Suspense } from "solid-js";
 import { getCurrentUser, signOut } from "~/server/auth";
 
-// Real launch nav (supersedes the 033/034 dev links: settings/madplan/spending
-// moved to the footer). Task 036.
-//
-// "Forside" is / (the landing, same for everyone, Task 037b) and "Tilbud" is
-// /offers. No session-conditional href.
+// Real launch nav (Task 036) + mobile hamburger (Task 038c).
+// Auth pattern (createAsync session, authVersion, Suspense + nested Show)
+// preserved unchanged — only layout/visibility is restructured.
+const LINKS = [
+  { href: "/", label: "Forside" },
+  { href: "/offers", label: "Tilbud" },
+  { href: "/lists", label: "Lister" },
+  { href: "/upload", label: "Upload kvittering" },
+  { href: "/report", label: "Rapporter en pris" },
+  { href: "/about", label: "Om" },
+];
+
 export default function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [authVersion, setAuthVersion] = createSignal(0);
+  const [menuOpen, setMenuOpen] = createSignal(false);
   const user = createAsync(() => {
     void authVersion();
     void location.pathname; // re-fetch the session when the route changes (post login)
@@ -18,6 +26,28 @@ export default function Nav() {
   });
   const active = (path: string) =>
     path == location.pathname ? "border-sky-600" : "border-transparent hover:border-sky-600";
+
+  // Close the menu on route change and on outside click / Esc.
+  createEffect(() => {
+    void location.pathname;
+    setMenuOpen(false);
+  });
+  let navRef: HTMLElement | undefined;
+  createEffect(() => {
+    if (!menuOpen()) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (navRef && !navRef.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKey);
+    onCleanup(() => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    });
+  });
 
   const handleSignOut = async (e: Event) => {
     e.preventDefault();
@@ -27,26 +57,55 @@ export default function Nav() {
   };
 
   return (
-    <nav class="bg-sky-800">
-      <ul class="container flex items-center p-3 text-gray-200">
-        <li class={`border-b-2 ${active("/")} mx-1.5 sm:mx-6`}>
-          <a href="/">Forside</a>
-        </li>
-        <li class={`border-b-2 ${active("/offers")} mx-1.5 sm:mx-6`}>
-          <a href="/offers">Tilbud</a>
-        </li>
-        <li class={`border-b-2 ${active("/lists")} mx-1.5 sm:mx-6`}>
-          <a href="/lists">Lister</a>
-        </li>
-        <li class={`border-b-2 ${active("/upload")} mx-1.5 sm:mx-6`}>
-          <a href="/upload">Upload kvittering</a>
-        </li>
-        <li class={`border-b-2 ${active("/report")} mx-1.5 sm:mx-6`}>
-          <a href="/report">Rapporter en pris</a>
-        </li>
-        <li class={`border-b-2 ${active("/about")} mx-1.5 sm:mx-6`}>
-          <a href="/about">Om</a>
-        </li>
+    <nav
+      class="bg-sky-800"
+      ref={(el) => {
+        navRef = el;
+      }}
+    >
+      {/* Mobile header: brand + auth + hamburger toggle */}
+      <div class="flex items-center justify-between p-3 text-gray-200 md:hidden">
+        <a href="/" class="px-2 py-2 text-sm font-semibold">
+          Sku' jeg?
+        </a>
+        <div class="flex items-center gap-1">
+          <Suspense fallback={null}>
+            <Show when={user() !== undefined}>
+              <Show
+                when={user()}
+                fallback={
+                  <a href="/signin" class="rounded bg-sky-600 px-3 py-2 text-sm">
+                    Log ind
+                  </a>
+                }
+              >
+                <a href="#" onClick={handleSignOut} class="rounded bg-white/10 px-3 py-2 text-sm">
+                  Log ud
+                </a>
+              </Show>
+            </Show>
+          </Suspense>
+          <button
+            type="button"
+            aria-expanded={menuOpen()}
+            aria-label="Menu"
+            onClick={() => setMenuOpen((o) => !o)}
+            class="px-3 py-2 text-2xl leading-none"
+          >
+            ☰
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop row (md and up) */}
+      <ul class="container hidden items-center p-3 text-gray-200 md:flex">
+        <For each={LINKS}>
+          {(l) => (
+            <li class={`border-b-2 ${active(l.href)} mx-1.5 sm:mx-6`}>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          )}
+        </For>
         <li class="ml-auto mx-1.5 sm:mx-6">
           <Suspense fallback={null}>
             <Show when={user() !== undefined}>
@@ -66,6 +125,29 @@ export default function Nav() {
           </Suspense>
         </li>
       </ul>
+
+      {/* Mobile panel (below md) */}
+      <Show when={menuOpen()}>
+        <ul class="border-t border-sky-700 bg-sky-800 pb-2 text-gray-200 md:hidden">
+          <For each={LINKS}>
+            {(l) => (
+              <li>
+                <a
+                  href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  class={`block border-l-4 px-4 py-3 text-sm ${
+                    l.href == location.pathname
+                      ? "border-sky-500 bg-sky-700/50 font-medium"
+                      : "border-transparent"
+                  }`}
+                >
+                  {l.label}
+                </a>
+              </li>
+            )}
+          </For>
+        </ul>
+      </Show>
     </nav>
   );
 }
