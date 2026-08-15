@@ -32,8 +32,8 @@ export default function Privacy() {
           </h2>
           <ul class="list-inside list-disc space-y-1">
             <li>
-              <span class="font-medium">E-mail-adresse</span> — til at logge dig ind (vi sender dig
-              en login-kode pr. e-mail).
+              <span class="font-medium">Passkey</span> — log ind sker med en passkey
+              (sikkerhedsnøgle på din enhed). Vi sender dig ikke længere en login-kode pr. e-mail.
             </li>
             <li>
               <span class="font-medium">Kvitteringsbilleder</span> — når du uploader en kvittering,

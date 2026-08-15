@@ -41,7 +41,7 @@ export default function Home() {
         </div>
         <Show when={!user()}>
           <p class="mt-3 text-xs text-gray-500">
-            Log ind med din e-mail — så får du en kode til at komme i gang.
+            Log ind med din passkey — en sikkerhedsnøgle på din enhed.
           </p>
         </Show>
       </section>
@@ -71,7 +71,7 @@ export default function Home() {
       <section class="mt-6 rounded border border-gray-200 p-4 text-sm">
         <p class="font-medium">Sådan virker det</p>
         <ol class="mt-2 list-inside list-decimal space-y-1 text-gray-600">
-          <li>Log ind med din e-mail.</li>
+          <li>Log ind med din passkey.</li>
           <li>Opret din indkøbsliste — hurtigst fra en skabelon eller et tilbud.</li>
           <li>Sammenlign priser på tværs af butikker og se, hvor du skal handle.</li>
           <li>Upload en kvittering og hjælp andre med rigtige priser.</li>

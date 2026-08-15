@@ -84,7 +84,7 @@ export interface PricePointTable {
 
 export interface UserTable {
   id: string;
-  email: string;
+  email: string | null;
   created_at: string;
   updated_at: string;
   points: number;
@@ -98,6 +98,27 @@ export interface UserTable {
   efficiency: number | null;
   ev_charging: "home" | "public" | null;
   muted: boolean;
+  user_handle: string | null;
+}
+
+export interface PasskeyCredentialTable {
+  id: string;
+  user_id: string;
+  credential_id: string;
+  public_key: string;
+  counter: string;
+  transports: JsonValue | null;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+export interface WebauthnChallengeTable {
+  id: string;
+  user_id: string | null;
+  challenge_hash: string;
+  user_handle: string | null;
+  expires_at: string;
+  created_at: string;
 }
 
 export interface UserStoreDistanceTable {
@@ -239,4 +260,6 @@ export interface Database {
   fuel_price: FuelPriceTable;
   crowd_report: CrowdReportTable;
   crowd_report_flag: CrowdReportFlagTable;
+  passkey_credential: PasskeyCredentialTable;
+  webauthn_challenge: WebauthnChallengeTable;
 }

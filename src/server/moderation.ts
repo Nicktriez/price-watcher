@@ -25,7 +25,7 @@ const ADMIN_EMAILS = ["jensen0710@gmail.com"];
 
 export async function isAdminUser(): Promise<boolean> {
   const user = await getCurrentUser();
-  return user != null && ADMIN_EMAILS.includes(user.email);
+  return user != null && user.email != null && ADMIN_EMAILS.includes(user.email);
 }
 
 export type FlagCrowdResult = { ok: true; hidden: boolean } | { ok: false; message: string };
@@ -208,7 +208,7 @@ export async function getModerationQueue(): Promise<ModerationItem[] | null> {
       items.push({
         id: r.id,
         reporterId: r.reporter_id,
-        reporterEmail: r.reporter_email,
+        reporterEmail: r.reporter_email ?? "",
         reporterMuted: r.reporter_muted,
         storeName: r.store_name,
         productName: r.product_name ?? r.free_text_name,

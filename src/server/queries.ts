@@ -275,7 +275,7 @@ export async function getLeaderboard(limit = 20): Promise<LeaderboardEntry[]> {
     .limit(limit)
     .execute();
   return rows.map((r) => ({
-    name: r.email.split("@")[0] ?? r.email,
+    name: r.email ? r.email.split("@")[0] : "Bruger",
     points: parseFloat(String(r.points)),
   }));
 }

@@ -12,6 +12,8 @@
     "ingest:schedule": "node src/server/ingest-scheduler.ts"
   },
   "dependencies": {
+    "@simplewebauthn/browser": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.2",
     "@solidjs/router": "^1.0.0",
     "@solidjs/start": "^2.0.0",
     "kysely": "^0.29.5",
