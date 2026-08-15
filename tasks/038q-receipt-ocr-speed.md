@@ -41,7 +41,8 @@ The original 038q plan (downscale + parallel) makes OCR faster but still synchro
 - **The user must never wait on OCR.** The upload route returns in milliseconds (queue only). Any lingering synchronous OCR is a regression.
 - **Privacy promise is load-bearing:** image deleted after parse (the plan/Task 038 already committed to this). Persist only long enough for the worker to read it, then delete.
 - **Dedup/points logic must still work** — it currently runs inline in `uploadReceipt`; move it into `processPendingReceipt` unchanged (dedup by fingerprint, points award, streak).
-- **Concurrency:** the worker should process receipts one-at-a-time or with a lock, so two worker runs don't double-process the same receipt (guard on `status=pending` + atomic transition).
+- **Concurrency — scan ONE receipt at a time (DECIDED, Nick 2026-08-15).** The worker must process receipts serially: one worker poll picks up at most one pending receipt, processes it to completion, then picks the next. Guard on `status=pending` with an atomic transition (e.g. `UPDATE ... SET status='processing' WHERE id=... AND status='pending'` returning the row — if 0 rows, another worker already claimed it). This avoids double-processing and keeps OCR from saturating the 2-vCPU box.
+- **Scale-up path (AFTER beta, do NOT build now):** the serial worker is intentionally the v1. For scale, the natural upgrade is a proper job queue (e.g. BullMQ + Redis) with N workers. **Design the code so this is easy later** — `queueReceipt` and `processPendingReceipt` should be cleanly separable (no OCR logic in the route; the worker function takes a receiptId and does one job). Do NOT build the queue/Redis now — the single serial worker is correct for the beta. Note this in a comment/TODO so the scale-up is obvious.
 - **The scheduler is the worker** — reuse it; don't spin up a separate process unless needed.
 - Plain Danish for user-facing copy (pending/failed/retry messages).
 - This is a **core beta flow** (Phase 7c asks users to upload 3–5 receipts) — pre-beta priority.
@@ -50,10 +51,11 @@ The original 038q plan (downscale + parallel) makes OCR faster but still synchro
 
 - [ ] Uploading a receipt returns immediately (well under a second) with a "we're reading it" confirmation — no OCR in the request
 - [ ] The scheduler worker processes the pending receipt and the results appear (items, price points, points) within a reasonable time
+- [ ] **Only one receipt is scanned at a time** (serial worker — verified: a second pending receipt waits while the first processes; no double-processing)
 - [ ] The user can leave the upload page and the receipt still gets processed
 - [ ] Receipts show a clear "processing" state, and "failed" + retry for failures
 - [ ] The image file is deleted after successful parse (GDPR promise intact)
 - [ ] Dedup + points + streak still work (moved into the worker unchanged)
-- [ ] No double-processing (worker guards on status=pending)
+- [ ] `queueReceipt`/`processPendingReceipt` are cleanly separable (scale-up to a job queue is a clear, isolated change — noted in a TODO, NOT built now)
 - [ ] `vp check` + `vp test` pass
-- [ ] Deployed + verified live on `beta.skujeg.dk` (upload returns fast, receipt processed in background, appears in spending)
+- [ ] Deployed + verified live on `beta.skujeg.dk` (upload returns fast, receipt processed serially in background, appears in spending)
