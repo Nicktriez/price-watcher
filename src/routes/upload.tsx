@@ -1,11 +1,11 @@
 import { A, createAsync, Navigate } from "@solidjs/router";
 import { createSignal, Show } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
-import { uploadReceipt, type UploadResult } from "~/server/receipt-upload";
+import { queueReceipt, type QueueReceiptResult } from "~/server/receipt-upload";
 
 export default function Upload() {
   const user = createAsync(() => getCurrentUser());
-  const [result, setResult] = createSignal<UploadResult | null>(null);
+  const [result, setResult] = createSignal<QueueReceiptResult | null>(null);
 
   const handleUpload = async (e: Event) => {
     e.preventDefault();
@@ -13,7 +13,7 @@ export default function Upload() {
     const input = form.querySelector<HTMLInputElement>('input[type="file"]');
     const file = input?.files?.[0];
     if (!file) return;
-    setResult(await uploadReceipt(file));
+    setResult(await queueReceipt(file));
   };
 
   return (
@@ -58,53 +58,37 @@ export default function Upload() {
               Upload
             </button>
           </form>
-          {result() && (
-            <div class="mt-6 rounded border border-gray-200 p-3 text-sm">
-              {result()!.ok ? (
-                <>
-                  <p class="font-medium text-green-700">{result()!.message}</p>
-                  <ul class="mt-2 space-y-1 text-gray-600">
-                    {result()!.store && <li>Butik: {result()!.store}</li>}
-                    {result()!.total != null && <li>Total: {result()!.total} kr</li>}
-                    <li>
-                      Varer: {result()!.cleanCount} genkendt, {result()!.garbledCount} ulæselige
-                    </li>
-                    {result()!.pointsEarned != null && (
-                      <li class="font-medium text-amber-700">
-                        Du fik {result()!.pointsEarned} point
-                        {result()!.streak ? ` · ${result()!.streak} dages stime` : ""}
-                      </li>
-                    )}
-                  </ul>
-                  {result()!.dedup !== "new" && (
-                    <p class="mt-2 text-gray-500">
-                      {result()!.dedup === "duplicate" && "Denne kvittering er allerede uploadet."}
-                      {result()!.dedup === "replace" &&
-                        "En nyere, tydeligere version erstattede din tidligere scanning."}
-                      {result()!.dedup === "keep" &&
-                        "Vi beholdt din tidligere, tydeligere scanning."}
+          {result() &&
+            (() => {
+              const r = result()!;
+              return (
+                <div class="mt-6 rounded border border-gray-200 p-3 text-sm">
+                  {r.ok ? (
+                    <>
+                      <p class="font-medium text-green-700">{r.message}</p>
+                      <p class="mt-2 text-gray-600">
+                        Kvitteringen læses i baggrunden — du kan gå videre og tjekke ind igen om et
+                        minut. Varerne og priserne dukker op på din forbrugsside.
+                      </p>
+                      <p class="mt-3">
+                        <A
+                          href={r.receiptId ? `/receipts/${r.receiptId}` : "/spending"}
+                          class="font-medium text-sky-700 hover:underline"
+                        >
+                          Se kvitteringen →
+                        </A>
+                      </p>
+                    </>
+                  ) : (
+                    <p class="font-medium text-red-700">
+                      {r.reason === "sign-in-required" && "Du skal være logget ind først."}
+                      {r.reason === "invalid-image" &&
+                        "Upload venligst et JPEG- eller PNG-billede."}
                     </p>
                   )}
-                  <p class="mt-3">
-                    <A
-                      href={result()!.receiptId ? `/receipts/${result()!.receiptId}` : "/spending"}
-                      class="font-medium text-sky-700 hover:underline"
-                    >
-                      Se din prissammenligning →
-                    </A>
-                  </p>
-                </>
-              ) : (
-                <p class="font-medium text-red-700">
-                  {result()!.reason === "sign-in-required" && "Du skal være logget ind først."}
-                  {result()!.reason === "invalid-image" &&
-                    "Upload venligst et JPEG- eller PNG-billede."}
-                  {result()!.reason === "ocr-failed" &&
-                    "Vi kunne ikke læse den kvittering. Prøv et tydeligere billede."}
-                </p>
-              )}
-            </div>
-          )}
+                </div>
+              );
+            })()}
         </main>
       </Show>
     </Show>

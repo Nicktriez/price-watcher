@@ -69,11 +69,16 @@ export default function Spending() {
                           <li class="flex items-baseline justify-between rounded border border-gray-200 px-3 py-2 text-sm">
                             <span class="text-gray-800">
                               <A href={`/receipts/${rec.id}`} class="hover:underline">
-                                {rec.storeName ?? "Unknown store"}
+                                {rec.storeName ?? "Ukendt butik"}
                               </A>
                               <span class="ml-2 text-xs text-gray-500">
-                                {rec.receiptDate ? fmtDate(rec.receiptDate) : "date unknown"} ·{" "}
-                                {rec.itemCount} items
+                                {rec.status === "pending" || rec.status === "processing"
+                                  ? "bliver behandlet…"
+                                  : rec.status === "failed"
+                                    ? "kunne ikke læses"
+                                    : rec.receiptDate
+                                      ? `${fmtDate(rec.receiptDate)} · ${rec.itemCount} varer`
+                                      : "date unknown"}
                               </span>
                             </span>
                             <span class="font-semibold">

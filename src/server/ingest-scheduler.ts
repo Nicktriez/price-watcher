@@ -1,10 +1,12 @@
 import { pathToFileURL } from "node:url";
 import cron from "node-cron";
 import { ingestAllChains } from "../lib/tjek-ingest.ts";
+import { claimAndProcessReceipts } from "./receipt-upload.ts";
 import { startFuelPriceScheduler } from "./fuel.ts";
 import { createRunLock, isSchedulerEnabled } from "./ingest-lock.ts";
 
 const SCHEDULE = "15 */6 * * *";
+const RECEIPT_POLL_MS = 30_000;
 
 const runLock = createRunLock();
 
@@ -36,7 +38,15 @@ export function startScheduler(): void {
     void runOnce();
   });
   startFuelPriceScheduler();
-  console.log(`[ingest] scheduler started, cadence ${SCHEDULE}`);
+  // Receipt OCR worker (Task 038q): poll for queued receipts and process them
+  // one at a time so the user never waits on OCR. Serial by design; scale-up
+  // to a job queue + N workers is a clean, isolated change later.
+  setInterval(() => {
+    void claimAndProcessReceipts().catch((e) => console.error("[receipt-worker] poll failed:", e));
+  }, RECEIPT_POLL_MS);
+  console.log(
+    `[ingest] scheduler started, cadence ${SCHEDULE} + receipt worker ${RECEIPT_POLL_MS}ms`,
+  );
 }
 
 const isMain = process.argv[1] ? import.meta.url === pathToFileURL(process.argv[1]).href : false;

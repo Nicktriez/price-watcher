@@ -153,6 +153,8 @@ export interface ReceiptTable {
   source: "receipt" | "import";
   trust_tier: "community" | "single";
   points_awarded: number;
+  status: "pending" | "processing" | "processed" | "failed";
+  error: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -368,6 +368,7 @@ export interface SpendingReport {
     receiptDate: string | null;
     total: string | null;
     itemCount: number;
+    status: string;
   }[];
 }
 
@@ -413,6 +414,7 @@ export async function getSpendingReport(userId: string): Promise<SpendingReport>
       "receipt.store_name",
       "receipt.receipt_date",
       "receipt.total",
+      "receipt.status",
       db.fn.count("receipt_item.id").as("item_count"),
     ])
     .where("receipt.user_id", "=", userId)
@@ -430,6 +432,7 @@ export async function getSpendingReport(userId: string): Promise<SpendingReport>
       receiptDate: dateOnly(r.receipt_date as Date | string | null),
       total: r.total,
       itemCount: Number(r.item_count),
+      status: r.status,
     })),
   };
 }

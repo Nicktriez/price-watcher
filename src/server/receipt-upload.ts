@@ -1,8 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { sql } from "kysely";
 import { db } from "~/db/client";
@@ -13,6 +12,10 @@ import { computeAward, computeStreak } from "~/lib/receipt-points";
 import { getCurrentUser } from "./auth.ts";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
+// Persistent upload dir (the box sets UPLOAD_DIR). Images live here only until
+// the worker parses them, then they're deleted (GDPR promise).
+const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(process.cwd(), "uploads", "receipts");
 
 function toIsoDateOnly(v: Date | string | null): string | null {
   if (v == null) return null;
@@ -34,6 +37,59 @@ function toDanish(value: Date | string | null): string | null {
   const day = String(dt.getDate()).padStart(2, "0");
   const month = String(dt.getMonth() + 1).padStart(2, "0");
   return `${day}.${month}.${dt.getFullYear()}`;
+}
+
+export type QueueReceiptResult =
+  | { ok: true; receiptId: string; message: string }
+  | { ok: false; reason: "sign-in-required" | "invalid-image" };
+
+/**
+ * Fast path: validate the image, persist it, queue the receipt as `pending`
+ * and return immediately. OCR happens later in the background worker
+ * (Task 038q) — the user never waits on it.
+ */
+export async function queueReceipt(file: File): Promise<QueueReceiptResult> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, reason: "sign-in-required" };
+
+  if (!["image/jpeg", "image/png"].includes(file.type) || file.size > MAX_IMAGE_BYTES) {
+    return { ok: false, reason: "invalid-image" };
+  }
+
+  const receiptId = randomUUID();
+  const fileName = `${receiptId}.jpg`;
+  await mkdir(UPLOAD_DIR, { recursive: true });
+  await writeFile(join(UPLOAD_DIR, fileName), Buffer.from(await file.arrayBuffer()));
+
+  const now = new Date().toISOString();
+  await db
+    .insertInto("receipt")
+    .values({
+      id: receiptId,
+      user_id: user.id,
+      store_id: null,
+      chain_id: null,
+      store_name: null,
+      receipt_date: null,
+      total: null,
+      currency: "DKK",
+      confidence: null,
+      image_path: fileName,
+      source: "receipt",
+      trust_tier: "community",
+      points_awarded: 0,
+      status: "pending",
+      error: null,
+      created_at: now,
+      updated_at: now,
+    })
+    .execute();
+
+  return {
+    ok: true,
+    receiptId,
+    message: "Vi læser din kvittering — du får besked, når den er klar.",
+  };
 }
 
 export interface UploadResult {
@@ -68,6 +124,7 @@ async function findMatchingReceipt(
     .selectFrom("receipt")
     .select(["id", "store_name", "receipt_date", "total", "points_awarded"])
     .where("user_id", "=", userId)
+    .where("status", "=", "processed")
     .execute();
 
   for (const receipt of receipts) {
@@ -96,26 +153,43 @@ async function findMatchingReceipt(
 }
 
 async function deleteReceiptRows(receiptId: string): Promise<void> {
+  const receipt = await db
+    .selectFrom("receipt")
+    .select(["image_path"])
+    .where("id", "=", receiptId)
+    .executeTakeFirst();
+  if (receipt?.image_path) {
+    await rm(join(UPLOAD_DIR, receipt.image_path), { force: true }).catch(() => {});
+  }
   await db.deleteFrom("price_point").where("receipt_id", "=", receiptId).execute();
   await db.deleteFrom("receipt_item").where("receipt_id", "=", receiptId).execute();
   await db.deleteFrom("receipt").where("id", "=", receiptId).execute();
 }
 
-export async function uploadReceipt(file: File): Promise<UploadResult> {
-  const user = await getCurrentUser();
-  if (!user) return { ok: false, reason: "sign-in-required" };
-
-  if (!["image/jpeg", "image/png"].includes(file.type) || file.size > MAX_IMAGE_BYTES) {
-    return { ok: false, reason: "invalid-image" };
+/**
+ * One background job: read a queued receipt's image, OCR it, parse, dedup,
+ * award points, store items + price points, then delete the image (GDPR).
+ * The queue/worker split (Task 038q) keeps the upload route instant.
+ */
+export async function processPendingReceipt(receiptId: string): Promise<UploadResult> {
+  const receipt = await db
+    .selectFrom("receipt")
+    .select(["user_id", "image_path"])
+    .where("id", "=", receiptId)
+    .executeTakeFirst();
+  if (!receipt || !receipt.image_path) {
+    return { ok: false, reason: "ocr-failed" };
   }
+  const user = await db
+    .selectFrom("user")
+    .select(["id", "email"])
+    .where("id", "=", receipt.user_id)
+    .executeTakeFirst();
+  if (!user) return { ok: false, reason: "ocr-failed" };
 
-  const tmp = await mkdtemp(join(tmpdir(), "receipt-upload-"));
-  const imagePath = join(tmp, "receipt.jpg");
+  const imagePath = join(UPLOAD_DIR, receipt.image_path);
   let parsed;
   try {
-    await writeFile(imagePath, Buffer.from(await file.arrayBuffer()));
-    // Known stores (chain + address/city/zip) let OCR fall back to an
-    // address match when the chain name is logo-only (Task 038p).
     const stores = await db
       .selectFrom("store")
       .leftJoin("chain", "chain.id", "store.chain_id")
@@ -131,18 +205,11 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
       imagePath,
       stores
         .filter((s): s is typeof s & { chain_name: string } => s.chain_name != null)
-        .map((s) => ({
-          chainName: s.chain_name,
-          address: s.address,
-          city: s.city,
-          zip: s.zip,
-        })),
+        .map((s) => ({ chainName: s.chain_name, address: s.address, city: s.city, zip: s.zip })),
     );
   } catch (error) {
-    console.error("[upload] OCR failed:", error);
+    console.error(`[receipt-worker] OCR failed for ${receiptId}:`, error);
     return { ok: false, reason: "ocr-failed" };
-  } finally {
-    await rm(tmp, { recursive: true, force: true });
   }
 
   const recoverable = parsed.items.filter((i) => i.price != null);
@@ -164,21 +231,21 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
       })
     : "new";
 
-  if (decision === "duplicate") {
-    return { ok: true, dedup: "duplicate", message: "You already uploaded this receipt." };
-  }
-  if (decision === "keep") {
+  if (decision === "duplicate" || decision === "keep") {
+    await deleteReceiptRows(receiptId);
     return {
       ok: true,
-      dedup: "keep",
-      message: "We kept your original scan — the new one wasn't cleaner.",
+      dedup: decision,
+      message:
+        decision === "duplicate"
+          ? "Du har allerede uploadet denne kvittering."
+          : "Vi beholdt din originale scanning — den nye var ikke tydeligere.",
     };
   }
   if (decision === "replace" && existing) {
     await deleteReceiptRows(existing.receiptId);
   }
 
-  const receiptId = randomUUID();
   const now = new Date().toISOString();
   const isoDate = parsed.date.value ? danishToIso(parsed.date.value) : null;
   const observedAt = isoDate ? `${isoDate}T00:00:00.000Z` : now;
@@ -228,25 +295,24 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
   }
 
   await db
-    .insertInto("receipt")
-    .values({
-      id: receiptId,
-      user_id: user.id,
+    .updateTable("receipt")
+    .set({
       store_id: null,
       chain_id: null,
       store_name: parsed.store.value,
       receipt_date: isoDate,
       total: parsed.total.value == null ? null : String(parsed.total.value),
-      currency: "DKK",
       confidence: null,
-      image_path: null,
-      source: "receipt",
-      trust_tier: "community",
       points_awarded: award,
-      created_at: now,
+      status: "processed",
+      error: null,
       updated_at: now,
     })
+    .where("id", "=", receiptId)
     .execute();
+
+  // GDPR: the image is deleted after a successful parse.
+  await rm(imagePath, { force: true }).catch(() => {});
 
   const products = await db.selectFrom("product").select(["id", "name"]).execute();
 
@@ -304,6 +370,72 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
     footerCount: parsed.footer_count,
     pointsEarned,
     streak,
-    message: `We parsed ${recoverable.length} item${recoverable.length === 1 ? "" : "s"} from your receipt.`,
+    message: `Vi læste ${recoverable.length} var${recoverable.length === 1 ? "" : "er"} fra din kvittering.`,
   };
+}
+
+/**
+ * Serial receipt worker (Task 038q): claim at most one pending receipt
+ * atomically and process it to completion, then pick the next. Scanning ONE
+ * at a time keeps OCR from saturating the box. This is the beta-scale worker;
+ * scale-up (job queue + N workers) is a clean, isolated change later.
+ */
+export async function claimAndProcessReceipts(): Promise<number> {
+  let processed = 0;
+  while (true) {
+    const claimed = await db
+      .updateTable("receipt")
+      .set({ status: "processing", updated_at: new Date().toISOString() })
+      .where("id", "=", (qb) =>
+        qb
+          .selectFrom("receipt")
+          .select("id")
+          .where("status", "=", "pending")
+          .orderBy("created_at", "asc")
+          .limit(1),
+      )
+      .where("status", "=", "pending")
+      .returning("id")
+      .executeTakeFirst();
+    if (!claimed) break;
+    try {
+      await processPendingReceipt(claimed.id);
+      processed++;
+    } catch (error) {
+      console.error(`[receipt-worker] processing ${claimed.id} failed:`, error);
+      await db
+        .updateTable("receipt")
+        .set({ status: "failed", error: String(error), updated_at: new Date().toISOString() })
+        .where("id", "=", claimed.id)
+        .execute();
+    }
+  }
+  if (processed > 0) console.log(`[receipt-worker] processed ${processed} receipt(s)`);
+  return processed;
+}
+
+export async function getReceiptStatus(
+  receiptId: string,
+  userId: string,
+): Promise<{ status: string; error: string | null } | null> {
+  const row = await db
+    .selectFrom("receipt")
+    .select(["status", "error"])
+    .where("id", "=", receiptId)
+    .where("user_id", "=", userId)
+    .executeTakeFirst();
+  return row ? { status: row.status, error: row.error } : null;
+}
+
+export async function retryReceipt(receiptId: string): Promise<{ ok: boolean }> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false };
+  const r = await db
+    .updateTable("receipt")
+    .set({ status: "pending", error: null, updated_at: new Date().toISOString() })
+    .where("id", "=", receiptId)
+    .where("user_id", "=", user.id)
+    .where("status", "=", "failed")
+    .execute();
+  return { ok: r.length > 0 };
 }
