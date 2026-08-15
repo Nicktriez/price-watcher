@@ -12,7 +12,7 @@ function TierBadge({ tier }: { tier: "community" | "single" }) {
       }`}
     >
       <span aria-hidden="true">●</span>
-      {tier === "community" ? "Community" : "Brugerrapporteret"}
+      {tier === "community" ? "Fællesskab" : "Brugerrapporteret"}
     </span>
   );
 }
@@ -25,7 +25,7 @@ export default function ReportedItems() {
       <h1 class="mb-1 text-2xl font-semibold">Rapporterede varer</h1>
       <p class="mb-6 text-sm text-gray-600">
         Hyldepriser folk har rapporteret, som endnu ikke er knyttet til et katalogprodukt. 3+
-        uafhængige rapporter inden for tolerancen bliver en Community-pris; en enkelt rapport
+        uafhængige rapporter inden for tolerancen bliver en fællesskabspris; en enkelt rapport
         forbliver "brugerrapporteret" og bliver forældet efter 24 timer.
       </p>
 

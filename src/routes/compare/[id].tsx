@@ -143,7 +143,7 @@ export default function StoreComparison() {
                             <th class="py-2 pr-2 text-right">I alt inkl. brændstof</th>
                             <th class="py-2 pr-2 text-right">ift. dyreste</th>
                             <th class="py-2 text-right">
-                              Officielt / Community / Brugerrapporteret
+                              Officielt / Fællesskab / Brugerrapporteret
                             </th>
                           </tr>
                         </thead>
@@ -260,7 +260,7 @@ export default function StoreComparison() {
                       </Show>
                       <p class="text-xs text-gray-500">
                         Blå = aktuelle tilbud (officielle). Gul = brugerrapporterede priser —
-                        Community-priser (3+ personer er enige) og kvitteringspriser — aldrig en
+                        fællesskabspriser (3+ personer er enige) og kvitteringspriser — aldrig en
                         rabat. Brændstof bruger landsgennemsnittet og din bilprofil; køreafstandene
                         er tur-retur til den nærmeste butik.
                       </p>

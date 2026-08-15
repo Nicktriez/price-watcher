@@ -46,7 +46,7 @@ function TrustBadge({ tier }: { tier: "official" | "community" | "single" }) {
       {tier === "official"
         ? "Officielt tilbud"
         : tier === "community"
-          ? "Community"
+          ? "Fællesskab"
           : "Brugerrapporteret"}
     </span>
   );
@@ -145,12 +145,14 @@ export default function ProductPage() {
             <h2 class="mb-2 mt-6 text-lg font-semibold">Priser fra fællesskabet</h2>
             <p class="mb-2 text-xs text-gray-500">
               Priser folk så på hylden i dag. 3+ uafhængige rapporter inden for tolerancen bliver en
-              Community-pris; en enkelt rapport forbliver "brugerrapporteret" og bliver forældet
+              fællesskabspris; en enkelt rapport forbliver "brugerrapporteret" og bliver forældet
               efter 24 timer.
             </p>
             <Show
               when={crowd() && crowd()!.length}
-              fallback={<p class="text-gray-500">No crowd shelf prices for this product yet.</p>}
+              fallback={
+                <p class="text-gray-500">Ingen priser fra fællesskabet på dette produkt endnu.</p>
+              }
             >
               <ul class="space-y-2">
                 <For each={crowd()}>
@@ -194,7 +196,7 @@ export default function ProductPage() {
             <h2 class="mb-2 mt-6 text-lg font-semibold">Prishistorik (30 dage)</h2>
             <Show
               when={history()?.length}
-              fallback={<p class="text-gray-500">No price history yet.</p>}
+              fallback={<p class="text-gray-500">Ingen prishistorik endnu.</p>}
             >
               <div class="rounded border border-gray-200 p-3">
                 <Show when={(history()?.length ?? 0) >= 2}>

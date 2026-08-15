@@ -303,7 +303,7 @@ export default function Report() {
                   <p class="font-medium text-green-700">{r().message}</p>
                   <p class="mt-2 text-xs text-gray-600">
                     Brugerrapporteret — denne pris vises aldrig som et tilbud eller en rabat, kun
-                    som en enkelt brugerrapport (den kan blive en Community-pris, når flere
+                    som en enkelt brugerrapport (den kan blive en fællesskabspris, når flere
                     uafhængige brugere er enige).
                   </p>
                 </Show>

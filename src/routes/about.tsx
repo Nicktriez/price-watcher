@@ -29,7 +29,7 @@ export default function About() {
           <p>
             Brugerrapporterede priser vises altid ærligt — en enkelt rapport er markeret som
             "brugerrapporteret", og først når flere uafhængige brugere er enige, bliver den en
-            Community-pris. Vi kalder aldrig en brugerpris for en rabat.
+            fællesskabspris. Vi kalder aldrig en brugerpris for en rabat.
           </p>
         </div>
       </section>
