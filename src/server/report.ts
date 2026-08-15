@@ -153,7 +153,7 @@ export async function submitCrowdReport(formData: FormData): Promise<CrowdReport
     earned,
     message:
       earned > 0
-        ? `Tak! Din pris hjalp gruppen til Community — du fik ${earned} point.`
+        ? `Tak! Din pris hjalp gruppen til Fællesskab — du fik ${earned} point.`
         : "Tak! Din pris er registreret som brugerrapporteret — den vises ikke som et tilbud eller en rabat.",
   };
 }
