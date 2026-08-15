@@ -36,7 +36,8 @@ export interface ProductTable {
   brand: string | null;
   ean: string | null;
   unit: string | null;
-  size_grams: number | null;
+  size: number | null;
+  size_to: number | null;
 }
 
 export interface OfferTable {

@@ -59,6 +59,10 @@ export async function getCurrentOffersPage(
       "offer.image_url",
       "offer.valid_from",
       "offer.valid_to",
+      "offer.size_from",
+      "offer.unit",
+      "offer.unit_price",
+      "offer.unit_price_unit",
       eb.ref("product.name").as("product_name"),
       eb.ref("chain.id").as("chain_id"),
       eb.ref("chain.name").as("chain_name"),
@@ -88,7 +92,7 @@ export async function getProductById(productId: string) {
 
   const product = await db
     .selectFrom("product")
-    .select(["id", "name", "brand", "ean", "unit", "size_grams"])
+    .select(["id", "name", "brand", "ean", "unit", "size", "size_to"])
     .where("id", "=", productId)
     .executeTakeFirst();
 
@@ -106,6 +110,11 @@ export async function getProductById(productId: string) {
       "offer.image_url",
       "offer.valid_from",
       "offer.valid_to",
+      "offer.size_from",
+      "offer.size_to",
+      "offer.unit",
+      "offer.unit_price",
+      "offer.unit_price_unit",
       eb.ref("chain.name").as("chain_name"),
     ])
     .where("offer.product_id", "=", productId)

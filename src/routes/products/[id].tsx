@@ -1,7 +1,7 @@
 import { A, createAsync, useParams } from "@solidjs/router";
 import { For, Show } from "solid-js";
 import { CrowdReportFlag } from "~/components/CrowdReportFlag";
-import { fmtDate, fmtPrice } from "~/lib/format";
+import { fmtDate, fmtPrice, fmtSize } from "~/lib/format";
 import { ageLabel } from "~/lib/trust-tier";
 import { getPriceHistory, getProductById, getProductCrowdPrices } from "~/server/queries";
 
@@ -69,7 +69,18 @@ export default function ProductPage() {
       <Show when={product()} fallback={<p>Produktet blev ikke fundet.</p>}>
         {(p) => (
           <>
-            <h1 class="mb-1 text-2xl font-semibold">{p().name}</h1>
+            <h1 class="mb-1 text-2xl font-semibold">
+              {p().name}
+              <Show when={p().size != null}>
+                <span class="ml-2 text-lg font-normal text-gray-500">
+                  {fmtSize(p().size!, p().unit)}
+                  <Show when={p().size_to != null}>
+                    {" – "}
+                    {fmtSize(p().size_to!, p().unit)}
+                  </Show>
+                </span>
+              </Show>
+            </h1>
             <Show when={p().brand}>
               <p class="text-sm text-gray-600">{p().brand}</p>
             </Show>
@@ -101,6 +112,20 @@ export default function ProductPage() {
                         <Show when={o.pre_price}>
                           <p class="text-sm text-gray-500 line-through">
                             {fmtPrice(o.pre_price!)} {o.currency}
+                          </p>
+                        </Show>
+                        <Show when={o.size_from != null}>
+                          <p class="text-sm text-gray-600">
+                            {fmtSize(o.size_from!, o.unit)}
+                            <Show when={o.size_to != null && o.size_to !== o.size_from}>
+                              {" – "}
+                              {fmtSize(o.size_to!, o.unit)}
+                            </Show>
+                            <Show when={o.unit_price != null && o.unit_price_unit != null}>
+                              <span class="ml-2 text-xs text-gray-500">
+                                {fmtPrice(String(o.unit_price))} {o.unit_price_unit}
+                              </span>
+                            </Show>
                           </p>
                         </Show>
                         <p class="text-sm text-gray-600">{o.chain_name ?? "Ukendt kæde"}</p>

@@ -3,6 +3,7 @@ import { getCatalogs, getOffers, type TjekOffer } from "./tjek.ts";
 import { splitOfferHeading } from "./offer-split.ts";
 import { linkProducts } from "./product-matching.ts";
 import { computeUnitPrice } from "./unit-price.ts";
+import { sql } from "kysely";
 import { uuidFromKey } from "./uuid.ts";
 import { syncStoresFromTjek } from "../server/store-sync.ts";
 
@@ -31,12 +32,44 @@ function pricePointUuid(offerId: string, price: string, observedAt: string): str
   return uuidFromKey(`${PRICE_POINT_NAMESPACE}:${offerId}:${price}:${observedAt}`);
 }
 
-async function upsertProduct(dealerId: string, name: string): Promise<string> {
+export interface ProductMeasurement {
+  unit: string | null;
+  size: number | null;
+  sizeTo: number | null;
+}
+
+/**
+ * Extract the measurement an offer carries (e.g. "1,5 l" / "400 g").
+ * Count products (stk / no unit symbol) have no size measurement.
+ * Ranges (from < to, e.g. variable-weight meat) use `from` as the
+ * representative minimum and keep `to` for honest display.
+ */
+export function offerMeasurement(offer: TjekOffer): ProductMeasurement {
+  const sym = offer.quantity?.unit?.symbol ?? null;
+  const from = offer.quantity?.size?.from ?? null;
+  const to = offer.quantity?.size?.to ?? null;
+  const isCount = !sym || sym === "stk" || sym === "";
+  if (isCount || from == null) return { unit: sym, size: null, sizeTo: null };
+  return { unit: sym, size: from, sizeTo: to != null && to !== from ? to : null };
+}
+
+async function upsertProduct(
+  dealerId: string,
+  name: string,
+  measurement?: ProductMeasurement,
+): Promise<string> {
   const id = productUuid(dealerId, name);
+  const m = measurement ?? { unit: null, size: null, sizeTo: null };
   await db
     .insertInto("product")
-    .values({ id, name, brand: null, ean: null, unit: null, size_grams: null })
-    .onConflict((oc) => oc.column("id").doNothing())
+    .values({ id, name, brand: null, ean: null, unit: m.unit, size: m.size, size_to: m.sizeTo })
+    .onConflict((oc) =>
+      oc.column("id").doUpdateSet({
+        unit: sql`COALESCE(${m.unit}, product.unit)`,
+        size: sql`COALESCE(${m.size}, product.size)`,
+        size_to: sql`COALESCE(${m.sizeTo}, product.size_to)`,
+      }),
+    )
     .execute();
   return id;
 }
@@ -92,7 +125,7 @@ export async function ingestChain(dealerId: string): Promise<IngestResult> {
 
       for (let i = 0; i < names.length; i++) {
         const name = names[i];
-        const productId = await upsertProduct(dealerId, name);
+        const productId = await upsertProduct(dealerId, name, offerMeasurement(offer));
         const id = offerUuid(dealerId, catalog.id, offer.id, i);
         const now = new Date().toISOString();
         const unitPrice = computeUnitPrice(offer);
@@ -147,6 +180,49 @@ export async function ingestChain(dealerId: string): Promise<IngestResult> {
 
 export async function ingestRema(): Promise<IngestResult> {
   return ingestChain("11deC");
+}
+
+/**
+ * Populate `product.unit`/`size`/`size_to` for already-ingested products from
+ * their first offer's quantity (extracted from raw_json). Idempotent.
+ */
+export async function backfillProductMeasurements(): Promise<number> {
+  const rows = await db
+    .selectFrom("offer")
+    .select(["product_id", "raw_json"])
+    .where("product_id", "is not", null)
+    .execute();
+
+  const byProduct = new Map<string, ProductMeasurement>();
+  for (const r of rows) {
+    if (byProduct.has(r.product_id)) continue; // first offer wins
+    const tjek = r.raw_json as {
+      quantity?: {
+        unit?: { symbol?: string | null };
+        size?: { from?: number | null; to?: number | null };
+      };
+    } | null;
+    const sym = tjek?.quantity?.unit?.symbol ?? null;
+    const from = tjek?.quantity?.size?.from ?? null;
+    const to = tjek?.quantity?.size?.to ?? null;
+    const isCount = !sym || sym === "stk" || sym === "";
+    byProduct.set(r.product_id, {
+      unit: sym,
+      size: isCount || from == null ? null : from,
+      sizeTo: to != null && to !== from ? to : null,
+    });
+  }
+
+  for (const [pid, m] of byProduct) {
+    await db
+      .updateTable("product")
+      .set({ unit: m.unit, size: m.size, size_to: m.sizeTo })
+      .where("id", "=", pid)
+      .execute();
+  }
+
+  console.log(`[backfill-measurement] set measurement on ${byProduct.size} products`);
+  return byProduct.size;
 }
 
 /**

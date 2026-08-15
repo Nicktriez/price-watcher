@@ -1,6 +1,6 @@
 import { A, createAsync, useSearchParams } from "@solidjs/router";
 import { For, Show } from "solid-js";
-import { fmtPrice } from "~/lib/format";
+import { fmtPrice, fmtSize } from "~/lib/format";
 import { getChains, getCurrentOffersPage } from "~/server/queries";
 
 const PAGE_SIZE = 100;
@@ -93,6 +93,16 @@ export default function Offers() {
                   >
                     {o.product_name}
                   </A>
+                  <Show when={o.size_from != null}>
+                    <p class="text-sm text-gray-600">
+                      {fmtSize(o.size_from!, o.unit)}
+                      <Show when={o.unit_price != null && o.unit_price_unit != null}>
+                        <span class="ml-2 text-xs text-gray-500">
+                          {fmtPrice(String(o.unit_price))} {o.unit_price_unit}
+                        </span>
+                      </Show>
+                    </p>
+                  </Show>
                   <p class="text-sm text-gray-600">{o.chain_name ?? "Ukendt kæde"}</p>
                   <p class="font-semibold">
                     {fmtPrice(o.price)} {o.currency}
