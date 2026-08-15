@@ -10,12 +10,13 @@ export default function Offers() {
   const chains = createAsync(() => getChains());
 
   const chain = () => (typeof params.chain === "string" ? params.chain : null);
+  const q = () => (typeof params.q === "string" ? params.q : "");
   const page = () => {
     const raw = typeof params.page === "string" ? parseInt(params.page, 10) : NaN;
     return Number.isFinite(raw) && raw >= 1 ? raw : 1;
   };
 
-  const data = createAsync(() => getCurrentOffersPage(chain(), page()));
+  const data = createAsync(() => getCurrentOffersPage(chain(), page(), 100, q()));
   const offers = () => data()?.offers;
   const total = () => data()?.total ?? 0;
 
@@ -25,7 +26,14 @@ export default function Offers() {
     <main class="mx-auto max-w-4xl p-4 text-gray-900">
       <h1 class="mb-4 text-2xl font-semibold">Aktuelle tilbud</h1>
 
-      <form method="get" class="mb-6 flex items-center gap-2">
+      <form method="get" class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input
+          type="search"
+          name="q"
+          value={q()}
+          placeholder="Søg på varenavn…"
+          class="rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-1"
+        />
         <label for="chain" class="text-sm text-gray-600">
           Kæde
         </label>
@@ -40,13 +48,29 @@ export default function Offers() {
           </For>
         </select>
         <button type="submit" class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white">
-          Filtrér
+          Søg
         </button>
+        <Show when={q() !== ""}>
+          <a
+            href={chain() ? `/offers?chain=${chain()}` : "/offers"}
+            class="text-sm text-sky-700 hover:underline"
+          >
+            Ryd
+          </a>
+        </Show>
       </form>
 
-      <Show when={offers()?.length} fallback={<p class="text-gray-500">Ingen aktuelle tilbud.</p>}>
+      <Show
+        when={offers()?.length}
+        fallback={
+          <p class="text-gray-500">
+            {q() !== "" ? "Ingen tilbud matcher din søgning." : "Ingen aktuelle tilbud."}
+          </p>
+        }
+      >
         <p class="mb-3 text-sm text-gray-600">
           Viser {offers()!.length} af {total()} tilbud (side {page()} af {totalPages()})
+          {q() !== "" ? ` — søgning på "${q()}"` : ""}
         </p>
         <ul class="grid gap-4 sm:grid-cols-2">
           <For each={offers()}>
@@ -82,7 +106,7 @@ export default function Offers() {
           <nav class="mt-6 flex items-center justify-center gap-4">
             <Show when={page() > 1}>
               <A
-                href={`/offers?page=${page() - 1}&chain=${chain() ?? ""}`}
+                href={`/offers?page=${page() - 1}&chain=${chain() ?? ""}&q=${encodeURIComponent(q())}`}
                 class="text-sky-700 hover:underline"
               >
                 ← Tidligere
@@ -90,7 +114,7 @@ export default function Offers() {
             </Show>
             <Show when={page() < totalPages()}>
               <A
-                href={`/offers?page=${page() + 1}&chain=${chain() ?? ""}`}
+                href={`/offers?page=${page() + 1}&chain=${chain() ?? ""}&q=${encodeURIComponent(q())}`}
                 class="text-sky-700 hover:underline"
               >
                 Næste →

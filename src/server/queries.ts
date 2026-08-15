@@ -24,7 +24,7 @@ export async function getChains() {
   return db.selectFrom("chain").select(["id", "name"]).orderBy("name").execute();
 }
 
-function baseOfferQuery(chainId: string | null) {
+function baseOfferQuery(chainId: string | null, queryText = "") {
   let query = db
     .selectFrom("offer")
     .innerJoin("product", "product.id", "offer.product_id")
@@ -33,13 +33,22 @@ function baseOfferQuery(chainId: string | null) {
   if (chainId) {
     query = query.where("chain.id", "=", chainId);
   }
+  const q = queryText.trim();
+  if (q) {
+    query = query.where("product.name", "ilike", `%${q}%`);
+  }
   return query;
 }
 
-export async function getCurrentOffersPage(chainId: string | null, page: number, pageSize = 100) {
+export async function getCurrentOffersPage(
+  chainId: string | null,
+  page: number,
+  pageSize = 100,
+  queryText = "",
+) {
   const offset = (page - 1) * pageSize;
 
-  const rows = await baseOfferQuery(chainId)
+  const rows = await baseOfferQuery(chainId, queryText)
     .select((eb) => [
       "offer.id",
       "offer.product_id",
@@ -60,7 +69,7 @@ export async function getCurrentOffersPage(chainId: string | null, page: number,
     .offset(offset)
     .execute();
 
-  const { n } = await baseOfferQuery(chainId)
+  const { n } = await baseOfferQuery(chainId, queryText)
     .select(db.fn.countAll<string>().as("n"))
     .executeTakeFirstOrThrow();
 
