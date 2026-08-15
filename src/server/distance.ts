@@ -56,6 +56,9 @@ export async function saveHomeAddress(addressInput: string): Promise<{ ok: boole
     })
     .where("id", "=", user.id)
     .execute();
+  // The cached round-trip distances were computed from the OLD origin —
+  // drop them so the next compare recomputes from the new address (Task 038o).
+  await db.deleteFrom("user_store_distance").where("user_id", "=", user.id).execute();
   return { ok: true };
 }
 
@@ -72,6 +75,8 @@ export async function clearHomeAddress(): Promise<void> {
     })
     .where("id", "=", user.id)
     .execute();
+  // No origin anymore — the cached distances are meaningless.
+  await db.deleteFrom("user_store_distance").where("user_id", "=", user.id).execute();
 }
 
 export interface StoreDistance {
