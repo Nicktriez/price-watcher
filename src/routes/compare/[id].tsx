@@ -112,6 +112,11 @@ export default function StoreComparison() {
                               kan ikke sammenlignes.
                             </p>
                             <p class="mt-2">
+                              Fuzzy-genkendelse er endnu ikke med: siden kan endnu ikke selv
+                              genkende en fritekst-vare (fx "Coca-Cola") som en rigtig vare. Det
+                              kommer senere.
+                            </p>
+                            <p class="mt-2">
                               Gå til{" "}
                               <a
                                 href={`/lists/${d().list.id}`}
