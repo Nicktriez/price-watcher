@@ -77,7 +77,11 @@ export async function signOut(): Promise<void> {
 function rpInfo(): { origin: string; rpID: string } {
   const event = getRequestEvent();
   const url = event?.request?.url;
-  const origin = url ? new URL(url).origin : (process.env.ORIGIN ?? "http://localhost:3100");
+  // ORIGIN takes precedence: behind a reverse proxy the request URL the app
+  // sees is internal (http://127.0.0.1:3000), which would make rpID 127.0.0.1
+  // and the browser would reject every ceremony. Set ORIGIN=https://beta.skujeg.dk
+  // on the box; unset in dev -> localhost.
+  const origin = process.env.ORIGIN ?? (url ? new URL(url).origin : "http://localhost:3100");
   return { origin, rpID: new URL(origin).hostname };
 }
 
