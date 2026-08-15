@@ -5,6 +5,10 @@ import { getCurrentUser } from "~/server/auth";
 import { clearCarProfile, getCarProfile, saveCarProfile } from "~/server/car-profile";
 import { clearHomeAddress, getHomeInfo, saveHomeAddress } from "~/server/distance";
 
+function fuelTypeLabel(fuelType: FuelType): string {
+  return fuelType === "petrol" ? "benzin" : fuelType === "diesel" ? "diesel" : "elbil";
+}
+
 export default function Settings() {
   const [params] = useSearchParams();
   const user = createAsync(() => getCurrentUser());
@@ -139,10 +143,14 @@ export default function Settings() {
             <Show when={car()}>
               <p class="mb-3 text-sm text-gray-800">
                 {car()!.set
-                  ? `Gemte indstillinger: ${car()!.profile.fuelType}, ${car()!.profile.efficiency} ${
-                      car()!.profile.fuelType === "ev" ? "kWh/km" : "km/l"
-                    }${car()!.profile.evCharging ? `, ${car()!.profile.evCharging}` : ""}`
-                  : `Standardindstilling (ikke sat): ${car()!.profile.fuelType}, ${car()!.profile.efficiency} km/l — sæt din bil for at få korrekte beregninger.`}
+                  ? `Gemte indstillinger: ${fuelTypeLabel(car()!.profile.fuelType)}, ${
+                      car()!.profile.efficiency
+                    } ${car()!.profile.fuelType === "ev" ? "kWh/km" : "km/l"}${
+                      car()!.profile.evCharging
+                        ? `, ${car()!.profile.evCharging === "home" ? "hjemme" : "offentlig"}`
+                        : ""
+                    }`
+                  : `Standardindstilling (ikke sat): ${fuelTypeLabel(car()!.profile.fuelType)}, ${car()!.profile.efficiency} km/l — sæt din bil for at få korrekte beregninger.`}
               </p>
             </Show>
             <form onSubmit={handleCarSave} class="space-y-2">
