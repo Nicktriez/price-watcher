@@ -338,16 +338,27 @@ export async function getBasketCosts(listId: string, userId: string) {
 
   // Include free-text items (product_id NULL) — they flow through as
   // "no-price" and are counted honestly on the compare page (Task 038g).
+  // Product-linked items without their own unit/quantity fall back to the
+  // product's measurement (Task 038n) so the kr/kg / kr/l conversion can run.
   const rows = await db
     .selectFrom("list_item")
-    .select(["product_id", "quantity", "unit"])
-    .where("list_id", "=", listId)
+    .leftJoin("product", "product.id", "list_item.product_id")
+    .select((eb) => [
+      "list_item.product_id",
+      "list_item.quantity",
+      "list_item.unit",
+      eb.ref("product.unit").as("product_unit"),
+      eb.ref("product.size").as("product_size"),
+    ])
+    .where("list_item.list_id", "=", listId)
     .execute();
-  const items = rows.map((r) => ({
-    productId: r.product_id,
-    quantity: r.quantity,
-    unit: r.unit,
-  }));
+  const items = rows.map((r) => {
+    const hasOwnUnit = r.unit != null && r.unit !== "";
+    // Explicit unit/quantity wins; otherwise default to the product measurement.
+    const unit = hasOwnUnit ? r.unit : r.product_unit;
+    const quantity = r.quantity ?? (hasOwnUnit ? null : r.product_size);
+    return { productId: r.product_id, quantity, unit };
+  });
   if (items.length === 0) return [];
 
   return computeBasketCostsForItems(items);
