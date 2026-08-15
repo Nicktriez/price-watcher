@@ -114,7 +114,30 @@ export async function uploadReceipt(file: File): Promise<UploadResult> {
   let parsed;
   try {
     await writeFile(imagePath, Buffer.from(await file.arrayBuffer()));
-    parsed = await ocrReceipt(imagePath);
+    // Known stores (chain + address/city/zip) let OCR fall back to an
+    // address match when the chain name is logo-only (Task 038p).
+    const stores = await db
+      .selectFrom("store")
+      .leftJoin("chain", "chain.id", "store.chain_id")
+      .select((eb) => [
+        eb.ref("chain.name").as("chain_name"),
+        "store.address",
+        "store.city",
+        "store.zip",
+      ])
+      .where("store.address", "is not", null)
+      .execute();
+    parsed = await ocrReceipt(
+      imagePath,
+      stores
+        .filter((s): s is typeof s & { chain_name: string } => s.chain_name != null)
+        .map((s) => ({
+          chainName: s.chain_name,
+          address: s.address,
+          city: s.city,
+          zip: s.zip,
+        })),
+    );
   } catch (error) {
     console.error("[upload] OCR failed:", error);
     return { ok: false, reason: "ocr-failed" };

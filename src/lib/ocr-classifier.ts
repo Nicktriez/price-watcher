@@ -245,8 +245,18 @@ function joinNextPrice(rawLines: string[], i: number): JoinedPrice | null {
       continue;
     }
     const last = matches[matches.length - 1];
-    const before = stripName(next.slice(0, last.index));
-    if (before !== null) break;
+    const before = next.slice(0, last.index);
+    // Accept the line if the text before the final price is only a
+    // quantity × unit-price prefix (e.g. "4 A 19,95 12,80" -> the item's
+    // total is 12,80) — thermal receipts put qty+unitprice before the total.
+    if (/^\s*\d{1,3}\s*(?:[Aa]|x|stk|pk)?\s*\d{1,4}(?:\.\d{3})*[,.]\d{2}\s*$/.test(before)) {
+      return {
+        name: rawLines[i].trim(),
+        price: parsePrice(last[0]),
+        usedIndex: j,
+      };
+    }
+    if (stripName(before) !== null) break;
     return {
       name: rawLines[i].trim(),
       price: parsePrice(last[0]),

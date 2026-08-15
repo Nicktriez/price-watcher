@@ -49,6 +49,55 @@ const TOTAL_LABELS = [
 
 const PRICE_RE = /\d{1,4}(?:\.\d{3})*[,.]\d{2}/g;
 
+export interface KnownStore {
+  chainName: string;
+  address: string | null;
+  city: string | null;
+  zip: string | null;
+}
+
+/**
+ * Store-from-address/CVR fallback (Task 038p): when the chain name appears
+ * only in the receipt logo and OCR can't read it as text, recover the store
+ * from what OCR DID read — the street/address, city, or zip. Lower confidence
+ * than a direct chain-name match; a direct match in `findStore` always wins.
+ */
+export function matchStoreByAddress(text: string, stores: KnownStore[]): ReceiptField<string> {
+  if (stores.length === 0) {
+    return { value: null, confidence: "low", note: "no known stores to match against" };
+  }
+  const textWords = new Set(
+    text
+      .toUpperCase()
+      .split(/[^A-ZÆØÅ0-9]+/)
+      .filter((w) => w.length >= 4),
+  );
+  const textZips = new Set(text.match(/\b\d{4}\b/g) ?? []);
+
+  let best: { chain: string; score: number } | null = null;
+  for (const store of stores) {
+    let score = 0;
+    if (store.zip && textZips.has(store.zip)) score += 5;
+    if (store.city) {
+      const cityToken = store.city.toUpperCase().replace(/[^A-ZÆØÅ0-9]/g, "");
+      if (cityToken.length >= 4 && textWords.has(cityToken)) score += 3;
+    }
+    if (store.address) {
+      const hasStreet = store.address
+        .toUpperCase()
+        .split(/[^A-ZÆØÅ0-9]+/)
+        .some((token) => token.length >= 4 && textWords.has(token));
+      if (hasStreet) score += 4;
+    }
+    if (score > (best?.score ?? 0)) best = { chain: store.chainName, score };
+  }
+
+  if (!best || best.score < 4) {
+    return { value: null, confidence: "low", note: "no address/city/zip match" };
+  }
+  return { value: best.chain, confidence: "low", note: "recovered from address match" };
+}
+
 export interface ReceiptField<T> {
   value: T | null;
   confidence: "high" | "medium" | "low";
@@ -268,7 +317,10 @@ function mergeItems(variants: ClassifiedLine[][]): ParsedItem[] {
   return out;
 }
 
-export async function ocrReceipt(imagePath: string): Promise<ReceiptParse> {
+export async function ocrReceipt(
+  imagePath: string,
+  knownStores: KnownStore[] = [],
+): Promise<ReceiptParse> {
   const tmp = await mkdtemp(join(tmpdir(), "receipt-ocr-"));
   try {
     const rotated: { rot: (typeof ROTATIONS)[number]; file: string }[] = [];
@@ -296,12 +348,17 @@ export async function ocrReceipt(imagePath: string): Promise<ReceiptParse> {
     }
 
     const bestVariants = ocrByRotation.get(bestRot) ?? [];
-    const parsed = bestVariants.map((v) => ({
-      store: findStore(v.text),
-      date: findDate(v.text),
-      total: findTotal(v.text),
-      classified: classifyReceipt(v.text),
-    }));
+    const parsed = bestVariants.map((v) => {
+      const store = findStore(v.text);
+      // Address/CVR fallback only when the chain name wasn't read from text.
+      const storeFinal = store.value ? store : matchStoreByAddress(v.text, knownStores);
+      return {
+        store: storeFinal,
+        date: findDate(v.text),
+        total: findTotal(v.text),
+        classified: classifyReceipt(v.text),
+      };
+    });
 
     const store = mergeField(parsed.map((p) => p.store));
     const date = mergeField(parsed.map((p) => p.date));

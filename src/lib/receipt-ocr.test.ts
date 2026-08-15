@@ -2,7 +2,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { findDate, findStore, findTotal, ocrReceipt } from "./receipt-ocr.ts";
+import { findDate, findStore, findTotal, matchStoreByAddress, ocrReceipt } from "./receipt-ocr.ts";
 
 const RECEIPTS_DIR =
   process.env.RECEIPTS_DIR ??
@@ -19,6 +19,36 @@ describe("findStore", () => {
 
   it("does not misread the 'og spar' loyalty verb as the SPAR chain", () => {
     expect(findStore("Tilmeld dig og spar ved Lidl Plus, og få rabat").value).not.toBe("SPAR");
+  });
+});
+
+describe("matchStoreByAddress", () => {
+  const stores = [
+    { chainName: "SPAR", address: "Stationsvej 30", city: "Broby", zip: "5672" },
+    { chainName: "REMA 1000", address: "Byvej 4", city: "Haarby", zip: "5683" },
+  ];
+
+  it("recovers the chain from the address when the name is logo-only", () => {
+    const r = matchStoreByAddress("STATIONSVEJ 30 / BROBY\nCVR.NR. 38714295", stores);
+    expect(r.value).toBe("SPAR");
+    expect(r.confidence).toBe("low"); // lower than a direct chain-name match
+    expect(r.note).toContain("address");
+  });
+
+  it("recovers the chain from the zip code", () => {
+    expect(matchStoreByAddress("5672 BRUBY", stores).value).toBe("SPAR");
+  });
+
+  it("returns null when nothing matches", () => {
+    expect(matchStoreByAddress("XYZ VEJ 1, UKENDT", stores).value).toBeNull();
+  });
+
+  it("a direct chain-name match still wins over the address fallback", () => {
+    const direct = findStore("SPAR BROBY\nSTATIONSVEJ 30\nCVR.NR. 38714295");
+    const fallback = matchStoreByAddress("STATIONSVEJ 30 / BROBY", stores);
+    expect(direct.value).toBe("SPAR");
+    expect(direct.confidence).toBe("high");
+    expect(fallback.confidence).toBe("low");
   });
 });
 

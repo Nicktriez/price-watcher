@@ -44,6 +44,14 @@ describe("classifyReceipt — wrapped line-joining", () => {
     expect(wrapped[0].kind).toBe("item");
   });
 
+  it("joins a qty x unitprice line (SPAR thermal layout)", () => {
+    const r = classifyReceipt("SILKLINE CARE TOILETPAPIR 6 RL\n4 A 19,95 12,80\n");
+    const wrapped = r.lines.filter((l) => l.status === "wrapped");
+    expect(wrapped).toHaveLength(1);
+    expect(wrapped[0].name).toBe("SILKLINE CARE TOILETPAPIR 6 RL");
+    expect(wrapped[0].price).toBeCloseTo(12.8);
+  });
+
   it("does not join a total/payment line as a wrapped item", () => {
     const r = classifyReceipt("GESTUS SURDEJSBOLLE\n\nAT BETALE 25,05\n");
     const wrapped = r.lines.filter((l) => l.status === "wrapped");
