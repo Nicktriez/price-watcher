@@ -317,6 +317,88 @@ export async function backfillSplitOffers(): Promise<{
   return { split, created, cleaned };
 }
 
+/**
+ * Repair false splits from before the hyphen-continuation guard (Task 038l):
+ * offers whose current heading is a fragment of an over-split hyphen name
+ * ("Softkerne" from "Softkerne- eller græskarkernerugbrød") are re-pointed to
+ * the restored whole-heading product. Detected via the offer's raw_json
+ * original heading: if that heading no longer splits (>1), the split was
+ * wrong. Genuine splits are left untouched. Idempotent.
+ */
+export async function repairOverSplitOffers(): Promise<{ repaired: number; deleted: number }> {
+  const rows = await db
+    .selectFrom("offer")
+    .select(["id", "dealer_id", "heading", "product_id", "raw_json"])
+    .execute();
+
+  let repaired = 0;
+  const fragmentIds = new Set<string>();
+  for (const offer of rows) {
+    const orig = (offer.raw_json as { heading?: string } | null)?.heading;
+    if (!orig || orig === offer.heading) continue; // not a split fragment
+    if (splitOfferHeading(orig).length > 1) continue; // genuine split — leave it
+
+    const wholeId = await upsertProduct(offer.dealer_id, orig);
+    await db
+      .updateTable("offer")
+      .set({ product_id: wholeId, heading: orig, updated_at: new Date().toISOString() })
+      .where("id", "=", offer.id)
+      .execute();
+    await db
+      .updateTable("price_point")
+      .set({ product_id: wholeId })
+      .where("offer_id", "=", offer.id)
+      .execute();
+    fragmentIds.add(offer.product_id);
+    repaired++;
+  }
+
+  let deleted = 0;
+  for (const pid of fragmentIds) {
+    const stillReferenced =
+      (await db
+        .selectFrom("offer")
+        .select("id")
+        .where("product_id", "=", pid)
+        .executeTakeFirst()) ??
+      (await db
+        .selectFrom("price_point")
+        .select("id")
+        .where("product_id", "=", pid)
+        .executeTakeFirst()) ??
+      (await db
+        .selectFrom("list_item")
+        .select("id")
+        .where("product_id", "=", pid)
+        .executeTakeFirst()) ??
+      (await db
+        .selectFrom("receipt_item")
+        .select("id")
+        .where("product_id", "=", pid)
+        .executeTakeFirst()) ??
+      (await db
+        .selectFrom("crowd_report")
+        .select("id")
+        .where("product_id", "=", pid)
+        .executeTakeFirst()) ??
+      (await db
+        .selectFrom("list_template_item")
+        .select("id")
+        .where("product_id", "=", pid)
+        .executeTakeFirst());
+    if (!stillReferenced) {
+      await db.deleteFrom("product").where("id", "=", pid).execute();
+      deleted++;
+    }
+  }
+
+  if (repaired > 0)
+    console.log(
+      `[repair-split] repaired ${repaired} false-split offers, deleted ${deleted} fragment products`,
+    );
+  return { repaired, deleted };
+}
+
 export interface ChainIngestResult {
   chainId: string;
   dealerId: string;

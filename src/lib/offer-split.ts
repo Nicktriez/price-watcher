@@ -6,14 +6,23 @@
  * Each alternative becomes its own product so users can add just one of them.
  *
  * Heuristic: a heading is an alternative list when it contains " eller "
- * (the Danish "or"). Alternatives are split on commas and " eller ". The last
- * alternative typically carries the shared size/pack suffix, which is kept.
- * Stray leading/trailing hyphens (hyphen-continuation like "Softkerne- eller
- * græskarkernerugbrød") are stripped so names don't end in "-".
+ * (the Danish "or") separating STANDALONE product names. Alternatives are
+ * split on commas and " eller ". The last alternative typically carries the
+ * shared size/pack suffix, which is kept.
+ *
+ * Guard — hyphen-continuation (ONE product, do NOT split): when the token
+ * immediately before " eller " ends with a hyphen, the phrase is a single
+ * product described with an "or" modifier, e.g. "Softkerne- eller
+ * græskarkernerugbrød" = "rye bread with soft OR pumpkin kernels" — one kind
+ * of bread, not a pick-one deal. Splitting it fragments the catalog.
  */
 export function splitOfferHeading(heading: string): string[] {
   const trimmed = heading.trim();
   if (!/ eller /i.test(trimmed)) return [trimmed];
+
+  // Hyphen-continuation: a token before " eller " ends in "-" (and the
+  // heading doesn't open with a comma-separated list that ends that way).
+  if (/(?:^|,\s*)\S*-\s+eller\s/i.test(trimmed)) return [trimmed];
 
   const parts = trimmed
     .split(/\s*(?:,\s*|\s+eller\s+)/i)
