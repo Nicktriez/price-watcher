@@ -9,7 +9,7 @@ import { matchProductName } from "~/lib/product-matching";
 import { computeAward, computeStreak } from "~/lib/receipt-points";
 
 /**
- * Receipt OCR worker (Tasks 038q + 038r).
+ * Receipt OCR worker (Tasks 038q + 038r + 038s).
  *
  * Lives in the SolidStart app runtime — NOT the raw-node scheduler
  * (`node src/server/ingest-scheduler.ts`), which cannot resolve the `~` alias
@@ -19,6 +19,11 @@ import { computeAward, computeStreak } from "~/lib/receipt-points";
  * directive: SolidStart wraps exports of `"use server"` modules in proxies that
  * throw "Cannot call server function outside of a request" when called from a
  * background timer.
+ *
+ * Stuck-state safety net (038s): every failure path in `processPendingReceipt`
+ * marks the receipt `failed` (never left `processing`), and each poll first
+ * recovers orphaned `processing` receipts (older than the max OCR time) back to
+ * `pending` so they're re-processed.
  */
 
 // Persistent upload dir (the box sets UPLOAD_DIR). Images live here only until
@@ -26,6 +31,12 @@ import { computeAward, computeStreak } from "~/lib/receipt-points";
 const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(process.cwd(), "uploads", "receipts");
 
 const RECEIPT_POLL_MS = 30_000;
+
+// A receipt claimed as `processing` older than this is considered orphaned
+// (e.g. the app restarted mid-OCR) and reset to `pending` for re-processing.
+// Well beyond the ~5 min max OCR time, so an actively-scanned receipt is never
+// reset while the worker is alive (Task 038s).
+const STALE_PROCESSING_MS = 10 * 60 * 1000;
 
 export interface UploadResult {
   ok: boolean;
@@ -71,6 +82,14 @@ interface MatchingReceipt {
   cleanCount: number;
   itemCount: number;
   pointsAwarded: number;
+}
+
+async function markReceiptFailed(receiptId: string, error: string): Promise<void> {
+  await db
+    .updateTable("receipt")
+    .set({ status: "failed", error, updated_at: new Date().toISOString() })
+    .where("id", "=", receiptId)
+    .execute();
 }
 
 async function findMatchingReceipt(
@@ -135,6 +154,9 @@ export async function processPendingReceipt(receiptId: string): Promise<UploadRe
     .where("id", "=", receiptId)
     .executeTakeFirst();
   if (!receipt || !receipt.image_path) {
+    // The row or its image is gone (e.g. file deleted off-box). Never leave the
+    // receipt stuck in `processing` — mark it failed with a clear error (038s).
+    await markReceiptFailed(receiptId, "no image");
     return { ok: false, reason: "ocr-failed" };
   }
   const user = await db
@@ -142,7 +164,10 @@ export async function processPendingReceipt(receiptId: string): Promise<UploadRe
     .select(["id", "email"])
     .where("id", "=", receipt.user_id)
     .executeTakeFirst();
-  if (!user) return { ok: false, reason: "ocr-failed" };
+  if (!user) {
+    await markReceiptFailed(receiptId, "no user");
+    return { ok: false, reason: "ocr-failed" };
+  }
 
   const imagePath = join(UPLOAD_DIR, receipt.image_path);
   let parsed;
@@ -166,6 +191,7 @@ export async function processPendingReceipt(receiptId: string): Promise<UploadRe
     );
   } catch (error) {
     console.error(`[receipt-worker] OCR failed for ${receiptId}:`, error);
+    await markReceiptFailed(receiptId, "ocr-failed");
     return { ok: false, reason: "ocr-failed" };
   }
 
@@ -332,12 +358,35 @@ export async function processPendingReceipt(receiptId: string): Promise<UploadRe
 }
 
 /**
+ * Reset `processing` receipts that are older than the max OCR time. These are
+ * orphaned claims (app restarted/crashed mid-OCR) — the worker only re-claims
+ * `pending`, so without this they'd linger in `processing` forever (038s).
+ * Resetting to `pending` lets the normal atomic claim re-process them; the
+ * single worker process plus the `status=pending→processing` claim guard means
+ * no double-processing.
+ */
+export async function recoverStuckReceipts(): Promise<number> {
+  const staleBefore = new Date(Date.now() - STALE_PROCESSING_MS).toISOString();
+  const updated = await db
+    .updateTable("receipt")
+    .set({ status: "pending", updated_at: new Date().toISOString() })
+    .where("status", "=", "processing")
+    .where("updated_at", "<", staleBefore)
+    .execute();
+  if (updated.length > 0) {
+    console.log(`[receipt-worker] recovered ${updated.length} stuck receipt(s) to pending`);
+  }
+  return updated.length;
+}
+
+/**
  * Serial receipt worker: claim at most one pending receipt atomically and
  * process it to completion, then pick the next. Scanning ONE at a time keeps
  * OCR from saturating the box. This is the beta-scale worker; scale-up (job
  * queue + N workers) is a clean, isolated change later.
  */
 export async function claimAndProcessReceipts(): Promise<number> {
+  await recoverStuckReceipts();
   let processed = 0;
   while (true) {
     const claimed = await db
@@ -356,15 +405,17 @@ export async function claimAndProcessReceipts(): Promise<number> {
       .executeTakeFirst();
     if (!claimed) break;
     try {
-      await processPendingReceipt(claimed.id);
-      processed++;
+      const result = await processPendingReceipt(claimed.id);
+      if (result.ok) {
+        processed++;
+      } else {
+        // Safety net: any failure path that didn't already mark the receipt
+        // failed (e.g. a new gap added later) still reaches a terminal state.
+        await markReceiptFailed(claimed.id, result.reason ?? "ocr-failed");
+      }
     } catch (error) {
       console.error(`[receipt-worker] processing ${claimed.id} failed:`, error);
-      await db
-        .updateTable("receipt")
-        .set({ status: "failed", error: String(error), updated_at: new Date().toISOString() })
-        .where("id", "=", claimed.id)
-        .execute();
+      await markReceiptFailed(claimed.id, String(error));
     }
   }
   if (processed > 0) console.log(`[receipt-worker] processed ${processed} receipt(s)`);
