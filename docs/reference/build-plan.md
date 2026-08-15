@@ -518,6 +518,13 @@ All 5 tasks implemented and pushed (schema+4 migrations, typed Tjek client, idem
 
 **Design tasks (039–045):** design variants (039, Nick picks winner by looking) → design system (040) → branding Skujeg (041) → screenshot-worthy comparison + madplan (042) → mobile receipt upload (043) → honest-UI consistency (044) → Danish-consistency (045).
 
+**Product tasks (046–047, the "free-text can't price" gap from the beta):** two items that close the gap a beta user hits when they type a free-text item (e.g. "Coca-Cola") that has a real offer but won't price because free text has no `product_id` link.
+
+- **Task 046 — Real-product-first add-item UI:** the "add item" flow should default to _searching real products_ (which links a `product_id` and can price), keeping free text as the explicit fallback. This steers users toward priceable items so they rarely hit the "free text can't price" state. Smaller than name-matching; high value for retention.
+- **Task 047 — Free-text→product name-matching (layer 2):** make free-text items actually price by parsing the text ("Coca-Cola"), searching the product catalog, and fuzzy-matching to a `product_id` (analogous to 030b's free-text grouping for crowd reports). This is the "make 'Coca-Cola' actually compare" feature. Bigger; builds on 046's search infrastructure.
+
+**Order:** 046 before 047 (046 builds the search; 047 reuses it). Both gated on Phase 8 success — do NOT build before the beta proves the loop, and do NOT build 047 before 046. Until then, the compare page honestly reports free-text items as unpriced (Task 038g) rather than silently dropping them, and beta users are told fuzzy matching isn't available yet.
+
 **Language policy (DECIDED — do not build full English i18n yet):**
 
 - **Launch language is Danish.** Danish-first; branding voice "Danish, direct, honest."
