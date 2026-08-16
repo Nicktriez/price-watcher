@@ -1,5 +1,6 @@
 import { createAsync, Navigate, useNavigate, useParams } from "@solidjs/router";
 import { createSignal, For, Show } from "solid-js";
+import { fmtSize } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import {
   addListItem,
@@ -11,6 +12,16 @@ import {
   searchProducts,
   updateListItem,
 } from "~/server/lists";
+
+function productSizeLabel(
+  size: number | null,
+  sizeTo: number | null,
+  unit: string | null,
+): string | null {
+  if (size == null) return null;
+  if (sizeTo != null) return `${fmtSize(size, unit)} – ${fmtSize(sizeTo, unit)}`;
+  return fmtSize(size, unit);
+}
 
 export default function ListDetail() {
   const params = useParams();
@@ -30,9 +41,16 @@ export default function ListDetail() {
   // Search results live in a plain signal (debounced fetch), NOT a resource:
   // a resource read that goes pending re-suspends the route's Suspense
   // boundary, which detaches the DOM and blurs the input on every keystroke.
-  const [results, setResults] = createSignal<{ id: string; name: string; brand: string | null }[]>(
-    [],
-  );
+  const [results, setResults] = createSignal<
+    {
+      id: string;
+      name: string;
+      brand: string | null;
+      unit: string | null;
+      size: number | null;
+      size_to: number | null;
+    }[]
+  >([]);
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
   const handleSearchInput = (value: string) => {
     setQ(value);
@@ -201,6 +219,11 @@ export default function ListDetail() {
                           >
                             {p.name}
                             {p.brand && <span class="ml-2 text-xs text-gray-500">{p.brand}</span>}
+                            <Show when={productSizeLabel(p.size, p.size_to, p.unit)}>
+                              <span class="ml-2 text-xs font-medium text-gray-500">
+                                {productSizeLabel(p.size, p.size_to, p.unit)}
+                              </span>
+                            </Show>
                           </button>
                         </li>
                       )}
@@ -276,7 +299,11 @@ export default function ListDetail() {
                           <span class="text-xs text-gray-500">
                             {item.quantity != null
                               ? `${item.quantity} ${item.unit ?? ""}`.trim()
-                              : ""}
+                              : (productSizeLabel(
+                                  item.productSize,
+                                  item.productSizeTo,
+                                  item.productUnit,
+                                ) ?? "")}
                           </span>
                         </div>
                         <div class="flex items-center gap-3">

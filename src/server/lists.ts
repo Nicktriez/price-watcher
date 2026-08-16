@@ -23,6 +23,9 @@ export interface ListItemRow {
   freeText: string | null;
   quantity: number | null;
   unit: string | null;
+  productUnit: string | null;
+  productSize: number | null;
+  productSizeTo: number | null;
 }
 
 export interface ListDetail {
@@ -127,6 +130,9 @@ export async function getList(listId: string): Promise<ListDetail | null> {
       "list_item.quantity",
       "list_item.unit",
       eb.ref("product.name").as("product_name"),
+      eb.ref("product.unit").as("product_unit"),
+      eb.ref("product.size").as("product_size"),
+      eb.ref("product.size_to").as("product_size_to"),
     ])
     .where("list_item.list_id", "=", listId)
     .orderBy("list_item.position", "asc")
@@ -144,6 +150,9 @@ export async function getList(listId: string): Promise<ListDetail | null> {
       freeText: i.free_text,
       quantity: i.quantity,
       unit: i.unit,
+      productUnit: i.product_unit,
+      productSize: i.product_size,
+      productSizeTo: i.product_size_to,
     })),
   };
 }
@@ -226,19 +235,33 @@ export async function reorderListItems(listId: string, orderedItemIds: string[])
   }
 }
 
-export async function searchProducts(
-  queryInput: string,
-): Promise<{ id: string; name: string; brand: string | null }[]> {
+export async function searchProducts(queryInput: string): Promise<
+  {
+    id: string;
+    name: string;
+    brand: string | null;
+    unit: string | null;
+    size: number | null;
+    size_to: number | null;
+  }[]
+> {
   const query = queryInput.trim();
   if (!query) return [];
   const rows = await db
     .selectFrom("product")
-    .select(["id", "name", "brand"])
+    .select(["id", "name", "brand", "unit", "size", "size_to"])
     .where("name", "ilike", `%${query}%`)
     .orderBy("name", "asc")
     .limit(10)
     .execute();
-  return rows.map((r) => ({ id: r.id, name: r.name, brand: r.brand }));
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    brand: r.brand,
+    unit: r.unit,
+    size: r.size,
+    size_to: r.size_to,
+  }));
 }
 
 export interface TemplatePreview {
