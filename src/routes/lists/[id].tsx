@@ -23,6 +23,69 @@ function productSizeLabel(
   return fmtSize(size, unit);
 }
 
+interface SearchProduct {
+  id: string;
+  name: string;
+  brand: string | null;
+  unit: string | null;
+  size: number | null;
+  size_to: number | null;
+}
+
+function ProductSearchRow({
+  product,
+  onAdd,
+}: {
+  product: SearchProduct;
+  onAdd: (id: string, quantity: number | null, unit: string | null) => void;
+}) {
+  // Per-row qty/unit — no shared state, so picking a product never adds it
+  // before the user sets how much (038u). Only the row's "Tilføj" adds.
+  const [qty, setQty] = createSignal("");
+  const [unit, setUnit] = createSignal("");
+  const submit = (e: Event) => {
+    e.preventDefault();
+    onAdd(product.id, qty() ? Number(qty()) : null, unit() || null);
+    setQty("");
+    setUnit("");
+  };
+  return (
+    <li class="rounded border border-gray-200 px-3 py-2">
+      <p class="text-sm text-gray-800">
+        {product.name}
+        {product.brand && <span class="ml-2 text-xs text-gray-500">{product.brand}</span>}
+        <Show when={productSizeLabel(product.size, product.size_to, product.unit)}>
+          <span class="ml-2 text-xs font-medium text-gray-500">
+            {productSizeLabel(product.size, product.size_to, product.unit)}
+          </span>
+        </Show>
+      </p>
+      <form onSubmit={submit} class="mt-1 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input
+          type="number"
+          value={qty()}
+          onInput={(e) => setQty(e.currentTarget.value)}
+          placeholder="Antal"
+          class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
+        />
+        <input
+          type="text"
+          value={unit()}
+          onInput={(e) => setUnit(e.currentTarget.value)}
+          placeholder="Enhed"
+          class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
+        />
+        <button
+          type="submit"
+          class="rounded bg-sky-600 px-4 py-1.5 text-sm text-white sm:flex-none"
+        >
+          Tilføj
+        </button>
+      </form>
+    </li>
+  );
+}
+
 export default function ListDetail() {
   const params = useParams();
   const navigate = useNavigate();
@@ -36,21 +99,10 @@ export default function ListDetail() {
   });
 
   const [q, setQ] = createSignal("");
-  const [qty, setQty] = createSignal("");
-  const [unit, setUnit] = createSignal("");
   // Search results live in a plain signal (debounced fetch), NOT a resource:
   // a resource read that goes pending re-suspends the route's Suspense
   // boundary, which detaches the DOM and blurs the input on every keystroke.
-  const [results, setResults] = createSignal<
-    {
-      id: string;
-      name: string;
-      brand: string | null;
-      unit: string | null;
-      size: number | null;
-      size_to: number | null;
-    }[]
-  >([]);
+  const [results, setResults] = createSignal<SearchProduct[]>([]);
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
   const handleSearchInput = (value: string) => {
     setQ(value);
@@ -61,15 +113,13 @@ export default function ListDetail() {
     }, 150);
   };
 
-  const addProduct = async (productId: string) => {
-    await addListItem(params.id!, {
-      productId,
-      quantity: qty() ? Number(qty()) : null,
-      unit: unit() || null,
-    });
+  const addProduct = async (
+    productId: string,
+    quantity: number | null,
+    unitValue: string | null,
+  ) => {
+    await addListItem(params.id!, { productId, quantity, unit: unitValue });
     setQ("");
-    setQty("");
-    setUnit("");
     refresh();
   };
 
@@ -182,51 +232,17 @@ export default function ListDetail() {
 
               <section class="mb-6 rounded border border-gray-200 p-3">
                 <h2 class="mb-2 text-sm font-semibold">Tilføj et produkt</h2>
-                <div class="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <input
-                    type="text"
-                    value={q()}
-                    onInput={(e) => handleSearchInput(e.currentTarget.value)}
-                    placeholder="Søg efter produkter…"
-                    class="rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-1"
-                  />
-                  <div class="flex gap-2">
-                    <input
-                      type="number"
-                      value={qty()}
-                      onInput={(e) => setQty(e.currentTarget.value)}
-                      placeholder="Antal"
-                      class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
-                    />
-                    <input
-                      type="text"
-                      value={unit()}
-                      onInput={(e) => setUnit(e.currentTarget.value)}
-                      placeholder="Enhed"
-                      class="min-w-0 flex-1 rounded border border-gray-300 px-3 py-1.5 text-sm sm:flex-none sm:w-20"
-                    />
-                  </div>
-                </div>
+                <input
+                  type="text"
+                  value={q()}
+                  onInput={(e) => handleSearchInput(e.currentTarget.value)}
+                  placeholder="Søg efter produkter…"
+                  class="mb-2 w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
+                />
                 <Show when={results().length}>
                   <ul class="space-y-1">
                     <For each={results()}>
-                      {(p) => (
-                        <li>
-                          <button
-                            type="button"
-                            onClick={() => addProduct(p.id)}
-                            class="w-full rounded px-2 py-1 text-left text-sm hover:bg-gray-100"
-                          >
-                            {p.name}
-                            {p.brand && <span class="ml-2 text-xs text-gray-500">{p.brand}</span>}
-                            <Show when={productSizeLabel(p.size, p.size_to, p.unit)}>
-                              <span class="ml-2 text-xs font-medium text-gray-500">
-                                {productSizeLabel(p.size, p.size_to, p.unit)}
-                              </span>
-                            </Show>
-                          </button>
-                        </li>
-                      )}
+                      {(p) => <ProductSearchRow product={p} onAdd={addProduct} />}
                     </For>
                   </ul>
                 </Show>
