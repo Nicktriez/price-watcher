@@ -1,26 +1,29 @@
 import { pathToFileURL } from "node:url";
 import { db } from "../db/client.ts";
+import { TEMPLATES } from "../db/template-seed.ts";
 import { resolveTemplateProduct, type TemplateProductCandidate } from "../lib/template-products.ts";
 
 /**
  * Backfill `list_template_item.product_id` for the fixed template set
- * (Task 038w). Templates were seeded with raw names (free_text only), so every
- * template list was unpriceable. This resolves each free_text to a real
- * product via the bounded resolver (`template-products.ts`) and stores the
- * link. Idempotent: resolution is deterministic, so re-running re-resolves
- * every free-text item to the same product (and applies the curated overrides).
+ * (Tasks 038w + 038y). Templates were seeded with raw names (free_text only),
+ * so every template list was unpriceable. This resolves each item's free_text
+ * anchor to a real product via the bounded resolver (`template-products.ts`)
+ * and stores the link.
  *
- * Human review: the report prints every item → chosen product + method, so a
- * wrong link is easy to spot. `OVERRIDES` (keyed by lowercased free_text) pins
- * a specific product name or forces a resolution to stay unresolved (`null`)
- * when no honest link exists — curated from the report, bounded to this fixed
- * item set.
+ * The free_text is the source of truth for "what the user meant"; product_id
+ * is only the current resolution. 038y: the backfill PRESERVES free_text — it
+ * never nulls it, and it restores the original term for any item whose anchor
+ * was previously destroyed (from the seed `template-seed.ts` or, as a last
+ * resort, derived from the current product name). This keeps links
+ * re-anchorable: a future resolver/offer change can re-resolve every template.
+ *
+ * Idempotent: resolution is deterministic, so re-running re-resolves every
+ * item to the same product (and applies the curated overrides).
  */
 
-// Keyed by lowercased item anchor — the template item's `free_text`, or (for
-// migration-seeded rows that have no free_text) the current linked product
-// name. `null` forces the item to stay free_text (no honest link); a string is
-// an exact product name to pin.
+// Keyed by lowercased item anchor (the original free_text term). `null` forces
+// the item to stay free_text (no honest link); a string is an exact product
+// name to pin. Curated from the report — bounded to this fixed item set.
 const OVERRIDES: Record<string, string | null> = {
   // Wrong automatic links (resolver picked a dish/odd product for a basic item)
   tomat: "Datterini tomater",
@@ -28,11 +31,13 @@ const OVERRIDES: Record<string, string | null> = {
   hvidløg: "AARSTIDERNE ØKOLOGISKE HVIDLØG",
   "ost til burger": "MAMMEN Ost i skiver",
   "hakket svinekød": "Dansk hakket grisekød",
-  // Migration-seeded links that point at products with no current offer —
-  // re-pin to an offered equivalent.
-  "salling lasagneplader": "COMBINO Lasagneplader",
-  "coop hakkede tomater": "Mutti Polpa hakkede tomater",
-  "beauvais tomatketchup eller tomatpuré": "Tomatpuré",
+  // Prefer an offered equivalent for priceability (affinity alone picks a
+  // no-offer variant).
+  "hakkede tomater": "Mutti Polpa hakkede tomater",
+  opvaskemiddel: "Fairy opvaskemiddel",
+  mælk: "Grøn Balance Øllingegaard Økologisk Mælk",
+  spaghetti: "COMBINO Spaghetti",
+  majs: "Nyhøstet dansk majs",
   // No honest link exists — keep free_text ("no price" on compare) rather than
   // force a wrong product.
   spinat: null,
@@ -40,6 +45,12 @@ const OVERRIDES: Record<string, string | null> = {
   mikrofiberklude: null,
   "taco shells": null,
 };
+
+// (template name → item names by position) from the seed, for restoring
+// anchors that were previously nulled (038y).
+const SEED_ANCHORS = new Map<string, string[]>(
+  TEMPLATES.map((t) => [t.name, t.items.map((i) => i.name)]),
+);
 
 function parseUnitPrice(v: string | null): number | null {
   if (v == null) return null;
@@ -85,6 +96,7 @@ export async function backfillTemplateProducts(): Promise<{
     .leftJoin("product", "product.id", "list_template_item.product_id")
     .select([
       "list_template_item.id",
+      "list_template_item.position",
       "list_template_item.free_text",
       "product.name as current_product_name",
       "list_template.name as template_name",
@@ -95,6 +107,7 @@ export async function backfillTemplateProducts(): Promise<{
 
   let linked = 0;
   let unresolved = 0;
+  let restored = 0;
   const report: string[] = [];
   let currentTemplate = "";
   for (const item of items) {
@@ -102,9 +115,23 @@ export async function backfillTemplateProducts(): Promise<{
       currentTemplate = item.template_name;
       report.push(`\n== ${currentTemplate} ==`);
     }
-    // Anchor: the template item's original free_text when present, else the
-    // currently linked product name (migration-seeded rows have no free_text).
-    const anchor = item.free_text ?? item.current_product_name ?? "";
+    // Anchor (038y): the item's original free_text term. If it was destroyed
+    // (NULL), restore it from the seed (template + position) or, last resort,
+    // derive a reasonable term from the current product name. The anchor is
+    // then written back so it outlives the link.
+    let anchor = item.free_text;
+    if (!anchor) {
+      const seed = SEED_ANCHORS.get(item.template_name);
+      anchor = seed?.[item.position] ?? item.current_product_name ?? "";
+      if (anchor && anchor !== item.free_text) {
+        await db
+          .updateTable("list_template_item")
+          .set({ free_text: anchor })
+          .where("id", "=", item.id)
+          .execute();
+        restored++;
+      }
+    }
     const key = anchor.toLowerCase();
     const override = OVERRIDES[key];
     let chosen: { id: string; name: string; hasOffer: boolean; method: string } | null = null;
@@ -134,7 +161,7 @@ export async function backfillTemplateProducts(): Promise<{
     if (chosen) {
       await db
         .updateTable("list_template_item")
-        .set({ product_id: chosen.id, free_text: null })
+        .set({ product_id: chosen.id, free_text: anchor })
         .where("id", "=", item.id)
         .execute();
       linked++;
@@ -146,7 +173,7 @@ export async function backfillTemplateProducts(): Promise<{
       // the item is genuinely free_text ("no price" on compare).
       await db
         .updateTable("list_template_item")
-        .set({ product_id: null })
+        .set({ product_id: null, free_text: anchor })
         .where("id", "=", item.id)
         .execute();
       unresolved++;
@@ -155,7 +182,7 @@ export async function backfillTemplateProducts(): Promise<{
   }
 
   report.push(
-    `\n[backfill-template] linked ${linked}, unresolved ${unresolved} (of ${items.length} template items)`,
+    `\n[backfill-template] linked ${linked}, unresolved ${unresolved} (of ${items.length} template items); anchors restored: ${restored}`,
   );
   console.log(report.join("\n"));
   return { linked, unresolved };
