@@ -81,4 +81,47 @@ describe("resolveTemplateProduct", () => {
     const r = resolveTemplateProduct("Salat", [c("a", "REMA 1000 Salat", true)]);
     expect(r).toEqual({ productId: "a", method: "exact" });
   });
+
+  describe("038x: wrong-link traps (name affinity beats cheapest unit price)", () => {
+    it("Kaffe does NOT resolve to a cheaper protein-drink — name affinity wins", () => {
+      const r = resolveTemplateProduct("Kaffe", [
+        c("starbucks", "Starbucks protein-drik med kaffe", true, 45.45),
+        c("bki", "BKI Kaffe", true, 91.43),
+        c("peterlarsen", "Peter Larsen Kaffe", true, 105),
+      ]);
+      expect(r.productId).toBe("bki"); // term dominates 2/3 of the name, not 1/5
+    });
+
+    it("Løg prefers a plain onion over a branded-but-cheaper one", () => {
+      const r = resolveTemplateProduct("Løg", [
+        c("branded", "Coop løg fra Månsson", true, 10),
+        c("plain", "Løg", true, 20),
+      ]);
+      expect(r.productId).toBe("plain");
+    });
+
+    it("Mælk prefers plain milk over a milk-based drink", () => {
+      const r = resolveTemplateProduct("Mælk", [
+        c("drink", "Choko kakaomælk", true, 12), // token 'kakaomælk' ≠ 'mælk' — not even a keyword match
+        c("larra", "Arla Lactofree mælk", true, 15),
+      ]);
+      expect(r.productId).toBe("larra");
+    });
+
+    it("does not let an offered unrelated product beat a correct unoffered one (wrong link > no link)", () => {
+      const r = resolveTemplateProduct("Kaffe", [
+        c("drink", "Starbucks protein-drik med kaffe", true, 45.45),
+        c("peterlarsen", "Peter Larsen Kaffe", false, 105),
+      ]);
+      expect(r.productId).toBe("peterlarsen");
+    });
+
+    it("unit price still breaks ties within the same affinity class", () => {
+      const r = resolveTemplateProduct("Kaffe", [
+        c("expensive", "BKI Kaffe", true, 120),
+        c("cheap", "BKI Kaffe", true, 80),
+      ]);
+      expect(r.productId).toBe("cheap");
+    });
+  });
 });
