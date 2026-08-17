@@ -155,6 +155,7 @@ export interface ReceiptTable {
   points_awarded: number;
   status: "pending" | "processing" | "processed" | "failed";
   error: string | null;
+  retry_count: number;
   created_at: string;
   updated_at: string;
 }

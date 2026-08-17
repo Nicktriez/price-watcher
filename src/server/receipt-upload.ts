@@ -55,6 +55,7 @@ export async function queueReceipt(file: File): Promise<QueueReceiptResult> {
       points_awarded: 0,
       status: "pending",
       error: null,
+      retry_count: 0,
       created_at: now,
       updated_at: now,
     })
@@ -85,7 +86,12 @@ export async function retryReceipt(receiptId: string): Promise<{ ok: boolean }> 
   if (!user) return { ok: false };
   const r = await db
     .updateTable("receipt")
-    .set({ status: "pending", error: null, updated_at: new Date().toISOString() })
+    .set({
+      status: "pending",
+      error: null,
+      retry_count: 0,
+      updated_at: new Date().toISOString(),
+    })
     .where("id", "=", receiptId)
     .where("user_id", "=", user.id)
     .where("status", "=", "failed")
