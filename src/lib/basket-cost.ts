@@ -57,6 +57,7 @@ function convertToUnit(
   if (toUnit === "l") {
     if (u === "ml") return qty / 1000;
     if (u === "cl") return qty / 100;
+    if (u === "dl") return qty / 10;
     if (u === "l") return qty;
     return null;
   }

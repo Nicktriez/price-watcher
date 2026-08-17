@@ -171,4 +171,15 @@ describe("computeBasketCosts", () => {
     expect(result2[0].lines[0].price).toBeNull();
     expect(result2[0].lines[0].source).toBe("no-price");
   });
+
+  it("converts recipe deciliters to liters against kr/l offers (5 dl = 0.5 l)", () => {
+    const result = computeBasketCosts({
+      items: [item("milk", 5, "dl")],
+      offers: { s1: [offer("milk", 13, 1, 13, "kr/l")] },
+      storeNames: { s1: "S1" },
+      baselines: {},
+    });
+    expect(result[0].offerItems).toBe(1);
+    expect(result[0].lines[0].price).toBeCloseTo(6.5, 2); // 0.5 l * 13 kr/l
+  });
 });
