@@ -181,9 +181,11 @@ psql "$DATABASE_URL" -c "\dt"
 ```bash
 vp dev            # dev server
 # then in another terminal:
-vp build && pnpm start   # production check
+vp build && pnpm start   # production check — one Nitro process runs the whole app
 # browse to http://localhost:3000
 ```
+
+> **Deployment is a single process.** `pnpm start` (`node .output/server/index.mjs`) serves the site _and_ runs the background jobs (receipt OCR worker, offer ingestion ~6 h, fuel refresh daily). No separate scheduler to start. For an immediate ingest, `pnpm ingest:run`.
 
 ## 12. Install Tesseract (receipt OCR — Phase 3)
 

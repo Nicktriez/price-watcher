@@ -9,7 +9,7 @@
     "prepare": "vp config",
     "db:migrate": "node src/db/migrate.ts",
     "db:geocode": "node src/server/geocode-stores.ts",
-    "ingest:schedule": "node src/server/ingest-scheduler.ts"
+    "ingest:run": "node src/server/ingest-scheduler.ts --once"
   },
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",

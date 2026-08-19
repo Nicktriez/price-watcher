@@ -1,5 +1,3 @@
-"use server";
-
 import { randomUUID } from "node:crypto";
 import cron from "node-cron";
 import { db } from "../db/client.ts";
