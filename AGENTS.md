@@ -34,7 +34,7 @@ A Denmark-only grocery price watcher. SolidStart 2 (Solid meta-framework) + Tail
 - **The design source of truth is `docs/reference/build-plan.md` in this repo.** Tasks reference its "What to code — Phase N" sections; read them from `docs/reference/build-plan.md`. (The `grocery-price-watcher-research` repo holds the research artifacts the plan links to.)
 - **Node >= 24 is required.** The project's `package.json` `engines` enforces it. If the local Node is older, flag it.
 - **"Fix English leakage" means: run the leak checker against the whole site, fix everything it flags, and prove exit 0.**
-  1. `npm run leak-check -- --language da --json <site-url> <all-routes...>` — scan the full site, not one page.
+  1. `pnpm run leak-check --language da --json <site-url> <all-routes...>` — scan the full site, not one page. (pnpm forwards `--` literally, so put flags before it; for npm use `npm run leak-check -- --language da --json <site-url> <all-routes...>`.)
   2. Read the JSON: each `{elementPath, text, detected}` is one leak to fix.
   3. Fix every flagged element. If a string isn't in the rendered component, grep `src/` for the leaked text to find its real source (e.g. a server module) and fix it there.
   4. Re-run the full-scan command. It must exit 0. Only then mark the task complete.
