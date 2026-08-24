@@ -261,7 +261,7 @@ importers:
         version: 8.21.0
       lang-leak-checker:
         specifier: github:Nicktriez/lang-leak-checker#main
-        version: git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#4054cc08b9ba23493c08042369a5bd57d2f9645f
+        version: git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#d9e8cb7d9eee8b88f0a37f0b30ea7039912c6951
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -1777,6 +1777,9 @@ packages:
   dictionary-da@6.0.0:
     resolution: {integrity: sha512-gn0IPPVzFljxOOewzLPIEFQKdsPrtgGHEGCWjJeZArl7tZJpGwjXdbvOpteq1GK6YBl66Ljn91EtuGMlV7+itA==}
 
+  dictionary-pl@2.0.0:
+    resolution: {integrity: sha512-jg1j4DM12i6oyp34Re5UeVYZAh2u4Y0Qi8zUfLVQjRmUQA8PsHO41ShoZLDwcQm7mWfeTeZjDPLv9wygPdqj3Q==}
+
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
 
@@ -1978,8 +1981,8 @@ packages:
     resolution: {integrity: sha512-ooa+eSbBNPTo3MycPEuW5jdrxQdQwdtB3LC3h43FiXQbIry5tR0C5lDG7eealK0E4D7XjrnOP5DIUg/LyjRMYQ==}
     engines: {node: '>=22.0.0'}
 
-  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#4054cc08b9ba23493c08042369a5bd57d2f9645f:
-    resolution: {commit: 4054cc08b9ba23493c08042369a5bd57d2f9645f, repo: git@github.com:Nicktriez/lang-leak-checker.git, type: git}
+  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#d9e8cb7d9eee8b88f0a37f0b30ea7039912c6951:
+    resolution: {commit: d9e8cb7d9eee8b88f0a37f0b30ea7039912c6951, repo: git@github.com:Nicktriez/lang-leak-checker.git, type: git}
     version: 0.1.0
     hasBin: true
 
@@ -3992,6 +3995,8 @@ snapshots:
 
   dictionary-da@6.0.0: {}
 
+  dictionary-pl@2.0.0: {}
+
   dom-accessibility-api@0.5.16: {}
 
   dom-serializer@2.0.0:
@@ -4159,11 +4164,12 @@ snapshots:
 
   kysely@0.29.5: {}
 
-  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#4054cc08b9ba23493c08042369a5bd57d2f9645f:
+  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#d9e8cb7d9eee8b88f0a37f0b30ea7039912c6951:
     dependencies:
       cheerio: 1.2.0
       commander: 15.0.0
       dictionary-da: 6.0.0
+      dictionary-pl: 2.0.0
       nspell: 2.1.5
 
   lightningcss-android-arm64@1.32.0:
