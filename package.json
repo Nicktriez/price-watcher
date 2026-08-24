@@ -9,7 +9,8 @@
     "prepare": "vp config",
     "db:migrate": "node src/db/migrate.ts",
     "db:geocode": "node src/server/geocode-stores.ts",
-    "ingest:run": "node src/server/ingest-scheduler.ts --once"
+    "ingest:run": "node src/server/ingest-scheduler.ts --once",
+    "leak-check": "lang-leak-checker --language da $URL"
   },
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",
@@ -28,6 +29,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.21.0",
+    "lang-leak-checker": "github:Nicktriez/lang-leak-checker#main",
     "tailwindcss": "^4.3.3",
     "vite-plus": "catalog:"
   },
