@@ -1,5 +1,4 @@
-import { createAsync } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { For, Show, createMemo } from "solid-js";
 import { CrowdReportFlag } from "~/components/CrowdReportFlag";
 import { fmtPrice } from "~/lib/format";
 import { getReportedItems } from "~/server/queries";
@@ -18,7 +17,7 @@ function TierBadge({ tier }: { tier: "community" | "single" }) {
 }
 
 export default function ReportedItems() {
-  const items = createAsync(() => getReportedItems());
+  const items = createMemo(() => getReportedItems());
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">

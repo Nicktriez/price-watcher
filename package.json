@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vp dev",
     "build": "vp build",
-    "start": "node .output/server/index.mjs",
+    "start": "node --env-file-if-exists=.env server.js",
     "preview": "vp preview",
     "prepare": "vp config",
     "db:migrate": "node src/db/migrate.ts",
@@ -13,16 +13,18 @@
     "leak-check": "lang-leak-checker --language da --crawl $URL --exclude-url /products --exclude \"li.flex.gap-3\" --exclude option --exclude a.font-medium"
   },
   "dependencies": {
+    "@remix-run/cookie": "^0.6.0",
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.2",
-    "@solidjs/router": "^1.0.0",
-    "@solidjs/start": "^2.0.0",
+    "@solidjs/router": "2.0.0-next.17",
+    "@solidjs/vite-plugin": "3.0.0-next.32",
+    "@solidjs/web": "2.0.0-rc.2",
+    "filesystem-routing": "^0.2.1",
     "kysely": "^0.29.5",
-    "nitro": "3.0.260610-beta",
     "node-cron": "^4.6.0",
     "pg": "^8.23.0",
     "sharp": "^0.35.3",
-    "solid-js": "^1.9.14",
+    "solid-js": "2.0.0-rc.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8"
   },
   "devDependencies": {

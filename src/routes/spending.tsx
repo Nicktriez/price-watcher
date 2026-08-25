@@ -1,12 +1,12 @@
-import { A, createAsync, Navigate } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { For, Show, createMemo } from "solid-js";
 import { fmtDate, fmtPrice } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import { getSpendingReport } from "~/server/queries";
+import Redirect from "~/components/Redirect";
 
 export default function Spending() {
-  const user = createAsync(() => getCurrentUser());
-  const report = createAsync(async () => (user() ? getSpendingReport(user()!.id) : null));
+  const user = createMemo(() => getCurrentUser());
+  const report = createMemo(async () => (user() ? getSpendingReport(user()!.id) : null));
 
   return (
     <Show
@@ -17,7 +17,7 @@ export default function Spending() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >
@@ -68,9 +68,9 @@ export default function Spending() {
                         {(rec) => (
                           <li class="flex items-baseline justify-between rounded border border-gray-200 px-3 py-2 text-sm">
                             <span class="text-gray-800">
-                              <A href={`/receipts/${rec.id}`} class="hover:underline">
+                              <a href={`/receipts/${rec.id}`} class="hover:underline">
                                 {rec.storeName ?? "Ukendt butik"}
-                              </A>
+                              </a>
                               <span class="ml-2 text-xs text-gray-500">
                                 {rec.status === "pending" || rec.status === "processing"
                                   ? "bliver behandlet…"

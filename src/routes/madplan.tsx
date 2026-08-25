@@ -1,11 +1,12 @@
-import { createAsync, Navigate, useSearchParams } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { fmtPrice } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import { generateMadplan } from "~/server/lists";
+import Redirect from "~/components/Redirect";
 
 export default function Madplan() {
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
   const [params] = useSearchParams();
 
   const budget = () => {
@@ -17,7 +18,7 @@ export default function Madplan() {
     return Number.isInteger(raw) && raw >= 1 ? Math.min(raw, 7) : 7;
   };
 
-  const plan = createAsync(async () => (user() ? generateMadplan(budget(), days()) : null));
+  const plan = createMemo(async () => (user() ? generateMadplan(budget(), days()) : null));
 
   const summary = () => {
     const p = plan();
@@ -40,7 +41,7 @@ export default function Madplan() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

@@ -1,18 +1,18 @@
-import { A, createAsync, useParams } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useParams } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { fmtDate, fmtPrice } from "~/lib/format";
 import { getStoreById } from "~/server/queries";
 
 export default function StorePage() {
   const params = useParams();
-  const store = createAsync(async () => (params.id ? getStoreById(params.id) : null));
+  const store = createMemo(async () => (params.id ? getStoreById(params.id) : null));
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
       <p class="mb-4">
-        <A href="/offers" class="text-sky-700 hover:underline">
+        <a href="/offers" class="text-sky-700 hover:underline">
           ← Tilbage til tilbud
-        </A>
+        </a>
       </p>
 
       <Show when={store()} fallback={<p>Store not found.</p>}>

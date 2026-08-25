@@ -185,19 +185,19 @@ Once set up: `vp dev` (dev server) · `vp check` (format/lint/type) · `vp test`
 
 ## Deployment
 
-Production is a **single Nitro server process** — the app, the receipt OCR worker, and the offer/fuel ingestion scheduler all run inside it. No separate scheduler process to keep alive.
+Production is a **single Node server process** — the app, the receipt OCR worker, and the offer/fuel ingestion scheduler all run inside it. No separate scheduler process to keep alive.
 
 1. Provision a box with Node >= 24, Postgres, and the repo clone (see `docs/bootstrap-new-machine.md`).
 2. Create `.env` (see below for the full set of vars).
 3. `pnpm db:migrate` — apply Kysely migrations (idempotent, safe to re-run).
-4. `vp build` — Nitro bundles the site _and_ the background jobs into `.output/`.
-5. `node .output/server/index.mjs` — one process serves the site, scans receipts (30 s poll), ingests offers (~6 h cadence) and refreshes fuel prices (daily).
+4. `vp build` — bundles the site into `dist/` (client assets + the SSR/server-function handler).
+5. `pnpm start` (`node --env-file-if-exists=.env server.js`) — one process serves static assets + SSR + the `/_server` endpoint, scans receipts (30 s poll), ingests offers (~6 h cadence) and refreshes fuel prices (daily).
 
 Optional on-demand ingest: `pnpm ingest:run` forces an immediate offer + fuel refresh without waiting for the cron tick.
 
 **Env vars:** `DATABASE_URL` (Postgres) and `TJEK_BASE_URL` (Tjek read API) are the essentials. For sign-in you also need `SESSION_SECRET` (>= 32 chars) and `ORIGIN` (the public URL, e.g. `https://beta.skujeg.dk` — important behind a reverse proxy). `UPLOAD_DIR` points at the persistent receipt-image directory. `DISABLE_INGEST_SCHEDULER=1` and `DISABLE_RECEIPT_WORKER=1` turn off the in-app background jobs (useful in dev or while debugging).
 
-**Keeping it alive:** background jobs start lazily with the Nitro runtime (on the first HTTP request). Run the single process under pm2 or systemd to restart on crash/boot — there is nothing else to supervise.
+**Keeping it alive:** background jobs start with the app process (on the first request through the middleware bootstrap). Run the single process under pm2 or systemd to restart on crash/boot — there is nothing else to supervise.
 
 ## Routes you should visit
 

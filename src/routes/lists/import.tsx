@@ -1,8 +1,9 @@
-import { createAsync, Navigate, useNavigate } from "@solidjs/router";
-import { createSignal, For, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { createSignal, For, Show, createMemo } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
 import { addListItem, createList, searchProducts } from "~/server/lists";
 import { parseIngredientQuantity, splitIngredients } from "~/lib/recipe";
+import Redirect from "~/components/Redirect";
 
 interface IngredientRow {
   key: string;
@@ -17,7 +18,7 @@ interface IngredientRow {
 
 export default function RecipeImport() {
   const navigate = useNavigate();
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
   const [recipeName, setRecipeName] = createSignal("");
   const [rawText, setRawText] = createSignal("");
   const [rows, setRows] = createSignal<IngredientRow[]>([]);
@@ -89,7 +90,7 @@ export default function RecipeImport() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

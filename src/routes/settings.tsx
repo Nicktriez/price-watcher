@@ -1,9 +1,10 @@
-import { createAsync, Navigate, useSearchParams } from "@solidjs/router";
-import { createSignal, Show } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { createSignal, Show, createMemo } from "solid-js";
 import type { FuelType } from "~/lib/car-profile";
 import { getCurrentUser } from "~/server/auth";
 import { clearCarProfile, getCarProfile, saveCarProfile } from "~/server/car-profile";
 import { clearHomeAddress, getHomeInfo, saveHomeAddress } from "~/server/distance";
+import Redirect from "~/components/Redirect";
 
 function fuelTypeLabel(fuelType: FuelType): string {
   return fuelType === "petrol" ? "benzin" : fuelType === "diesel" ? "diesel" : "elbil";
@@ -11,9 +12,9 @@ function fuelTypeLabel(fuelType: FuelType): string {
 
 export default function Settings() {
   const [params] = useSearchParams();
-  const user = createAsync(() => getCurrentUser());
-  const home = createAsync(() => getHomeInfo());
-  const car = createAsync(() => getCarProfile());
+  const user = createMemo(() => getCurrentUser());
+  const home = createMemo(() => getHomeInfo());
+  const car = createMemo(() => getCarProfile());
   const [carFuel, setCarFuel] = createSignal<FuelType>("petrol");
   const [carEv, setCarEv] = createSignal<string>("home");
   const saved = () => typeof params.ok === "string";
@@ -67,7 +68,7 @@ export default function Settings() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-md p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

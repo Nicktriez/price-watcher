@@ -1,5 +1,5 @@
-import { A, createAsync, useParams } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useParams } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { CrowdReportFlag } from "~/components/CrowdReportFlag";
 import { fmtDate, fmtPrice, fmtSize } from "~/lib/format";
 import { ageLabel } from "~/lib/trust-tier";
@@ -54,16 +54,16 @@ function TrustBadge({ tier }: { tier: "official" | "community" | "single" }) {
 
 export default function ProductPage() {
   const params = useParams();
-  const product = createAsync(async () => (params.id ? getProductById(params.id) : null));
-  const history = createAsync(async () => (params.id ? getPriceHistory(params.id, 30) : null));
-  const crowd = createAsync(async () => (params.id ? getProductCrowdPrices(params.id) : []));
+  const product = createMemo(async () => (params.id ? getProductById(params.id) : null));
+  const history = createMemo(async () => (params.id ? getPriceHistory(params.id, 30) : null));
+  const crowd = createMemo(async () => (params.id ? getProductCrowdPrices(params.id) : []));
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
       <p class="mb-4">
-        <A href="/offers" class="text-sky-700 hover:underline">
+        <a href="/offers" class="text-sky-700 hover:underline">
           ← Tilbage til tilbud
-        </A>
+        </a>
       </p>
 
       <Show when={product()} fallback={<p>Produktet blev ikke fundet.</p>}>

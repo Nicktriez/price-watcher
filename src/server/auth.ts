@@ -1,8 +1,8 @@
 "use server";
 
 import { randomUUID, createHash, randomBytes } from "node:crypto";
-import { useSession } from "@solidjs/start/http";
-import { getRequestEvent } from "solid-js/web";
+import { getRequestEvent } from "@solidjs/web";
+import { clearSession, getSession, setSession } from "~/server/session";
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,
@@ -15,36 +15,16 @@ import {
 } from "@simplewebauthn/server";
 import { db } from "~/db/client";
 
-const SESSION_COOKIE = "pw-session";
-const SESSION_MAX_AGE = 60 * 60 * 24 * 30;
 const CHALLENGE_TTL_MS = 5 * 60 * 1000;
 
 // TODO(beta): add email or TOTP recovery before public launch — passkeys have
 // no self-serve recovery; for the closed beta Nick resets by deleting a user's
 // passkey_credential rows.
-
-function sessionSecret(): string {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret) {
-    console.warn("[auth] SESSION_SECRET not set; using insecure dev secret");
-    return "dev-only-insecure-session-secret-0123456789";
-  }
-  if (secret.length < 32) {
-    throw new Error("SESSION_SECRET must be at least 32 characters");
-  }
-  return secret;
-}
+// Sessions live in ~/server/session.ts (signed cookie over the request
+// event), replacing SolidStart's useSession.
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
-}
-
-async function session() {
-  return useSession<{ userId: string }>({
-    password: sessionSecret(),
-    name: SESSION_COOKIE,
-    maxAge: SESSION_MAX_AGE,
-  });
 }
 
 export interface AuthUser {
@@ -53,8 +33,7 @@ export interface AuthUser {
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
-  const current = await session();
-  const userId = current.data.userId;
+  const userId = (await getSession())?.userId;
   if (!userId) return null;
   const user = await db
     .selectFrom("user")
@@ -65,8 +44,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 }
 
 export async function signOut(): Promise<void> {
-  const current = await session();
-  await current.clear();
+  await clearSession();
 }
 
 /**
@@ -202,8 +180,7 @@ export async function finishRegistration(
       })
       .execute();
 
-    const current = await session();
-    await current.update({ userId });
+    await setSession({ userId });
     return { ok: true, user: { id: userId, email: null } };
   } catch (error) {
     console.error("[auth] finishRegistration failed:", error);
@@ -293,8 +270,7 @@ export async function finishAuthentication(
       .where("id", "=", credential.id)
       .execute();
 
-    const current = await session();
-    await current.update({ userId: user.id });
+    await setSession({ userId: user.id });
     return { ok: true, user: { id: user.id, email: user.email } };
   } catch {
     return { ok: false, error: "authentication-failed" };

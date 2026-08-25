@@ -1,14 +1,13 @@
-import { createAsync } from "@solidjs/router";
-import { Show } from "solid-js";
+import { Show, createMemo } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
 
 // Landing page — the same page for everyone (Task 037b), except the primary
 // CTA: signed-out users see "Log ind og kom i gang", signed-in users see
 // "Opret indkøbsliste" (Task 037c). No redirect. The landing sits inside the
-// route Suspense, so the createAsync session read resolves both in SSR and on
+// route Loading boundary, so the session read resolves both in SSR and on
 // the client.
 export default function Home() {
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">

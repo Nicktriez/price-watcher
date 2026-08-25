@@ -1,10 +1,9 @@
-import { createAsync } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { For, Show, createMemo } from "solid-js";
 import { fmtPrice } from "~/lib/format";
 import { getLeaderboard } from "~/server/queries";
 
 export default function Leaderboard() {
-  const entries = createAsync(() => getLeaderboard(20));
+  const entries = createMemo(() => getLeaderboard(20));
 
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">

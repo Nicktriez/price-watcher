@@ -1,10 +1,10 @@
-import { A, createAsync, Navigate } from "@solidjs/router";
-import { createSignal, Show } from "solid-js";
+import { createSignal, Show, createMemo } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
 import { queueReceipt, type QueueReceiptResult } from "~/server/receipt-upload";
+import Redirect from "~/components/Redirect";
 
 export default function Upload() {
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
   const [result, setResult] = createSignal<QueueReceiptResult | null>(null);
 
   const handleUpload = async (e: Event) => {
@@ -25,7 +25,7 @@ export default function Upload() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-md p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >
@@ -71,12 +71,12 @@ export default function Upload() {
                         minut. Varerne og priserne dukker op på din forbrugsside.
                       </p>
                       <p class="mt-3">
-                        <A
+                        <a
                           href={r.receiptId ? `/receipts/${r.receiptId}` : "/spending"}
                           class="font-medium text-sky-700 hover:underline"
                         >
                           Se kvitteringen →
-                        </A>
+                        </a>
                       </p>
                     </>
                   ) : (

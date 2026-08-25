@@ -1,13 +1,14 @@
-import { A, createAsync, Navigate, useNavigate } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
 import { createList, getMyLists, getTemplates, useTemplate } from "~/server/lists";
+import Redirect from "~/components/Redirect";
 
 export default function ListsIndex() {
   const navigate = useNavigate();
-  const user = createAsync(() => getCurrentUser());
-  const lists = createAsync(() => getMyLists());
-  const templates = createAsync(() => getTemplates());
+  const user = createMemo(() => getCurrentUser());
+  const lists = createMemo(() => getMyLists());
+  const templates = createMemo(() => getTemplates());
 
   const handleCreate = async (e: Event) => {
     e.preventDefault();
@@ -35,16 +36,16 @@ export default function ListsIndex() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >
         <main class="mx-auto max-w-3xl p-4 text-gray-900">
           <h1 class="mb-4 text-2xl font-semibold">Dine lister</h1>
           <p class="mb-4">
-            <A href="/lists/import" class="text-sky-700 hover:underline">
+            <a href="/lists/import" class="text-sky-700 hover:underline">
               Importer en opskrift →
-            </A>
+            </a>
           </p>
 
           <section class="mb-6">
@@ -103,9 +104,9 @@ export default function ListsIndex() {
                 <For each={lists()}>
                   {(l) => (
                     <li class="flex items-center justify-between rounded border border-gray-200 px-3 py-2 text-sm">
-                      <A href={`/lists/${l.id}`} class="font-medium text-sky-700 hover:underline">
+                      <a href={`/lists/${l.id}`} class="font-medium text-sky-700 hover:underline">
                         {l.name}
-                      </A>
+                      </a>
                       <span class="text-xs text-gray-500">
                         {l.kind} · {l.itemCount} varer
                       </span>
@@ -117,9 +118,9 @@ export default function ListsIndex() {
           </Show>
 
           <p class="mt-6 text-sm">
-            <A href="/upload" class="text-sky-700 hover:underline">
+            <a href="/upload" class="text-sky-700 hover:underline">
               Upload en kvittering →
-            </A>
+            </a>
           </p>
         </main>
       </Show>

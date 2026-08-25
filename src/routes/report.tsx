@@ -1,14 +1,14 @@
-import { createAsync, Navigate } from "@solidjs/router";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Show, createMemo } from "solid-js";
 import { getCurrentUser } from "~/server/auth";
 import { searchProducts } from "~/server/lists";
 import { searchStores, submitCrowdReport, type CrowdReportResult } from "~/server/report";
+import Redirect from "~/components/Redirect";
 
 export default function Report() {
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
 
   // Search results live in plain signals (debounced fetch), NOT resources —
-  // a pending resource read re-suspends the route's Suspense boundary and
+  // a pending async read re-suspends the route's Loading boundary and
   // blurs the input on each keystroke.
   const [storeQuery, setStoreQuery] = createSignal("");
   const [selectedStore, setSelectedStore] = createSignal<{ id: string; name: string } | null>(null);
@@ -75,7 +75,7 @@ export default function Report() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

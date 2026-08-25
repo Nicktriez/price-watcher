@@ -1,9 +1,9 @@
-import { createAsync, useLocation, useNavigate } from "@solidjs/router";
-import { createEffect, createSignal, For, onCleanup, Show, Suspense } from "solid-js";
+import { useLocation, useNavigate } from "@solidjs/router";
+import { createEffect, createSignal, For, Show, Loading, createMemo } from "solid-js";
 import { getCurrentUser, signOut } from "~/server/auth";
 
 // Real launch nav (Task 036) + mobile hamburger (Task 038c).
-// Auth pattern (createAsync session, authVersion, Suspense + nested Show)
+// Auth pattern (createMemo session, authVersion, Loading + nested Show)
 // preserved unchanged — only layout/visibility is restructured.
 const LINKS = [
   { href: "/", label: "Forside" },
@@ -19,7 +19,7 @@ export default function Nav() {
   const navigate = useNavigate();
   const [authVersion, setAuthVersion] = createSignal(0);
   const [menuOpen, setMenuOpen] = createSignal(false);
-  const user = createAsync(() => {
+  const user = createMemo(() => {
     void authVersion();
     void location.pathname; // re-fetch the session when the route changes (post login)
     return getCurrentUser();
@@ -28,26 +28,33 @@ export default function Nav() {
     path == location.pathname ? "border-sky-600" : "border-transparent hover:border-sky-600";
 
   // Close the menu on route change and on outside click / Esc.
-  createEffect(() => {
-    void location.pathname;
-    setMenuOpen(false);
-  });
+  // (Solid 2: effects split into a compute phase that tracks and an untracked
+  // apply phase that writes; cleanup is returned from apply.)
+  createEffect(
+    () => location.pathname,
+    () => {
+      setMenuOpen(false);
+    },
+  );
   let navRef: HTMLElement | undefined;
-  createEffect(() => {
-    if (!menuOpen()) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (navRef && !navRef.contains(e.target as Node)) setMenuOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("click", onDocClick);
-    document.addEventListener("keydown", onKey);
-    onCleanup(() => {
-      document.removeEventListener("click", onDocClick);
-      document.removeEventListener("keydown", onKey);
-    });
-  });
+  createEffect(
+    () => menuOpen(),
+    (open) => {
+      if (!open) return;
+      const onDocClick = (e: MouseEvent) => {
+        if (navRef && !navRef.contains(e.target as Node)) setMenuOpen(false);
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setMenuOpen(false);
+      };
+      document.addEventListener("click", onDocClick);
+      document.addEventListener("keydown", onKey);
+      return () => {
+        document.removeEventListener("click", onDocClick);
+        document.removeEventListener("keydown", onKey);
+      };
+    },
+  );
 
   const handleSignOut = async (e: Event) => {
     e.preventDefault();
@@ -69,7 +76,7 @@ export default function Nav() {
           Sku' jeg?
         </a>
         <div class="flex items-center gap-1">
-          <Suspense fallback={null}>
+          <Loading fallback={null}>
             <Show when={user() !== undefined}>
               <Show
                 when={user()}
@@ -84,10 +91,10 @@ export default function Nav() {
                 </a>
               </Show>
             </Show>
-          </Suspense>
+          </Loading>
           <button
             type="button"
-            aria-expanded={menuOpen()}
+            aria-expanded={menuOpen() ? "true" : "false"}
             aria-label="Menu"
             onClick={() => setMenuOpen((o) => !o)}
             class="px-3 py-2 text-2xl leading-none"
@@ -107,7 +114,7 @@ export default function Nav() {
           )}
         </For>
         <li class="ml-auto mx-1.5 sm:mx-6">
-          <Suspense fallback={null}>
+          <Loading fallback={null}>
             <Show when={user() !== undefined}>
               <Show
                 when={user()}
@@ -122,7 +129,7 @@ export default function Nav() {
                 </a>
               </Show>
             </Show>
-          </Suspense>
+          </Loading>
         </li>
       </ul>
 

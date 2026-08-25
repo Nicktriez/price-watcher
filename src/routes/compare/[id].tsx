@@ -1,9 +1,10 @@
-import { createAsync, Navigate, useParams } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useParams } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { fmtPrice } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import { getList } from "~/server/lists";
 import { getStoreVerdicts } from "~/server/verdict";
+import Redirect from "~/components/Redirect";
 
 function Sparkline({ values }: { values: number[] }) {
   const width = 90;
@@ -37,9 +38,9 @@ function Sparkline({ values }: { values: number[] }) {
 
 export default function StoreComparison() {
   const params = useParams();
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
 
-  const data = createAsync(async () => {
+  const data = createMemo(async () => {
     const me = user();
     if (!me || !params.id) return null;
     const list = await getList(params.id);
@@ -57,7 +58,7 @@ export default function StoreComparison() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

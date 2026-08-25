@@ -1,5 +1,5 @@
-import { A, createAsync, useSearchParams } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { fmtPrice, fmtSize } from "~/lib/format";
 import { getChains, getCurrentOffersPage } from "~/server/queries";
 
@@ -7,7 +7,7 @@ const PAGE_SIZE = 100;
 
 export default function Offers() {
   const [params] = useSearchParams();
-  const chains = createAsync(() => getChains());
+  const chains = createMemo(() => getChains());
 
   const chain = () => (typeof params.chain === "string" ? params.chain : null);
   const q = () => (typeof params.q === "string" ? params.q : "");
@@ -16,7 +16,7 @@ export default function Offers() {
     return Number.isFinite(raw) && raw >= 1 ? raw : 1;
   };
 
-  const data = createAsync(() => getCurrentOffersPage(chain(), page(), 100, q()));
+  const data = createMemo(() => getCurrentOffersPage(chain(), page(), 100, q()));
   const offers = () => data()?.offers;
   const total = () => data()?.total ?? 0;
 
@@ -87,12 +87,12 @@ export default function Offers() {
                   />
                 </Show>
                 <div>
-                  <A
+                  <a
                     href={`/products/${o.product_id}`}
                     class="font-medium text-sky-700 hover:underline"
                   >
                     {o.product_name}
-                  </A>
+                  </a>
                   <Show when={o.size_from != null}>
                     <p class="text-sm text-gray-600">
                       {fmtSize(o.size_from!, o.unit)}
@@ -115,20 +115,20 @@ export default function Offers() {
         <Show when={totalPages() > 1}>
           <nav class="mt-6 flex items-center justify-center gap-4">
             <Show when={page() > 1}>
-              <A
+              <a
                 href={`/offers?page=${page() - 1}&chain=${chain() ?? ""}&q=${encodeURIComponent(q())}`}
                 class="text-sky-700 hover:underline"
               >
                 ← Tidligere
-              </A>
+              </a>
             </Show>
             <Show when={page() < totalPages()}>
-              <A
+              <a
                 href={`/offers?page=${page() + 1}&chain=${chain() ?? ""}&q=${encodeURIComponent(q())}`}
                 class="text-sky-700 hover:underline"
               >
                 Næste →
-              </A>
+              </a>
             </Show>
           </nav>
         </Show>

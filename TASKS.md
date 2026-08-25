@@ -177,3 +177,24 @@ UX polish that runs AFTER the beta proves the loop. Not beta blockers.
 | 046 | Smart auth redirect — return to intended page after login | ⬜     | post-beta (after Phase 8) — shared helper, `next` query param, validated same-origin, no open redirect |
 
 Then: monetization + launch (Phase 10), agent layer (Phase 11), Tjek-independent ingestion (Phase 12, conditional).
+
+## Infrastructure — SolidStart → Solid 2 RC migration (Nick-directed, agent-run)
+
+**Status: ✅ code-complete, verified** (2026-08-25, branch `simplify-deployment`). Migrated the app off released SolidStart 2 (Solid 1) onto the Solid 2 RC stack per https://v2.solidjs.com/migration/from-solid-start and the pinned `solid-v2/fullstack` template.
+
+| Change          | Detail                                                                                                                                                                                                                                                            |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Runtime         | `solid-js@2.0.0-rc.2`, `@solidjs/web@2.0.0-rc.2`, `@solidjs/router@2.0.0-next.17` (removed `@solidjs/start`, `nitro`)                                                                                                                                             |
+| Build           | `@solidjs/vite-plugin@3.0.0-next.32` start mode (`ssr: true`, `serverFunctions: true`) + `filesystem-routing@^0.2.1` + Tailwind; `~` alias now a Vite resolve alias                                                                                               |
+| Entries         | Deleted `entry-client/entry-server/global.d.ts` — plugin generates them around `src/App.tsx` + `src/Document.tsx`; router instance in `src/router.ts` (`createRouter` + `fileRoutes(pageRoutes)`)                                                                 |
+| Background jobs | Receipt worker + ingest/fuel scheduler moved from entry-server side effects to `src/server/bootstrap.ts`, loaded once per process via `start.middleware` (`src/middleware.ts`)                                                                                    |
+| API swaps       | `createAsync`→`createMemo`, `Suspense`→`Loading`, `<A>`→plain `<a>` (Router 2 still intercepts clicks — SPA nav preserved), `<Navigate>`→`Redirect` component (setup-time `navigate()`), Nav effects split into Solid 2 compute/apply form                        |
+| Sessions        | SolidStart `useSession` → signed cookie via `@remix-run/cookie` over `getRequestEvent()` (`@solidjs/web`), same cookie name/maxAge/secret logic (`src/server/session.ts`)                                                                                         |
+| Auth gates      | Old `<Navigate>` folded into real SSR 302s. Under start mode a redirect only folds pre-flush, so direct hits are gated in middleware (`PROTECTED_PREFIXES` list → 302 `/signin`); in-page `<Redirect>` fallbacks still cover client-side nav after session expiry |
+| Deployment      | Nitro `.output/` gone. `vp build` → `dist/client` assets + `dist/server/server.js` exporting `handleRequest(Request)→Response`; root `server.js` is the Node adapter (template's verified baseline); `pnpm start` runs it                                         |
+
+**Verified:** `vp check` clean (fmt/lint/type), `vp test` 169 passed, prod adapter + `vp preview`: all routes match old status matrix (public 200, gated 302→/signin), SSR renders Danish content incl. DB-backed offers, Playwright E2E on dev + preview: hydration, client nav, auth redirects, zero console errors, client bundle free of server code/secrets. Old-app behavior baseline captured from HEAD worktree before removal.
+
+**404 status (fixed same day):** unknown URLs now answer real HTTP 404 (old SolidStart app returned 200 here). `src/routes/[...404].tsx` declares `httpStatus(404)` (`@solidjs/web`, server-only); because the catch-all chunk loads lazily — on a cold process the shell can commit a 200 head before the component runs — `src/middleware.ts` also rewrites post-dispatch: GET page requests whose URL matches no real route pattern (matchers compiled from the `virtual:file-routes` manifest) get their status rewritten to 404. Verified cold + warm in dev, preview and prod adapter; body/hydration unchanged.
+
+**Manual follow-ups for Nick:** passkey sign-in/up flow needs one manual run (needs a real authenticator); receipt upload round-trip worth a smoke test (File serialization through the new server-function codec).

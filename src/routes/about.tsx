@@ -1,5 +1,3 @@
-import { A } from "@solidjs/router";
-
 export default function About() {
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
@@ -35,9 +33,9 @@ export default function About() {
       </section>
 
       <p class="mt-6">
-        <A href="/offers" class="text-sky-700 hover:underline">
+        <a href="/offers" class="text-sky-700 hover:underline">
           → Se ugens tilbud
-        </A>
+        </a>
       </p>
     </main>
   );

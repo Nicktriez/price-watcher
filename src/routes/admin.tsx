@@ -1,5 +1,4 @@
-import { createAsync, Navigate } from "@solidjs/router";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Show, createMemo } from "solid-js";
 import { fmtPrice } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import {
@@ -8,13 +7,14 @@ import {
   moderateCrowdReport,
   setUserMuted,
 } from "~/server/moderation";
+import Redirect from "~/components/Redirect";
 
 export default function Admin() {
-  const user = createAsync(() => getCurrentUser());
-  const admin = createAsync(() => isAdminUser());
+  const user = createMemo(() => getCurrentUser());
+  const admin = createMemo(() => isAdminUser());
   const [version, setVersion] = createSignal(0);
   const [busy, setBusy] = createSignal(false);
-  const queue = createAsync(async () => {
+  const queue = createMemo(async () => {
     version();
     return getModerationQueue();
   });
@@ -39,7 +39,7 @@ export default function Admin() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

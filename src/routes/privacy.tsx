@@ -1,14 +1,12 @@
-import { A } from "@solidjs/router";
-
 // Privacy policy — draft by OpenCode from actual code behavior. NICK MUST
 // APPROVE the final text (human gate, Task 038) before beta invites.
 export default function Privacy() {
   return (
     <main class="mx-auto max-w-3xl p-4 text-gray-900">
       <p class="mb-3 text-sm">
-        <A href="/" class="text-sky-700 hover:underline">
+        <a href="/" class="text-sky-700 hover:underline">
           ← Forside
-        </A>
+        </a>
       </p>
       <h1 class="mb-1 text-2xl font-semibold">Privatlivspolitik</h1>
       <p class="mb-6 text-sm text-gray-500">Sidst opdateret: 14. august 2026</p>

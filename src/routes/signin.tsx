@@ -1,5 +1,5 @@
-import { createAsync, useNavigate } from "@solidjs/router";
-import { createSignal, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { createSignal, Show, createMemo } from "solid-js";
 import {
   startAuthentication as browserStartAuthentication,
   startRegistration as browserStartRegistration,
@@ -14,7 +14,7 @@ import {
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
   const [busy, setBusy] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
 

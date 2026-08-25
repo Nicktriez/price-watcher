@@ -1,9 +1,10 @@
-import { createAsync, Navigate, useParams } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useParams } from "@solidjs/router";
+import { For, Show, createMemo } from "solid-js";
 import { fmtDate, fmtPrice } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import { getReceiptComparison, type ReceiptLineComparison } from "~/server/queries";
 import { getReceiptStatus, retryReceipt } from "~/server/receipt-upload";
+import Redirect from "~/components/Redirect";
 
 function DeltaLabel({ line }: { line: ReceiptLineComparison }) {
   if (line.paid == null) {
@@ -29,11 +30,11 @@ function DeltaLabel({ line }: { line: ReceiptLineComparison }) {
 
 export default function ReceiptPage() {
   const params = useParams();
-  const user = createAsync(() => getCurrentUser());
-  const status = createAsync(async () =>
+  const user = createMemo(() => getCurrentUser());
+  const status = createMemo(async () =>
     user() && params.id ? getReceiptStatus(params.id, user()!.id) : null,
   );
-  const comparison = createAsync(async () =>
+  const comparison = createMemo(async () =>
     user() && params.id && status()?.status === "processed"
       ? getReceiptComparison(params.id, user()!.id)
       : null,
@@ -48,7 +49,7 @@ export default function ReceiptPage() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >

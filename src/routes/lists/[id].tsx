@@ -1,5 +1,5 @@
-import { createAsync, Navigate, useNavigate, useParams } from "@solidjs/router";
-import { createSignal, For, Show } from "solid-js";
+import { useNavigate, useParams } from "@solidjs/router";
+import { createSignal, For, Show, createMemo } from "solid-js";
 import { fmtSize } from "~/lib/format";
 import { getCurrentUser } from "~/server/auth";
 import {
@@ -12,6 +12,7 @@ import {
   searchProducts,
   updateListItem,
 } from "~/server/lists";
+import Redirect from "~/components/Redirect";
 
 function productSizeLabel(
   size: number | null,
@@ -89,18 +90,18 @@ function ProductSearchRow({
 export default function ListDetail() {
   const params = useParams();
   const navigate = useNavigate();
-  const user = createAsync(() => getCurrentUser());
+  const user = createMemo(() => getCurrentUser());
   const [version, setVersion] = createSignal(0);
   const refresh = () => setVersion((v) => v + 1);
 
-  const list = createAsync(async () => {
+  const list = createMemo(async () => {
     version();
     return user() ? getList(params.id!) : null;
   });
 
   const [q, setQ] = createSignal("");
   // Search results live in a plain signal (debounced fetch), NOT a resource:
-  // a resource read that goes pending re-suspends the route's Suspense
+  // an async read that goes pending re-suspends the route's Loading
   // boundary, which detaches the DOM and blurs the input on every keystroke.
   const [results, setResults] = createSignal<SearchProduct[]>([]);
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -188,7 +189,7 @@ export default function ListDetail() {
         when={user()}
         fallback={
           <main class="mx-auto max-w-3xl p-4 text-gray-900">
-            <Navigate href="/signin" />
+            <Redirect href="/signin" />
           </main>
         }
       >
