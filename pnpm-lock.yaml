@@ -261,7 +261,7 @@ importers:
         version: 8.21.0
       lang-leak-checker:
         specifier: github:Nicktriez/lang-leak-checker#main
-        version: git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#3cf43759f70628423e871149c9fd197efdbbbbb3
+        version: git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#361a64adeffb1594c8f074f57c632cd6785b597e
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -1994,8 +1994,8 @@ packages:
     resolution: {integrity: sha512-ooa+eSbBNPTo3MycPEuW5jdrxQdQwdtB3LC3h43FiXQbIry5tR0C5lDG7eealK0E4D7XjrnOP5DIUg/LyjRMYQ==}
     engines: {node: '>=22.0.0'}
 
-  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#3cf43759f70628423e871149c9fd197efdbbbbb3:
-    resolution: {commit: 3cf43759f70628423e871149c9fd197efdbbbbb3, repo: git@github.com:Nicktriez/lang-leak-checker.git, type: git}
+  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#361a64adeffb1594c8f074f57c632cd6785b597e:
+    resolution: {commit: 361a64adeffb1594c8f074f57c632cd6785b597e, repo: git@github.com:Nicktriez/lang-leak-checker.git, type: git}
     version: 1.0.0
     engines: {node: '>=20'}
     hasBin: true
@@ -4197,7 +4197,7 @@ snapshots:
 
   kysely@0.29.5: {}
 
-  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#3cf43759f70628423e871149c9fd197efdbbbbb3:
+  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#361a64adeffb1594c8f074f57c632cd6785b597e:
     dependencies:
       cheerio: 1.2.0
       commander: 15.0.0
