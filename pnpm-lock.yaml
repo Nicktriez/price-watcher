@@ -261,7 +261,7 @@ importers:
         version: 8.21.0
       lang-leak-checker:
         specifier: github:Nicktriez/lang-leak-checker#main
-        version: git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#e96d59c5d16784c3ecfd04852b9848d33b849adf
+        version: git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#3cf43759f70628423e871149c9fd197efdbbbbb3
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -1884,6 +1884,11 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -1989,8 +1994,8 @@ packages:
     resolution: {integrity: sha512-ooa+eSbBNPTo3MycPEuW5jdrxQdQwdtB3LC3h43FiXQbIry5tR0C5lDG7eealK0E4D7XjrnOP5DIUg/LyjRMYQ==}
     engines: {node: '>=22.0.0'}
 
-  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#e96d59c5d16784c3ecfd04852b9848d33b849adf:
-    resolution: {commit: e96d59c5d16784c3ecfd04852b9848d33b849adf, repo: git@github.com:Nicktriez/lang-leak-checker.git, type: git}
+  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#3cf43759f70628423e871149c9fd197efdbbbbb3:
+    resolution: {commit: 3cf43759f70628423e871149c9fd197efdbbbbb3, repo: git@github.com:Nicktriez/lang-leak-checker.git, type: git}
     version: 1.0.0
     engines: {node: '>=20'}
     hasBin: true
@@ -2355,6 +2360,16 @@ packages:
   picomatch@4.0.5:
     resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
     engines: {node: '>=12'}
+
+  playwright-core@1.62.1:
+    resolution: {integrity: sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==}
+    engines: {node: '>=20'}
+    hasBin: true
+
+  playwright@1.62.1:
+    resolution: {integrity: sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
@@ -4093,6 +4108,9 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
+  fsevents@2.3.2:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -4179,7 +4197,7 @@ snapshots:
 
   kysely@0.29.5: {}
 
-  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#e96d59c5d16784c3ecfd04852b9848d33b849adf:
+  lang-leak-checker@git+ssh://git@github.com/Nicktriez/lang-leak-checker.git#3cf43759f70628423e871149c9fd197efdbbbbb3:
     dependencies:
       cheerio: 1.2.0
       commander: 15.0.0
@@ -4187,6 +4205,7 @@ snapshots:
       dictionary-pl: 2.0.0
       domhandler: 6.0.1
       nspell: 2.1.5
+      playwright: 1.62.1
 
   lightningcss-android-arm64@1.32.0:
     optional: true
@@ -4565,6 +4584,14 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.5: {}
+
+  playwright-core@1.62.1: {}
+
+  playwright@1.62.1:
+    dependencies:
+      playwright-core: 1.62.1
+    optionalDependencies:
+      fsevents: 2.3.2
 
   pngjs@7.0.0: {}
 

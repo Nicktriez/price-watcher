@@ -10,7 +10,7 @@
     "db:migrate": "node src/db/migrate.ts",
     "db:geocode": "node src/server/geocode-stores.ts",
     "ingest:run": "node src/server/ingest-scheduler.ts --once",
-    "leak-check": "lang-leak-checker --language da $URL"
+    "leak-check": "lang-leak-checker --language da --crawl $URL"
   },
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",
